@@ -99,13 +99,13 @@ Incluye:
 Ejemplo:  
 
 ```sql
-CREATE TABLE dbo.match_ratings (
-  id BIGINT IDENTITY PRIMARY KEY,
-  match_id BIGINT NOT NULL FOREIGN KEY REFERENCES dbo.matches(id) ON DELETE CASCADE,
-  user_id UNIQUEIDENTIFIER NOT NULL FOREIGN KEY REFERENCES dbo.users(id) ON DELETE CASCADE,
-  rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-  created_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-  CONSTRAINT UQ_ratings UNIQUE(match_id, user_id)
+CREATE TABLE dbo.calificaciones (
+  id         BIGINT IDENTITY(1,1) CONSTRAINT PK_calificaciones PRIMARY KEY,
+  partido_id BIGINT           NOT NULL CONSTRAINT FK_calif_partido REFERENCES dbo.partidos(id) ON DELETE CASCADE,
+  usuario_id UNIQUEIDENTIFIER NOT NULL CONSTRAINT FK_calif_usuario REFERENCES dbo.usuarios(id) ON DELETE CASCADE,
+  puntaje    TINYINT          NOT NULL CONSTRAINT CK_calif_1_5 CHECK (puntaje BETWEEN 1 AND 5),
+  creado_en  DATETIME2        NOT NULL CONSTRAINT DF_calif_creado DEFAULT SYSUTCDATETIME(),
+  CONSTRAINT UQ_calif UNIQUE (partido_id, usuario_id)
 );
 ```  
 
@@ -147,7 +147,9 @@ Incluye:
 │  └─ BDI_grupoXX_v1.pdf       # Documento académico (Cap. I y IV)
 ├─ script/
 │  ├─ creacion.sql             # DDL: tablas y restricciones
-│  └─ carga_inicial.sql        # DML: datos representativos
+│  ├─ carga_inicial.sql        # DML: datos representativos
+│  ├─ verificacion.sql         # DML: verifica datos cargados
+│  └─ conteo.sql               # DML: cantidad cargada
 ├─ assets/
 │  ├─ banner-bdi.jpg
 │  ├─ der-tribuneros.png
@@ -182,5 +184,5 @@ SELECT * FROM dbo.match_ratings;
 <div align="center">
   <br/>
   <img src="./assets/badge-bdi.png" alt="BDI Badge" height="120"/><br/>
-  <sub>Hecho con ⚽ y 💾 — FaCENA · UNNE</sub>
+  <sub>❤️🐔 Hecho con pasión y dedicación — FaCENA · UNNE</sub>
 </div>
