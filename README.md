@@ -181,13 +181,17 @@ Incluye:
 ### Verificación de la carga
 - Ejecutar `script/verificacion.sql` para revisar que las tablas principales tengan registros y relaciones consistentes.
 - Ejecutar `script/conteo.sql` para obtener un resumen de cantidades por entidad.
-- Consultas útiles:
+- Consultas útiles (ver `script/verificacion.sql` para más ejemplos):
 
   ```sql
-  SELECT m.match_date, t_home.name AS local, t_away.name AS visitante
-  FROM dbo.matches AS m
-  JOIN dbo.teams AS t_home ON t_home.id = m.home_team_id
-  JOIN dbo.teams AS t_away ON t_away.id = m.away_team_id;
+  SELECT p.fecha_utc,
+         e_local.nombre      AS equipo_local,
+         e_visitante.nombre  AS equipo_visitante
+  FROM dbo.partidos AS p
+  JOIN dbo.equipos  AS e_local
+    ON e_local.id = p.equipo_local
+  JOIN dbo.equipos  AS e_visitante
+    ON e_visitante.id = p.equipo_visitante;
   ```
 
 ---
