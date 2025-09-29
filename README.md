@@ -1,10 +1,5 @@
 <div align="center">
-
-  <!-- Banner -->
-  <a href="https://github.com/tobiager/BD1-proyecto">
-    <img src="./assets/banner-bdi.jpg" alt="BD1 — Proyecto de Estudio e Investigación (FaCENA-UNNE)" width="1100">
-  </a>
-
+  
   <!-- Badges -->
   <p>
     <img src="https://img.shields.io/badge/Cátedra-Bases%20de%20Datos%20I-008CFF?style=for-the-badge&labelColor=0a0a0a"/>
