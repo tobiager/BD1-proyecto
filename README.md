@@ -23,18 +23,22 @@ Este repositorio contiene la documentación y scripts SQL Server correspondiente
 ---
 
 ## Índice
-1. [Capítulo I — Introducción](#capítulo-i--introducción)  
-   - [Tema](#tema)  
-   - [Definición o planteamiento del problema](#definición-o-planteamiento-del-problema)  
-   - [Objetivos del trabajo práctico](#objetivos-del-trabajo-práctico)  
-2. [Capítulo IV — Desarrollo del tema / Resultados](#capítulo-iv--desarrollo-del-tema--resultados)  
-   - [Esquema relacional](#esquema-relacional)  
-   - [Script de creación (DDL)](#script-de-creación-ddl)  
-   - [Carga representativa (DML)](#carga-representativa-dml)  
-   - [Diccionario de datos](#diccionario-de-datos)  
-3. [Estructura del repositorio](#estructura-del-repo)  
-4. [Cómo ejecutar los scripts](#cómo-ejecutar-los-scripts)   
-5. [Licencia](#licencia)  
+1. [Capítulo I — Introducción](#capítulo-i--introducción)
+   - [Tema](#tema)
+   - [Definición o planteamiento del problema](#definición-o-planteamiento-del-problema)
+   - [Objetivos del trabajo práctico](#objetivos-del-trabajo-práctico)
+2. [Capítulo IV — Desarrollo del tema / Resultados](#capítulo-iv--desarrollo-del-tema--resultados)
+   - [Esquema relacional](#esquema-relacional)
+   - [Script de creación (DDL)](#script-de-creación-ddl)
+   - [Carga representativa (DML)](#carga-representativa-dml)
+   - [Diccionario de datos](#diccionario-de-datos)
+3. [Estructura del repositorio](#estructura-del-repo)
+4. [Cómo ejecutar los scripts](#cómo-ejecutar-los-scripts)
+   - [Requisitos previos](#requisitos-previos)
+   - [Ejecución en SQL Server Management Studio](#ejecución-en-sql-server-management-studio)
+   - [Ejecución con sqlcmd (Linux/macOS/WSL)](#ejecución-con-sqlcmd-linuxmacoswsl)
+   - [Verificación de la carga](#verificación-de-la-carga)
+5. [Licencia](#licencia)
 
 ---
 
@@ -127,53 +131,69 @@ Incluye:
 
 | Tabla | Columna | Tipo | Regla | Descripción |
 |---|---|---|---|---|
-| `users` | `id` | UNIQUEIDENTIFIER | PK, `DEFAULT NEWID()` | Identificador del usuario |
-| `users` | `email` | NVARCHAR(255) | UNIQUE, NOT NULL | Correo de acceso |
-| `user_profiles` | `username` | NVARCHAR(30) | UNIQUE, NOT NULL | Alias público |
-| `matches` | `status` | NVARCHAR(15) | CHECK estados válidos | Estado del partido |
-| `match_ratings` | `rating` | TINYINT | CHECK 1–5 | Puntuación del partido |
-| `views` | `medium` | NVARCHAR(12) | CHECK valores válidos | Medio de visualización |
-| `follow_teams` | `(user_id,team_id)` | — | UNIQUE | Un usuario sigue un equipo una sola vez |
-| `reminders` | `status` | NVARCHAR(12) | CHECK valores válidos | Estado del recordatorio |
+| `usuarios` | `id` | UNIQUEIDENTIFIER | PK, `DEFAULT NEWID()` | Identificador del usuario |
+| `usuarios` | `correo` | NVARCHAR(255) | UNIQUE, NOT NULL | Correo de acceso |
+| `perfiles` | `nombre_usuario` | NVARCHAR(30) | UNIQUE, NOT NULL | Alias público |
+| `partidos` | `estado` | NVARCHAR(15) | CHECK estados válidos | Estado del partido |
+| `calificaciones` | `puntaje` | TINYINT | CHECK 1–5 | Puntuación del partido |
+| `visualizaciones` | `medio` | NVARCHAR(12) | CHECK valores válidos | Medio de visualización |
+| `seguidos` | `(usuario_id,equipo_id)` | — | UNIQUE | Un usuario sigue un equipo una sola vez |
+| `recordatorios` | `estado` | NVARCHAR(12) | CHECK valores válidos | Estado del recordatorio |
 
-> El **diccionario completo** se encuentra en el documento PDF (carpeta `documento/`).  
+> El **diccionario completo** se encuentra en el documento PDF (carpeta `docs/`).  
 
 ---
 
 ## Estructura del repo
 ```txt
 .
-├─ documento/
-│  └─ BDI_grupoXX_v1.pdf       # Documento académico (Cap. I y IV)
-├─ script/
-│  ├─ creacion.sql             # DDL: tablas y restricciones
-│  ├─ carga_inicial.sql        # DML: datos representativos
-│  ├─ verificacion.sql         # DML: verifica datos cargados
-│  └─ conteo.sql               # DML: cantidad cargada
 ├─ assets/
-│  ├─ banner-bdi.jpg
-│  ├─ der-tribuneros.png
-│  └─ badge-bdi.png
-├─ README.md
+│  ├─ banner-bdi.jpg           # Identidad visual para presentaciones
+│  ├─ der-tribuneros.png       # Diagrama entidad-relación
+│  └─ badge-bdi.png            # Insignia para documentación
+├─ script/
+│  ├─ creacion.sql             # DDL: tablas, claves y restricciones
+│  ├─ carga_inicial.sql        # DML: dataset representativo
+│  ├─ verificacion.sql         # Consultas de control y consistencia
+│  └─ conteo.sql               # Métricas rápidas de carga
+├─ README.md                   # Este documento
 └─ LICENSE
 ```
 
 ---
 
 ## Cómo ejecutar los scripts
-Requisitos: **SQL Server** + **SSMS 19/20**.  
 
-```sql
--- Crear esquema
-:r .\script\creacion.sql
+### Requisitos previos
+- SQL Server 2019+ (on-premise, Docker o Azure SQL Database).
+- Un cliente para ejecutar scripts T-SQL: **SQL Server Management Studio (SSMS 19/20)**, **Azure Data Studio** o la utilidad de línea de comandos **sqlcmd**.
+- Clonar este repositorio o descargarlo como ZIP para tener disponibles los archivos `.sql`.
 
--- Insertar datos
-:r .\script\carga_inicial.sql
+### Ejecución en SQL Server Management Studio
+1. Crear una base de datos vacía (`Tribuneros` recomendado).
+2. Abrir una nueva ventana de consulta apuntando a la base.
+3. Ejecutar, en este orden, los scripts de creación y carga utilizando la directiva `:r`:
 
--- Consultas de prueba
-SELECT * FROM dbo.matches;
-SELECT * FROM dbo.match_ratings;
-```
+   ```sql
+   :r .\script\creacion.sql
+   GO
+   :r .\script\carga_inicial.sql
+   GO
+   ```
+
+4. Validar rápidamente con consultas sugeridas (pueden copiarse desde `script/verificacion.sql`).
+
+### Verificación de la carga
+- Ejecutar `script/verificacion.sql` para revisar que las tablas principales tengan registros y relaciones consistentes.
+- Ejecutar `script/conteo.sql` para obtener un resumen de cantidades por entidad.
+- Consultas útiles:
+
+  ```sql
+  SELECT m.match_date, t_home.name AS local, t_away.name AS visitante
+  FROM dbo.matches AS m
+  JOIN dbo.teams AS t_home ON t_home.id = m.home_team_id
+  JOIN dbo.teams AS t_away ON t_away.id = m.away_team_id;
+  ```
 
 ---
 
