@@ -76,19 +76,19 @@ Diseñar y documentar un modelo de datos relacional para Tribuneros, asegurando 
 ### Esquema relacional  
 ![DER](./assets/der-tribuneros.png)  
 
-Entidades principales:  
-- **Usuarios** (`users`, `user_profiles`)  
-- **Catálogos** (`leagues`, `teams`)  
-- **Partidos** (`matches`)  
-- **Interacciones** (`match_ratings`, `match_opinions`, `favorites`, `views`)  
-- **Social** (`follow_teams`)  
-- **Curaduría y extras** (`featured_matches`, `reminders`)  
+Entidades principales:
+- **Usuarios** (`usuarios`, `perfiles`)
+- **Catálogos** (`ligas`, `equipos`)
+- **Partidos** (`partidos`)
+- **Interacciones** (`calificaciones`, `opiniones`, `favoritos`, `visualizaciones`)
+- **Social** (`seguidos`)
+- **Curaduría y extras** (`partidos_destacados`, `recordatorios`)
+**Highlights de diseño**
+- PK/FK y **UNIQUE** en combinaciones clave (`partido_id,usuario_id`).
+- **CHECK** para estados (`partidos.estado`, `visualizaciones.medio`, `recordatorios.estado`).
+- `ON DELETE CASCADE` en relaciones de usuario; `RESTRICT/SET NULL` en catálogos.
+- Índices por `partidos.fecha_utc`, `partidos.liga_id` y `usuario_id` en tablas de interacciones para consultas frecuentes.
 
-**Highlights de diseño**  
-- PK/FK y **UNIQUE** en combinaciones clave (`match_id,user_id`).  
-- **CHECK** para estados (`status`, `medium`, `reminder_status`).  
-- `ON DELETE CASCADE` en relaciones de usuario; `RESTRICT/SET NULL` en catálogos.  
-- Índices por `date_utc`, `league_id`, `user_id` para consultas frecuentes.  
 
 ---
 
