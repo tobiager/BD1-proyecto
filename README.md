@@ -31,7 +31,6 @@ Este repositorio contiene la documentación y scripts SQL Server correspondiente
 4. [Cómo ejecutar los scripts](#cómo-ejecutar-los-scripts)
    - [Requisitos previos](#requisitos-previos)
    - [Ejecución en SQL Server Management Studio](#ejecución-en-sql-server-management-studio)
-   - [Ejecución con sqlcmd (Linux/macOS/WSL)](#ejecución-con-sqlcmd-linuxmacoswsl)
    - [Verificación de la carga](#verificación-de-la-carga)
 5. [Licencia](#licencia)
 
