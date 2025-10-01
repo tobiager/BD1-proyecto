@@ -186,7 +186,7 @@ Incluye:
 
 ---
 
-### Diccionario de datos  
+### Diccionario de datos
 
 | Tabla | Columna | Tipo | Regla | Descripción |
 |---|---|---|---|---|
@@ -199,7 +199,7 @@ Incluye:
 | `seguidos` | `(usuario_id,equipo_id)` | — | UNIQUE | Un usuario sigue un equipo una sola vez |
 | `recordatorios` | `estado` | NVARCHAR(12) | CHECK valores válidos | Estado del recordatorio |
 
-> El **diccionario completo** se encuentra en el documento PDF (carpeta `docs/`).  
+> Consulta el [diccionario de datos completo](docs/diccionario_datos.md) para obtener el detalle por tabla, columnas y reglas de negocio.
 
 ---
 
@@ -210,6 +210,9 @@ Incluye:
 │  ├─ banner-bdi.jpg           # Identidad visual para presentaciones
 │  ├─ der-tribuneros.png       # Diagrama entidad-relación
 │  └─ badge-bdi.png            # Insignia para documentación
+├─ docs/
+│  ├─ capitulo-2-marco-conceptual.md # Versión extendida del marco conceptual
+│  └─ diccionario_datos.md           # Diccionario de datos completo en formato Markdown
 ├─ script/
 │  ├─ creacion.sql             # DDL: tablas, claves y restricciones
 │  ├─ carga_inicial.sql        # DML: dataset representativo
