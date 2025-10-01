@@ -22,17 +22,20 @@ Este repositorio contiene la documentación y scripts SQL Server correspondiente
    - [Tema](#tema)
    - [Definición o planteamiento del problema](#definición-o-planteamiento-del-problema)
    - [Objetivos del trabajo práctico](#objetivos-del-trabajo-práctico)
-2. [Capítulo IV — Desarrollo del tema / Resultados](#capítulo-iv--desarrollo-del-tema--resultados)
+2. [Capítulo II — Marco conceptual o referencial](#capítulo-ii--marco-conceptual-o-referencial)
+   - [2.1. Enfoque y delimitación del problema](#21-enfoque-y-delimitación-del-problema)
+   - [2.2. Conceptos clave](#22-conceptos-clave)
+4. [Capítulo IV — Desarrollo del tema / Resultados](#capítulo-iv--desarrollo-del-tema--resultados)
    - [Esquema relacional](#esquema-relacional)
    - [Script de creación (DDL)](#script-de-creación-ddl)
    - [Carga representativa (DML)](#carga-representativa-dml)
    - [Diccionario de datos](#diccionario-de-datos)
-3. [Estructura del repositorio](#estructura-del-repo)
-4. [Cómo ejecutar los scripts](#cómo-ejecutar-los-scripts)
+1. [Estructura del repositorio](#estructura-del-repo)
+2. [Cómo ejecutar los scripts](#cómo-ejecutar-los-scripts)
    - [Requisitos previos](#requisitos-previos)
    - [Ejecución en SQL Server Management Studio](#ejecución-en-sql-server-management-studio)
    - [Verificación de la carga](#verificación-de-la-carga)
-5. [Licencia](#licencia)
+3. [Licencia](#licencia)
 
 ---
 
@@ -62,6 +65,68 @@ Diseñar y documentar un modelo de datos relacional para Tribuneros, asegurando 
 - Implementar el modelo en SQL Server con **scripts DDL/DML**.  
 - Documentar diccionario de datos y justificación de diseño.  
 - Versionar en GitHub para trazabilidad y reproducibilidad.  
+
+---
+
+## Capítulo II — Marco conceptual o referencial
+
+> Versión completa en [`docs/capitulo-2-marco-conceptual.md`](docs/capitulo-2-marco-conceptual.md)
+
+### 2.1. Enfoque y delimitación del problema
+- **Tema**: registro social de experiencias de visionado de fútbol y producción de reseñas/calificaciones con control de *spoilers*.
+- **Objeto de estudio**: las **interacciones** entre usuarios, partidos y contenido (visualizaciones, calificaciones, opiniones, favoritos, seguimientos, recordatorios y curaduría de destacados).
+- **Unidades de análisis**: usuario, partido y publicación (opinión/calificación).
+- **Ámbito**: ligas y equipos profesionales (extensible a selecciones y copas); foco en consumo pos-partido y conversación segura (sin *spoilers*).
+- **Propósito del marco**: estandarizar términos y supuestos para el modelo de datos y los indicadores de engagement/actividad que se reportarán en los capítulos siguientes.
+
+### 2.2. Conceptos clave
+1. **Plataforma social**  
+   *Definición operativa*: sistema multiusuario con perfiles, publicaciones y vínculos (seguir equipos, marcar favoritos).  
+   *Rol*: infraestructura sociotécnica que habilita interacción y efecto red.
+
+2. **Contenido generado por usuarios (UGC)**  
+   *Definición operativa*: opiniones y calificaciones creadas por personas usuarias sobre partidos.  
+   *Rol*: insumo central para reputación, descubrimiento y curaduría.
+
+3. **Experiencia de visualización**  
+   *Definición operativa*: acto de ver un partido con metadatos de medio y duración (`minutes_watched`, `viewed_at`).  
+   *Rol*: puerta de entrada para calificar y opinar; base de métricas de consumo.
+
+4. **Calificación (rating)**  
+   *Definición operativa*: valoración numérica discreta del partido (p. ej., 1–5).  
+   *Rol*: insumo cuantitativo para promedios, rankings y recomendaciones básicas.
+
+5. **Opinión / Reseña**  
+   *Definición operativa*: publicación textual con banderas de visibilidad (`is_public`) y *spoilers* (`has_spoilers`).  
+   *Rol*: canal cualitativo de discusión y memoria del partido.
+
+6. **Spoilers**  
+   *Definición operativa*: revelación de eventos clave; se marca explícitamente.  
+   *Rol*: **protege la experiencia**; condiciona la visibilidad en el feed.
+
+7. **Privacidad**  
+   *Definición operativa*: ámbito de publicación (público/privado) configurable por el autor.  
+   *Rol*: determina alcance del contenido y cumplimiento normativo.
+
+8. **Seguimiento y favoritos**  
+   *Definición operativa*: seguir equipos de interés y marcar partidos como favoritos.  
+   *Rol*: personaliza el feed y las notificaciones.
+
+9. **Curaduría / Partidos destacados**  
+   *Definición operativa*: selección editorial o algorítmica de partidos a resaltar (`featured_on`, `curated_by`).  
+   *Rol*: aumenta descubrimiento y concentra la conversación.
+
+10. **Recordatorios**  
+    *Definición operativa*: alertas programadas asociadas a un partido (`remind_at`, `status`).  
+    *Rol*: impulsa intención de visualización y cierre del ciclo ver → calificar → opinar.
+
+11. **Reputación y confianza**  
+    *Definición operativa*: señales derivadas de actividad (antigüedad, consistencia, proporción de contenido público).  
+    *Rol*: prioriza contenido de calidad y reduce ruido.
+
+12. **Integridad e interoperabilidad de datos**  
+    *Definición operativa*: claves foráneas, catálogos (ligas, equipos, estados) y restricciones que aseguran consistencia.  
+    *Rol*: base de reportes confiables y evolución del modelo.
 
 ---
 
