@@ -17,52 +17,52 @@
 
 1. **Plataforma social (social network)**
 
-   * *Definición operativa*: sistema multiusuario con perfiles, publicaciones y vínculos (seguir equipos, marcar favoritos), persistidos en tablas `usuarios`, `perfiles_usuario`, `opiniones_partido`, `favoritos` y `seguir_equipos`.
+   * *Definición operativa*: sistema multiusuario con perfiles, publicaciones y vínculos (seguir equipos, marcar favoritos), persistidos en tablas `usuarios`, `perfiles`, `opiniones`, `favoritos` y `seguidos`.
    * *Rol*: infraestructura sociotécnica que habilita la interacción y el efecto red.
 
 2. **Contenido generado por usuarios (UGC)**
 
-   * *Definición operativa*: opiniones, calificaciones y reseñas creadas por personas usuarias respecto de un **partido** (`opiniones_partido`, `calificaciones_partido`).
+   * *Definición operativa*: opiniones, calificaciones y reseñas creadas por personas usuarias respecto de un **partido** (`opiniones`, `calificaciones`).
    * *Rol*: insumo central para la experiencia, la reputación y la curaduría.
 
 3. **Experiencia de visualización**
 
-   * *Definición operativa*: acto de ver un partido con metadatos de medio y duración (`visualizaciones`: `medium`, `minutes_watched`, `viewed_at`).
+   * *Definición operativa*: acto de ver un partido con metadatos de medio y duración (`visualizaciones`: `medio`, `visto_en`, `minutos_vistos`).
    * *Rol*: fuente primaria de verdad para habilitar calificar/comentar y para métricas de consumo.
 
 4. **Calificación (rating)**
 
-   * *Definición operativa*: valoración numérica discreta del partido (p.ej., 1–5) registrada en `calificaciones_partido.rating`.
+   * *Definición operativa*: valoración numérica discreta del partido (p.ej., 1–5) registrada en `calificaciones.puntaje`.
    * *Rol*: variable cuantitativa para rankings, promedios y recomendaciones básicas.
 
 5. **Opinión / Reseña**
 
-   * *Definición operativa*: publicación textual con banderas `is_public` y `has_spoilers` en `opiniones_partido`, con marca temporal de creación/edición.
+   * *Definición operativa*: publicación textual con banderas `publica` y `tiene_spoilers` en `opiniones`, con marca temporal de creación/edición.
    * *Rol*: canal cualitativo para discusión y memoria del partido; su visibilidad depende de privacidad y spoilers.
 
 6. **Spoilers**
 
-   * *Definición operativa*: revelación de eventos clave (marcador, goles decisivos) marcada por `has_spoilers=true`.
+   * *Definición operativa*: revelación de eventos clave (marcador, goles decisivos) marcada por `tiene_spoilers = 1`.
    * *Rol*: mecanismo de **protección de experiencia** que condiciona el feed y las reglas de visibilidad.
 
 7. **Privacidad**
 
-   * *Definición operativa*: ámbito de publicación `is_public` (público/privado) en opiniones y controles de perfil.
+   * *Definición operativa*: ámbito de publicación `publica` (público/privado) en opiniones y controles de perfil.
    * *Rol*: determinante del alcance del contenido y del cumplimiento normativo.
 
 8. **Seguimiento y favoritos**
 
-   * *Definición operativa*: relación de interés del usuario con `equipos` (`seguir_equipos`) y marcación de `partidos` como favoritos.
+   * *Definición operativa*: relación de interés del usuario con `equipos` (`seguidos`) y marcación de `partidos` como favoritos (`favoritos`).
    * *Rol*: personalización del feed y de las notificaciones.
 
 9. **Curaduría / Partidos destacados**
 
-   * *Definición operativa*: selección editorial o algorítmica registrada en `partidos_destacados` (`featured_on`, `curated_by`, `note`).
+   * *Definición operativa*: selección editorial o algorítmica registrada en `partidos_destacados` (`destacado_en`, `nota`).
    * *Rol*: aumentar descubrimiento y conversación de calidad.
 
 10. **Recordatorios**
 
-    * *Definición operativa*: programación de alertas para un partido (`recordatorios.remind_at`, `status`).
+    * *Definición operativa*: programación de alertas para un partido (`recordatorios.recordar_en`, `estado`).
     * *Rol*: elevar intención de visualización y completar el ciclo *ver → calificar → opinar*.
 
 11. **Reputación y confianza**
@@ -72,5 +72,19 @@
 
 12. **Integridad e interoperabilidad de datos**
 
-    * *Definición operativa*: claves foráneas y estados válidos (`estado_partido`) que garantizan consistencia entre `ligas`, `equipos` y `partidos`.
+    * *Definición operativa*: claves foráneas y estados válidos (`estado` en `partidos`, `medio` en `visualizaciones`, `estado` en `recordatorios`) que garantizan consistencia entre `ligas`, `equipos` y `partidos`.
     * *Rol*: base para reportes confiables y evolución del modelo.
+
+---
+
+## 2.3. Terminología de datos
+- **Modelo lógico**: se describe en detalle en el [Capítulo III](capitulo-3-metodologia.md#proceso-de-modelado) y su materialización se implementa en [`script/creacion.sql`](../script/creacion.sql).
+- **Datos de ejemplo**: la carga inicial que acompaña los casos de uso se encuentra en [`script/carga_inicial.sql`](../script/carga_inicial.sql).
+- **Diccionario de datos**: referencia tabular completa disponible en [`docs/diccionario_datos.md`](diccionario_datos.md), imprescindible para interpretar columnas y restricciones.
+
+
+---
+
+|  Anterior | Siguiente  |
+| --- | --- |
+| [Capítulo I — Introducción](capitulo-1-introduccion.md) | [Capítulo III — Metodología](capitulo-3-metodologia.md) |
