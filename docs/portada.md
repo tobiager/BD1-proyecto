@@ -5,9 +5,8 @@
 | Universidad | Universidad Nacional del Nordeste (UNNE) |
 | Facultad | Facultad de Ciencias Exactas y Naturales y Agrimensura (FaCENA) |
 | Carrera | Licenciatura en Sistemas |
-| Asignatura | Bases de Datos I |
-| Docentes responsables | Cátedra Bases de Datos I |
-| Cohorte | 2025 |
+| Asignatura | Bases de Datos 1 |
+| Año | 2025 |
 | Equipo | Tribuneros — Red social del fútbol |
 | Integrantes |  Tobias Orban - Lisandro Gomez - Gabriel Firmapaz |
 | Documento | Trabajo Práctico Integrador — Diseño e implementación de base de datos |
