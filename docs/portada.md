@@ -4,7 +4,7 @@
 | --- | --- |
 | Universidad | Universidad Nacional del Nordeste (UNNE) |
 | Facultad | Facultad de Ciencias Exactas y Naturales y Agrimensura (FaCENA) |
-| Carrera | Licenciatura en Ciencias de la Computación |
+| Carrera | Licenciatura en Sistemas |
 | Asignatura | Bases de Datos I |
 | Docentes responsables | Cátedra Bases de Datos I |
 | Cohorte | 2025 |
