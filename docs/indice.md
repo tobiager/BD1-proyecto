@@ -15,6 +15,7 @@
    2. [Proceso de modelado](capitulo-3-metodologia.md#proceso-de-modelado)
    3. [Estrategia de implementación](capitulo-3-metodologia.md#estrategia-de-implementación)
    4. [Herramientas y control de calidad](capitulo-3-metodologia.md#herramientas-y-control-de-calidad)
+   5. [Esquema Relacional](capitulo-3-metodologia.md##esquema-relacional)
 5. [Capítulo IV — Resultados](capitulo-4-resultados.md)
    1. [Modelo de datos consolidado](capitulo-4-resultados.md#modelo-de-datos-consolidado)
    2. [Esquema relacional y DDL](capitulo-4-resultados.md#esquema-relacional-y-ddl)
