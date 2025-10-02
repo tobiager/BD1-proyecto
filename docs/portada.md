@@ -7,9 +7,9 @@
 | Carrera | Licenciatura en Ciencias de la Computación |
 | Asignatura | Bases de Datos I |
 | Docentes responsables | Cátedra Bases de Datos I |
-| Cohorte | 2024 |
+| Cohorte | 2025 |
 | Equipo | Tribuneros — Red social del fútbol |
-| Integrantes | Integrantes a consignar en la entrega final |
+| Integrantes |  Tobias Orban - Lisandro Gomez - Gabriel Firmapaz |
 | Documento | Trabajo Práctico Integrador — Diseño e implementación de base de datos |
 | Repositorio | [`BD1-proyecto`](../README.md) |
 
