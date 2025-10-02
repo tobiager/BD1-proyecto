@@ -25,6 +25,194 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 - **Revisión**: controles manuales tras cada iteración y verificación automática mediante las consultas incluidas en los scripts de validación.
 
 
+
+
+## Esquema relacional  
+
+![DER](/assets/der-tribuneros.png)  
+
+<details>
+  <summary><b> Script DBdiagram.io</b></summary>
+  
+  ```
+  
+  Table usuarios {
+  id UNIQUEIDENTIFIER [pk]
+  correo varchar [unique, not null]
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+}
+
+Table perfiles {
+  usuario_id UNIQUEIDENTIFIER [pk]
+  nombre_usuario varchar [unique, not null]
+  nombre_mostrar varchar
+  avatar_url varchar
+  biografia varchar
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  actualizado_en timestamp
+}
+
+Table ligas {
+  id int [pk]
+  nombre varchar [not null]
+  pais varchar
+  slug varchar [unique]
+  id_externo varchar
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+}
+
+Table equipos {
+  id int [pk]
+  nombre varchar [not null]
+  nombre_corto varchar
+  pais varchar
+  escudo_url varchar
+  liga_id int
+  id_externo varchar
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+}
+
+Table partidos {
+  id int [pk]
+  id_externo varchar
+  liga_id int
+  temporada int
+  ronda varchar
+  fecha_utc timestamp [not null]
+  estado varchar [not null]
+  estadio varchar
+  equipo_local int [not null]
+  equipo_visitante int [not null]
+  goles_local int
+  goles_visitante int
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+}
+
+Table calificaciones {
+  id int [pk]
+  partido_id int [not null]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  puntaje int [not null]
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+
+  indexes {
+    (partido_id, usuario_id) [unique]
+  }
+}
+
+Table opiniones {
+  id int [pk]
+  partido_id int [not null]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  titulo varchar
+  cuerpo varchar
+  publica BIT [not null, default: '(1)']
+  tiene_spoilers BIT [not null, default: '(0)']
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  actualizado_en timestamp
+
+  indexes {
+    (partido_id, usuario_id) [unique]
+  }
+}
+
+Table favoritos {
+  id int [pk]
+  partido_id int [not null]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+
+  indexes {
+    (partido_id, usuario_id) [unique]
+  }
+}
+
+Table visualizaciones {
+  id int [pk]
+  partido_id int [not null]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  medio varchar [not null]
+  visto_en timestamp [not null]
+  minutos_vistos int
+  ubicacion varchar
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+}
+
+Table seguidos {
+  id int [pk]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  equipo_id int [not null]
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+
+  indexes {
+    (usuario_id, equipo_id) [unique]
+  }
+}
+
+Table partidos_destacados {
+  id int [pk]
+  usuario_id UNIQUEIDENTIFIER
+  partido_id int [not null]
+  destacado_en DATE [not null]
+  nota varchar
+
+  indexes {
+    (partido_id) [unique]
+  }
+}
+
+Table recordatorios {
+  id int [pk]
+  usuario_id UNIQUEIDENTIFIER [not null]
+  partido_id int [not null]
+  recordar_en timestamp [not null]
+  estado varchar [not null]
+  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+
+  indexes {
+    (usuario_id, partido_id, recordar_en) [unique]
+  }
+}
+
+/* Relaciones */
+Ref: perfiles.usuario_id > usuarios.id
+Ref: equipos.liga_id > ligas.id
+Ref: partidos.liga_id > ligas.id
+Ref: partidos.equipo_local > equipos.id
+Ref: partidos.equipo_visitante > equipos.id
+Ref: calificaciones.partido_id > partidos.id
+Ref: calificaciones.usuario_id > usuarios.id
+Ref: opiniones.partido_id > partidos.id
+Ref: opiniones.usuario_id > usuarios.id
+Ref: favoritos.partido_id > partidos.id
+Ref: favoritos.usuario_id > usuarios.id
+Ref: visualizaciones.partido_id > partidos.id
+Ref: visualizaciones.usuario_id > usuarios.id
+Ref: seguidos.usuario_id > usuarios.id
+Ref: seguidos.equipo_id > equipos.id
+Ref: partidos_destacados.partido_id > partidos.id
+Ref: partidos_destacados.usuario_id > usuarios.id
+Ref: recordatorios.usuario_id > usuarios.id
+Ref: recordatorios.partido_id > partidos.id
+
+```
+
+</details>
+
+Entidades principales:
+- **Usuarios** (`usuarios`, `perfiles`)
+- **Catálogos** (`ligas`, `equipos`)
+- **Partidos** (`partidos`)
+- **Interacciones** (`calificaciones`, `opiniones`, `favoritos`, `visualizaciones`)
+- **Social** (`seguidos`)
+- **Curaduría y extras** (`partidos_destacados`, `recordatorios`)
+  
+**Highlights de diseño**
+- PK/FK y **UNIQUE** en combinaciones clave (`partido_id,usuario_id`).
+- **CHECK** para estados (`partidos.estado`, `visualizaciones.medio`, `recordatorios.estado`).
+- `ON DELETE CASCADE` en relaciones de usuario; `RESTRICT/SET NULL` en catálogos.
+- Índices por `partidos.fecha_utc`, `partidos.liga_id` y `usuario_id` en tablas de interacciones para consultas frecuentes.
+
 ---
 
 |  Anterior | Siguiente  |
