@@ -13,13 +13,13 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 5. **Validación cruzada**: contraste del modelo con casos de uso narrativos y con la carga de datos de prueba para detectar huecos.
 
 ## Estrategia de implementación
-- **Definición del esquema**: el script [`script/creacion.sql`](../script/creacion.sql) crea la base `tribuneros_bdi`, define tablas y restricciones y aplica índices de apoyo.
+- **Definición del esquema**: el script [`script/creacion.sql`](../script/creacion.sql) crea la base `tribuneros_bdi`, define tablas, restricciones y aplica índices de apoyo.
 - **Poblado inicial**: [`script/carga_inicial.sql`](../script/carga_inicial.sql) inserta un conjunto representativo de ligas, equipos, partidos y actividades de usuarios para ejercitar las restricciones.
 - **Validaciones**: [`script/verificacion.sql`](../script/verificacion.sql) incluye consultas de consistencia y verificaciones funcionales; [`script/conteo.sql`](../script/conteo.sql) provee métricas rápidas para auditoría.
 - **Orden de ejecución**: se recomienda el flujo indicado en el [README](../README.md#cómo-ejecutar-los-scripts) utilizando `:r` desde SQL Server Management Studio o `sqlcmd`.
 
 ## Herramientas y control de calidad
-- **Gestión de versiones**: GitHub para trazabilidad y revisión de cambios.
+- **Gestión de versiones**: GitHub para trazabilidad, revisión de cambios, gestión de versiones para corrección de posibles errores y, además, para obtener un respaldo de datos en internet.
 - **SQL Server**: motor objetivo, probado localmente con SQL Server 2019.
 - **Documentación colaborativa**: Markdown para capítulos y diccionario de datos, siguiendo el orden propuesto en [`docs/indice.md`](indice.md).
 - **Revisión**: controles manuales tras cada iteración y verificación automática mediante las consultas incluidas en los scripts de validación.
