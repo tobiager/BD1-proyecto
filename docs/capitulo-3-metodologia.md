@@ -13,13 +13,13 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 5. **Validación cruzada**: contraste del modelo con casos de uso narrativos y con la carga de datos de prueba para detectar huecos.
 
 ## Estrategia de implementación
-- **Definición del esquema**: el script [`script/creacion.sql`](../script/creacion.sql) crea la base `tribuneros_bdi`, define tablas, restricciones y aplica índices de apoyo.
+- **Definición del esquema**: el script [`script/creacion.sql`](../script/creacion.sql) crea la base `tribuneros_bdi`, define tablas y restricciones y aplica índices de apoyo.
 - **Poblado inicial**: [`script/carga_inicial.sql`](../script/carga_inicial.sql) inserta un conjunto representativo de ligas, equipos, partidos y actividades de usuarios para ejercitar las restricciones.
 - **Validaciones**: [`script/verificacion.sql`](../script/verificacion.sql) incluye consultas de consistencia y verificaciones funcionales; [`script/conteo.sql`](../script/conteo.sql) provee métricas rápidas para auditoría.
 - **Orden de ejecución**: se recomienda el flujo indicado en el [README](../README.md#cómo-ejecutar-los-scripts) utilizando `:r` desde SQL Server Management Studio o `sqlcmd`.
 
 ## Herramientas y control de calidad
-- **Gestión de versiones**: GitHub para trazabilidad, revisión de cambios, gestión de versiones para corrección de posibles errores y, además, para obtener un respaldo de datos en internet.
+- **Gestión de versiones**: GitHub para trazabilidad y revisión de cambios.
 - **SQL Server**: motor objetivo, probado localmente con SQL Server 2019.
 - **Documentación colaborativa**: Markdown para capítulos y diccionario de datos, siguiendo el orden propuesto en [`docs/indice.md`](indice.md).
 - **Revisión**: controles manuales tras cada iteración y verificación automática mediante las consultas incluidas en los scripts de validación.
@@ -37,18 +37,18 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
   ```
   
   Table usuarios {
-  id UNIQUEIDENTIFIER [pk]
+  id char(36) [pk]
   correo varchar [unique, not null]
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table perfiles {
-  usuario_id UNIQUEIDENTIFIER [pk]
+  usuario_id char(36) [pk]
   nombre_usuario varchar [unique, not null]
   nombre_mostrar varchar
   avatar_url varchar
   biografia varchar
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
   actualizado_en timestamp
 }
 
@@ -58,7 +58,7 @@ Table ligas {
   pais varchar
   slug varchar [unique]
   id_externo varchar
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table equipos {
@@ -69,7 +69,7 @@ Table equipos {
   escudo_url varchar
   liga_id int
   id_externo varchar
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table partidos {
@@ -78,22 +78,22 @@ Table partidos {
   liga_id int
   temporada int
   ronda varchar
-  fecha_utc timestamp [not null]
+  fecha_utc timestamp with time zone [not null]
   estado varchar [not null]
   estadio varchar
   equipo_local int [not null]
   equipo_visitante int [not null]
   goles_local int
   goles_visitante int
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table calificaciones {
   id int [pk]
   partido_id int [not null]
-  usuario_id UNIQUEIDENTIFIER [not null]
+  usuario_id char(36) [not null]
   puntaje int [not null]
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 
   indexes {
     (partido_id, usuario_id) [unique]
@@ -103,12 +103,12 @@ Table calificaciones {
 Table opiniones {
   id int [pk]
   partido_id int [not null]
-  usuario_id UNIQUEIDENTIFIER [not null]
+  usuario_id char(36) [not null]
   titulo varchar
-  cuerpo varchar
-  publica BIT [not null, default: '(1)']
-  tiene_spoilers BIT [not null, default: '(0)']
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  cuerpo clob
+  publica boolean [not null, default: 'TRUE']
+  tiene_spoilers boolean [not null, default: 'FALSE']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
   actualizado_en timestamp
 
   indexes {
@@ -119,8 +119,8 @@ Table opiniones {
 Table favoritos {
   id int [pk]
   partido_id int [not null]
-  usuario_id UNIQUEIDENTIFIER [not null]
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  usuario_id char(36) [not null]
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 
   indexes {
     (partido_id, usuario_id) [unique]
@@ -130,19 +130,19 @@ Table favoritos {
 Table visualizaciones {
   id int [pk]
   partido_id int [not null]
-  usuario_id UNIQUEIDENTIFIER [not null]
+  usuario_id char(36) [not null]
   medio varchar [not null]
-  visto_en timestamp [not null]
+  visto_en timestamp with time zone [not null]
   minutos_vistos int
   ubicacion varchar
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table seguidos {
   id int [pk]
-  usuario_id UNIQUEIDENTIFIER [not null]
+  usuario_id char(36) [not null]
   equipo_id int [not null]
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 
   indexes {
     (usuario_id, equipo_id) [unique]
@@ -151,7 +151,7 @@ Table seguidos {
 
 Table partidos_destacados {
   id int [pk]
-  usuario_id UNIQUEIDENTIFIER
+  usuario_id char(36)
   partido_id int [not null]
   destacado_en DATE [not null]
   nota varchar
@@ -163,11 +163,11 @@ Table partidos_destacados {
 
 Table recordatorios {
   id int [pk]
-  usuario_id UNIQUEIDENTIFIER [not null]
+  usuario_id char(36) [not null]
   partido_id int [not null]
-  recordar_en timestamp [not null]
+  recordar_en timestamp with time zone [not null]
   estado varchar [not null]
-  creado_en timestamp [not null, default: 'SYSUTCDATETIME()']
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 
   indexes {
     (usuario_id, partido_id, recordar_en) [unique]
