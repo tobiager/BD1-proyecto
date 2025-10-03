@@ -1,6 +1,6 @@
 # Capítulo V — Conclusiones
 
-## Síntesis de hallazgoss
+## Síntesis de hallazgos
 - El modelo de datos desarrollado satisface los requerimientos principales de la plataforma Tribuneros, permitiendo almacenar interacciones complejas entre usuarios, partidos y contenido generado por la comunidad.
 - Las restricciones implementadas en [`script/creacion.sql`](../script/creacion.sql) y validadas con [`script/verificacion.sql`](../script/verificacion.sql) aseguran integridad referencial y control de dominios, reduciendo errores durante la carga.
 - La documentación generada (capítulos, índice y diccionario) consolida un circuito claro para revisión académica y facilita la trazabilidad entre narrativa, decisiones técnicas y scripts ejecutables.
