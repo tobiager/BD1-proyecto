@@ -1,4 +1,4 @@
-# Capítulo II — Marco conceptual o referencial
+# Capítulo II — Marco conceptual o referenciall
 
 > **Propósito**. Este capítulo reúne los conceptos, supuestos y definiciones operativas que enmarcan **Tribuneros**, una red social del fútbol para registrar, puntuar y comentar partidos. Sirve para ubicar el problema dentro de un cuerpo de conocimientos (plataformas sociales, contenido generado por usuarios, reputación, engagement, curaduría y moderación) y para estandarizar los términos que se usarán en el modelo de datos y en el análisis posterior.
 
