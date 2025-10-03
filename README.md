@@ -4,7 +4,7 @@
   <p>
     <img src="https://img.shields.io/badge/Cátedra-Bases%20de%20Datos%20I-008CFF?style=for-the-badge&labelColor=0a0a0a"/>
     <img src="https://img.shields.io/badge/Entrega-Fase%201-008CFF?style=for-the-badge&labelColor=0a0a0a"/>
-    <img src="https://img.shields.io/badge/Motor-SQL%20Server-008CFF?style=for-the-badge&labelColor=0a0a0a"/>
+    <img src="https://img.shields.io/badge/Motor- SQL%20Server-008CFF?style=for-the-badge&labelColor=0a0a0a"/>
     <img src="https://img.shields.io/github/license/tobiager/BD1-proyecto?style=for-the-badge&labelColor=0a0a0a&color=008CFF" alt="License"/>
   </p>
 
@@ -12,7 +12,7 @@
 
 # BD1 — Proyecto de Estudio e Investigación
 
-**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts T-SQL del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
+**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **ANSI SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
 
 ## Presentación del proyecto
 - Dominio de aplicación: gestión colaborativa de partidos de fútbol y opiniones de la comunidad.
