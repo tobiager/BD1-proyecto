@@ -9,7 +9,7 @@ El script [`script/creacion.sql`](../script/creacion.sql) materializa el modelo 
 - Declaración explícita de claves primarias (`PK_*`) y foráneas con reglas de eliminación (`ON DELETE`).
 - Restricciones de dominio (`CHECK`) para estados de partidos (`estado`), medios de visualización (`medio`), rangos de puntaje y estados de recordatorios.
 - Índices de apoyo (`IX_*`) para optimizar consultas por usuario, partido y fechas clave.
-- Default de fechas mediante `SYSUTCDATETIME()` para trazabilidad temporal.
+- Valores predeterminados de fechas mediante `CURRENT_TIMESTAMP` para trazabilidad temporal.
 
 La ejecución del script crea la base `tribuneros_bdi` y garantiza un estado limpio al reiniciar el entorno (drop condicional de tablas).
 
