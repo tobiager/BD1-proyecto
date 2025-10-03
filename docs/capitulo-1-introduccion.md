@@ -3,7 +3,7 @@
 ## Tema y contexto
 **Tribuneros** es una red social del fútbol orientada a que las personas aficionadas puedan **registrar, puntuar y comentar** los partidos que ven. El proyecto propone el diseño e implementación de un **modelo de datos relacional** que sirva de base para futuras aplicaciones web y móviles centradas en la experiencia pospartido.
 
-El trabajo se enmarca en la asignatura Bases de Datos I (FaCENA–UNNE) y se desarrolla bajo una modalidad iterativa que combina investigación, diseño conceptual y validación técnica mediante scripts T-SQL. La documentación se organiza en capítulos para reflejar el recorrido académico solicitado por la cátedra.
+El trabajo se enmarca en la asignatura Bases de Datos I (FaCENA–UNNE) y se desarrolla bajo una modalidad iterativa que combina investigación, diseño conceptual y validación técnica mediante scripts en ANSI SQL. La documentación se organiza en capítulos para reflejar el recorrido académico solicitado por la cátedra.
 
 ## Definición del problema
 En la actualidad los hinchas gestionan su historial futbolero de forma dispersa (aplicaciones de resultados, redes sociales generalistas y notas personales). Esto dificulta:
