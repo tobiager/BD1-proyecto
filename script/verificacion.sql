@@ -1,21 +1,22 @@
 -- Usuarios cargados
-SELECT * FROM dbo.users;
-SELECT * FROM dbo.user_profiles;
+SELECT * FROM usuarios;
+SELECT * FROM perfiles;
 
 -- Catálogos
-SELECT * FROM dbo.leagues;
-SELECT * FROM dbo.teams;
+SELECT * FROM ligas;
+SELECT * FROM equipos;
 
 -- Partido cargado
-SELECT * FROM dbo.matches;
+SELECT * FROM partidos;
 
 -- Interacciones
-SELECT * FROM dbo.match_ratings;
-SELECT * FROM dbo.match_opinions;
-SELECT * FROM dbo.favorites;
-SELECT * FROM dbo.views;
+SELECT * FROM calificaciones;
+SELECT * FROM opiniones;
+SELECT * FROM favoritos;
+SELECT * FROM visualizaciones;
 
 -- Social
-SELECT * FROM dbo.follow_teams;
-SELECT * FROM dbo.reminders;
-SELECT * FROM dbo.featured_matches;
+SELECT * FROM seguidos;
+SELECT * FROM recordatorios;
+SELECT * FROM partidos_destacados;
+
