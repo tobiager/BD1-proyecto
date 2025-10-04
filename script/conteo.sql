@@ -1,21 +1,22 @@
-SELECT 'Usuarios' AS tabla, COUNT(*) AS filas FROM dbo.users
+
+SELECT 'Usuarios' AS tabla, COUNT(*) AS filas FROM usuarios
 UNION ALL
-SELECT 'Ligas', COUNT(*) FROM dbo.leagues
+SELECT 'Ligas', COUNT(*) FROM ligas
 UNION ALL
-SELECT 'Equipos', COUNT(*) FROM dbo.teams
+SELECT 'Equipos', COUNT(*) FROM equipos
 UNION ALL
-SELECT 'Partidos', COUNT(*) FROM dbo.matches
+SELECT 'Partidos', COUNT(*) FROM partidos
 UNION ALL
-SELECT 'Ratings', COUNT(*) FROM dbo.match_ratings
+SELECT 'Calificaciones', COUNT(*) FROM calificaciones
 UNION ALL
-SELECT 'Opiniones', COUNT(*) FROM dbo.match_opinions
+SELECT 'Opiniones', COUNT(*) FROM opiniones
 UNION ALL
-SELECT 'Favoritos', COUNT(*) FROM dbo.favorites
+SELECT 'Favoritos', COUNT(*) FROM favoritos
 UNION ALL
-SELECT 'Vistas', COUNT(*) FROM dbo.views
+SELECT 'Visualizaciones', COUNT(*) FROM visualizaciones
 UNION ALL
-SELECT 'Follow Teams', COUNT(*) FROM dbo.follow_teams
+SELECT 'Seguidos', COUNT(*) FROM seguidos
 UNION ALL
-SELECT 'Reminders', COUNT(*) FROM dbo.reminders
+SELECT 'Recordatorios', COUNT(*) FROM recordatorios
 UNION ALL
-SELECT 'Featured', COUNT(*) FROM dbo.featured_matches;
+SELECT 'Partidos_Destacados', COUNT(*) FROM partidos_destacados;
