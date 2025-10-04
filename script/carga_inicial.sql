@@ -1,3 +1,4 @@
+
 -- =========================================================
 -- Tribuneros - Carga representativa (DML)
 -- =========================================================
@@ -10,82 +11,91 @@ GO
 
 BEGIN TRAN;
 
--- Usuarios
-DECLARE @u1 UNIQUEIDENTIFIER = '11111111-1111-1111-1111-111111111111';
-DECLARE @u2 UNIQUEIDENTIFIER = '22222222-2222-2222-2222-222222222222';
+-- ================== 1) Usuarios y perfiles ==================
+INSERT INTO dbo.usuarios (id, correo, creado_en) VALUES
+('11111111-1111-1111-1111-111111111111', 'tobiager@example.com', SYSDATETIME()),
+('22222222-2222-2222-2222-222222222222', 'ana.ferro@example.com', SYSDATETIME());
 
-INSERT INTO dbo.usuarios(id, correo) VALUES
-(@u1, N'tobiager@example.com'),
-(@u2, N'ana.ferro@example.com');
+INSERT INTO dbo.perfiles (usuario_id, nombre_usuario, nombre_mostrar, avatar_url, biografia, creado_en, actualizado_en) VALUES
+('11111111-1111-1111-1111-111111111111', 'tobiager', 'Tobias Orban', NULL, 'Hincha de River Plate', SYSDATETIME(), NULL),
+('22222222-2222-2222-2222-222222222222', 'anaferro', 'Ana Ferro',     NULL, 'Hincha de Velez',      SYSDATETIME(), NULL);
 
-INSERT INTO dbo.perfiles(usuario_id, nombre_usuario, nombre_mostrar, biografia)
-VALUES
-(@u1, N'tobiager', N'Tobias Orban', N'Hincha de River Plate'),
-(@u2, N'anaferro', N'Ana Ferro', N'Hincha de Vélez');
+-- ================== 2) Ligas ==================
+INSERT INTO dbo.ligas (id, nombre, pais, slug, id_externo, creado_en) VALUES
+(1, 'Primera Division Argentina', 'Argentina',  'liga-arg',     NULL, SYSDATETIME()),
+(2, 'Copa Libertadores',          'Sudamerica', 'libertadores', NULL, SYSDATETIME());
 
--- Ligas
-INSERT INTO dbo.ligas(nombre, pais, slug) VALUES
-(N'Primera División Argentina', N'Argentina', N'liga-arg'),
-(N'Copa Libertadores', N'Sudamérica', N'libertadores');
+-- ================== 3) Equipos ==================
+INSERT INTO dbo.equipos (id, nombre, nombre_corto, pais, escudo_url, liga_id, id_externo, creado_en) VALUES
+(1, 'River Plate',  'River', 'Argentina', NULL, 1, NULL, SYSDATETIME()),
+(2, 'Boca Juniors', 'Boca',  'Argentina', NULL, 1, NULL, SYSDATETIME()),
+(3, 'Fluminense',   'Flu',   'Brasil',    NULL, 2, NULL, SYSDATETIME());
 
--- Equipos
-INSERT INTO dbo.equipos(nombre, nombre_corto, pais, liga_id) VALUES
-(N'River Plate', N'River', N'Argentina', 1),
-(N'Boca Juniors', N'Boca', N'Argentina', 1),
-(N'Fluminense', N'Flu', N'Brasil', 2);
-
--- Partido: Final de Madrid (Copa Libertadores)
-INSERT INTO dbo.partidos(liga_id, temporada, ronda, fecha_utc, estado, estadio, equipo_local, equipo_visitante, goles_local, goles_visitante
-)
-VALUES (
-  2,                -- Copa Libertadores
-  2018,
-  N'Final',
-  '2018-12-09T19:30:00Z',
-  N'finalizado',
-  N'Santiago Bernabéu',
-  1,                -- River (local designado)
-  2,                -- Boca
-  3,                -- River 3
-  1                 -- Boca 1
+-- ================== 4) Partidos ==================
+-- Partido 1: Final de Madrid (Copa Libertadores)
+INSERT INTO dbo.partidos (
+  id, id_externo, liga_id, temporada, ronda, fecha_utc, estado, estadio,
+  equipo_local, equipo_visitante, goles_local, goles_visitante, creado_en
+) VALUES (
+  1, NULL, 2, 2018, 'Final',
+  CAST('2018-12-09 19:30:00' AS DATETIME2),
+  'finalizado',
+  'Santiago Bernabeu',
+  1, 2, 3, 1,
+  SYSDATETIME()
 );
 
--- Interacciones sobre la Final de Madrid (partido_id = 1)
-INSERT INTO dbo.favoritos(partido_id, usuario_id) VALUES (1, @u1);
+-- ================== 5) Interacciones sobre partido_id = 1 ==================
+-- Favorito
+INSERT INTO dbo.favoritos (id, partido_id, usuario_id, creado_en) VALUES
+(1, 1, '11111111-1111-1111-1111-111111111111', SYSDATETIME());
 
-INSERT INTO dbo.calificaciones(partido_id, usuario_id, puntaje)
-VALUES (1, @u1, 5);
+-- Calificacion
+INSERT INTO dbo.calificaciones (id, partido_id, usuario_id, puntaje, creado_en) VALUES
+(1, 1, '11111111-1111-1111-1111-111111111111', 5, SYSDATETIME());
 
-INSERT INTO dbo.opiniones(
-  partido_id, usuario_id, titulo, cuerpo, publica, tiene_spoilers
-)
-VALUES (
-  1, @u1,
-  N'La gloria eterna en Madrid',
-  N'Partidazo histórico: River campeón con autoridad. 3–1 y a casa.',
-  1, 0
+-- Opinion (publica=1, tiene_spoilers=0)
+INSERT INTO dbo.opiniones (
+  id, partido_id, usuario_id, titulo, cuerpo, publica, tiene_spoilers, creado_en, actualizado_en
+) VALUES (
+  1, 1, '11111111-1111-1111-1111-111111111111',
+  'La gloria eterna en Madrid',
+  'Partidazo historico: River campeon con autoridad. 3–1 y a casa.',
+  1, 0,
+  SYSDATETIME(), NULL
 );
 
-INSERT INTO dbo.visualizaciones(
-  partido_id, usuario_id, medio, visto_en, minutos_vistos, ubicacion
-)
-VALUES (
-  1, @u1,
-  N'tv',
-  '2018-12-09T19:30:00Z',
+-- Visualizacion
+INSERT INTO dbo.visualizaciones (
+  id, partido_id, usuario_id, medio, visto_en, minutos_vistos, ubicacion, creado_en
+) VALUES (
+  1, 1, '11111111-1111-1111-1111-111111111111',
+  'tv',
+  CAST('2018-12-09 19:30:00' AS DATETIME2),
   120,
-  N'Madrid'
+  'Madrid',
+  SYSDATETIME()
 );
 
--- Seguimiento & Recordatorio (histórico, 15 min antes del inicio)
-INSERT INTO dbo.seguidos(usuario_id, equipo_id) VALUES (@u1, 1), (@u1, 2);
+-- ================== 6) Social / Seguimientos ==================
+INSERT INTO dbo.seguidos (id, usuario_id, equipo_id, creado_en) VALUES
+(1, '11111111-1111-1111-1111-111111111111', 1, SYSDATETIME()),
+(2, '11111111-1111-1111-1111-111111111111', 2, SYSDATETIME());
 
-INSERT INTO dbo.recordatorios(usuario_id, partido_id, recordar_en, estado)
-VALUES (@u1, 1, DATEADD(MINUTE, -15, '2018-12-09T19:30:00Z'), N'enviado');
+-- ================== 7) Recordatorio (histórico, 15 min antes) ==================
+INSERT INTO dbo.recordatorios (id, usuario_id, partido_id, recordar_en, estado, creado_en) VALUES
+(1,
+ '11111111-1111-1111-1111-111111111111',
+ 1,
+ CAST('2018-12-09 19:15:00' AS DATETIME2),
+ 'enviado',
+ SYSDATETIME()
+);
 
--- Partido destacado del día
-INSERT INTO dbo.partidos_destacados(usuario_id, partido_id, destacado_en, nota)
-VALUES (@u2, 1, CONVERT(date, '2018-12-09'), N'Final de Madrid: River campeón 2018');
+-- ================== 8) Partido destacado del dia ==================
+INSERT INTO dbo.partidos_destacados (id, usuario_id, partido_id, destacado_en, nota) VALUES
+(1, '22222222-2222-2222-2222-222222222222', 1, CAST('2018-12-09' AS DATE), 'Final de Madrid: River campeon 2018');
 
 COMMIT;
+
 PRINT 'Datos cargados correctamente.';
