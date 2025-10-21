@@ -21,9 +21,9 @@ script/
     └── 03_Resultados_Analisis.sql
 ```
 
-## Scripts Base (Directorio `script/`)
+## Script Base (Directorio `script/`)
 
-Estos scripts están en el directorio raíz `script/` del proyecto:
+Estos script están en el directorio raíz `script/` del proyecto:
 
 1. **creacion.sql** - Crea la base de datos y todas las tablas
 2. **carga_inicial.sql** - Inserta datos representativos
@@ -36,7 +36,7 @@ Estos scripts están en el directorio raíz `script/` del proyecto:
 
 ```sql
 -- Desde el directorio raíz del proyecto
-:r scripts/00_Maestro_Ejecucion.sql
+:r script/00_Maestro_Ejecucion.sql
 ```
 
 Este script ejecuta automáticamente:
@@ -69,13 +69,13 @@ Los anexos opcionales (seguridad y carga masiva) requieren ejecución manual.
 
 ```sql
 -- 1. Crear procedimientos almacenados
-:r scripts/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql
+:r script/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql
 
 -- 2. Crear funciones
-:r scripts/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql
+:r script/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql
 
 -- 3. [Opcional] Ejecutar pruebas comparativas
-:r scripts/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
+:r script/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
 ```
 
 #### Fase 3: Seguridad (Opcional)
@@ -84,13 +84,13 @@ Los anexos opcionales (seguridad y carga masiva) requieren ejecución manual.
 
 ```sql
 -- 1. Configurar usuarios
-:r scripts/Cap09_Seguridad/01_Configuracion_Usuarios.sql
+:r script/Cap09_Seguridad/01_Configuracion_Usuarios.sql
 
 -- 2. Configurar roles
-:r scripts/Cap09_Seguridad/02_Configuracion_Roles.sql
+:r script/Cap09_Seguridad/02_Configuracion_Roles.sql
 
 -- 3. Ejecutar pruebas de permisos
-:r scripts/Cap09_Seguridad/03_Pruebas_Permisos.sql
+:r script/Cap09_Seguridad/03_Pruebas_Permisos.sql
 ```
 
 #### Fase 4: Optimización con Índices (Opcional)
@@ -99,16 +99,16 @@ Los anexos opcionales (seguridad y carga masiva) requieren ejecución manual.
 
 ```sql
 -- 1. Carga masiva de datos (TARDA 5-15 MINUTOS)
-:r scripts/Cap11_Indices/01_Carga_Masiva.sql
+:r script/Cap11_Indices/01_Carga_Masiva.sql
 
 -- 2. Pruebas de performance con diferentes índices
-:r scripts/Cap11_Indices/02_Pruebas_Performance.sql
+:r script/Cap11_Indices/02_Pruebas_Performance.sql
 
 -- 3. Análisis de resultados y consultas de diagnóstico
-:r scripts/Cap11_Indices/03_Resultados_Analisis.sql
+:r script/Cap11_Indices/03_Resultados_Analisis.sql
 ```
 
-## Descripción Detallada de Scripts
+## Descripción Detallada de Script
 
 ### Anexo I: Seguridad y Permisos (Cap09_Seguridad)
 
