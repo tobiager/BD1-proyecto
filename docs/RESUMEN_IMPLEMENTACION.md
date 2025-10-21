@@ -24,10 +24,10 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 - ✅ Demostración de ownership chaining
 - ✅ 6 pruebas automatizadas de validación
 
-**Scripts creados**:
-1. `Cap09_Seguridad/01_Configuracion_Usuarios.sql` (7.6 KB)
-2. `Cap09_Seguridad/02_Configuracion_Roles.sql` (7.6 KB)
-3. `Cap09_Seguridad/03_Pruebas_Permisos.sql` (9.4 KB)
+**Scripts creados**: (en `script/`)
+1. `Cap09_Seguridad/01_Configuracion_Usuarios.sql`
+2. `Cap09_Seguridad/02_Configuracion_Roles.sql`
+3. `Cap09_Seguridad/03_Pruebas_Permisos.sql`
 
 **Documentación**: `docs/anexo-1-seguridad.md` (8.0 KB)
 
@@ -53,10 +53,10 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 - `fn_ObtenerPromedioCalificaciones`: Promedio de calificaciones de partido
 - `fn_ContarPartidosPorEstado`: Contar partidos por estado
 
-**Scripts creados**:
-1. `Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql` (13.4 KB)
-2. `Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql` (9.0 KB)
-3. `Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql` (11.9 KB)
+**Scripts creados**: (en `script/`)
+1. `Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql`
+2. `Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql`
+3. `Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql`
 
 **Documentación**: `docs/anexo-2-procedimientos-funciones.md` (13.6 KB)
 
@@ -79,10 +79,10 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 - ✅ Análisis de métricas de IO
 - ✅ Consultas de diagnóstico con DMVs
 
-**Scripts creados**:
-1. `Cap11_Indices/01_Carga_Masiva.sql` (9.4 KB)
-2. `Cap11_Indices/02_Pruebas_Performance.sql` (13.0 KB)
-3. `Cap11_Indices/03_Resultados_Analisis.sql` (13.5 KB)
+**Scripts creados**: (en `script/`)
+1. `Cap11_Indices/01_Carga_Masiva.sql`
+2. `Cap11_Indices/02_Pruebas_Performance.sql`
+3. `Cap11_Indices/03_Resultados_Analisis.sql`
 
 **Documentación**: `docs/anexo-3-indices.md` (14.8 KB)
 
@@ -157,16 +157,16 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 
 ### Scripts SQL (10 archivos)
 
-1. ✅ `scripts/00_Maestro_Ejecucion.sql` (7.6 KB) - Script integrador
-2. ✅ `scripts/Cap09_Seguridad/01_Configuracion_Usuarios.sql` (7.6 KB)
-3. ✅ `scripts/Cap09_Seguridad/02_Configuracion_Roles.sql` (7.6 KB)
-4. ✅ `scripts/Cap09_Seguridad/03_Pruebas_Permisos.sql` (9.4 KB)
-5. ✅ `scripts/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql` (13.4 KB)
-6. ✅ `scripts/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql` (9.0 KB)
-7. ✅ `scripts/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql` (11.9 KB)
-8. ✅ `scripts/Cap11_Indices/01_Carga_Masiva.sql` (9.4 KB)
-9. ✅ `scripts/Cap11_Indices/02_Pruebas_Performance.sql` (13.0 KB)
-10. ✅ `scripts/Cap11_Indices/03_Resultados_Analisis.sql` (13.5 KB)
+1. ✅ `script/00_Maestro_Ejecucion.sql` (7.6 KB) - Script integrador
+2. ✅ `script/Cap09_Seguridad/01_Configuracion_Usuarios.sql` (7.6 KB)
+3. ✅ `script/Cap09_Seguridad/02_Configuracion_Roles.sql` (7.6 KB)
+4. ✅ `script/Cap09_Seguridad/03_Pruebas_Permisos.sql` (9.4 KB)
+5. ✅ `script/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql` (13.4 KB)
+6. ✅ `script/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql` (9.0 KB)
+7. ✅ `script/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql` (11.9 KB)
+8. ✅ `script/Cap11_Indices/01_Carga_Masiva.sql` (9.4 KB)
+9. ✅ `script/Cap11_Indices/02_Pruebas_Performance.sql` (13.0 KB)
+10. ✅ `script/Cap11_Indices/03_Resultados_Analisis.sql` (13.5 KB)
 
 **Total SQL**: ~102 KB de código SQL nuevo
 
@@ -175,7 +175,7 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 1. ✅ `docs/anexo-1-seguridad.md` (8.0 KB)
 2. ✅ `docs/anexo-2-procedimientos-funciones.md` (13.6 KB)
 3. ✅ `docs/anexo-3-indices.md` (14.8 KB)
-4. ✅ `scripts/README.md` (9.1 KB)
+4. ✅ `script/README.md` (9.1 KB)
 5. ✅ `docs/diccionario_datos.md` (actualizado, +5.5 KB)
 
 **Total Documentación**: ~51 KB de documentación nueva/actualizada
@@ -320,20 +320,20 @@ Este documento resume la implementación exitosa de tres anexos técnicos avanza
 
 ```sql
 -- 1. Ejecutar script maestro para base + procedimientos
-:r scripts/00_Maestro_Ejecucion.sql
+:r script/00_Maestro_Ejecucion.sql
 
 -- 2. Configurar seguridad (requiere modo mixto)
-:r scripts/Cap09_Seguridad/01_Configuracion_Usuarios.sql
-:r scripts/Cap09_Seguridad/02_Configuracion_Roles.sql
-:r scripts/Cap09_Seguridad/03_Pruebas_Permisos.sql
+:r script/Cap09_Seguridad/01_Configuracion_Usuarios.sql
+:r script/Cap09_Seguridad/02_Configuracion_Roles.sql
+:r script/Cap09_Seguridad/03_Pruebas_Permisos.sql
 
 -- 3. [OPCIONAL] Pruebas de procedimientos
-:r scripts/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
+:r script/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
 
 -- 4. [OPCIONAL] Optimización con índices (TARDA 5-15 min)
-:r scripts/Cap11_Indices/01_Carga_Masiva.sql
-:r scripts/Cap11_Indices/02_Pruebas_Performance.sql
-:r scripts/Cap11_Indices/03_Resultados_Analisis.sql
+:r script/Cap11_Indices/01_Carga_Masiva.sql
+:r script/Cap11_Indices/02_Pruebas_Performance.sql
+:r script/Cap11_Indices/03_Resultados_Analisis.sql
 ```
 
 ### Para Entrega Académica

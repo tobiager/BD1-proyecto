@@ -106,15 +106,15 @@ PRINT 'REQUISITO: Servidor en modo de autenticación mixto';
 PRINT '¿Desea ejecutar el Anexo I? (Configuración manual requerida)';
 PRINT '';
 PRINT '-- Para ejecutar manualmente:';
-PRINT '-- :r scripts/Cap09_Seguridad/01_Configuracion_Usuarios.sql';
-PRINT '-- :r scripts/Cap09_Seguridad/02_Configuracion_Roles.sql';
-PRINT '-- :r scripts/Cap09_Seguridad/03_Pruebas_Permisos.sql';
+PRINT '-- :r script/Cap09_Seguridad/01_Configuracion_Usuarios.sql';
+PRINT '-- :r script/Cap09_Seguridad/02_Configuracion_Roles.sql';
+PRINT '-- :r script/Cap09_Seguridad/03_Pruebas_Permisos.sql';
 PRINT '';
 
 -- Descomentar las siguientes líneas para ejecutar automáticamente
--- :r scripts/Cap09_Seguridad/01_Configuracion_Usuarios.sql
--- :r scripts/Cap09_Seguridad/02_Configuracion_Roles.sql
--- :r scripts/Cap09_Seguridad/03_Pruebas_Permisos.sql
+-- :r script/Cap09_Seguridad/01_Configuracion_Usuarios.sql
+-- :r script/Cap09_Seguridad/02_Configuracion_Roles.sql
+-- :r script/Cap09_Seguridad/03_Pruebas_Permisos.sql
 
 -- =========================================================
 -- ANEXO II: PROCEDIMIENTOS Y FUNCIONES ALMACENADAS
@@ -125,18 +125,18 @@ PRINT '==================================================';
 PRINT 'Ejecutando scripts de procedimientos y funciones...';
 PRINT '';
 
-:r scripts/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql
-:r scripts/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql
+:r script/Cap10_Procedimientos_Funciones/01_Procedimientos_Almacenados.sql
+:r script/Cap10_Procedimientos_Funciones/02_Funciones_Almacenadas.sql
 
 PRINT '';
 PRINT 'Procedimientos y funciones creados.';
 PRINT '';
 PRINT 'Para ejecutar pruebas comparativas:';
-PRINT ':r scripts/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql';
+PRINT ':r script/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql';
 PRINT '';
 
 -- Descomentar para ejecutar pruebas automáticamente
--- :r scripts/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
+-- :r script/Cap10_Procedimientos_Funciones/03_Pruebas_Comparativas.sql
 
 -- =========================================================
 -- ANEXO III: OPTIMIZACIÓN CON ÍNDICES
@@ -151,16 +151,16 @@ PRINT '';
 PRINT '¿Desea ejecutar el Anexo III? (Configuración manual requerida)';
 PRINT '';
 PRINT '-- Para ejecutar manualmente:';
-PRINT '-- :r scripts/Cap11_Indices/01_Carga_Masiva.sql';
-PRINT '-- :r scripts/Cap11_Indices/02_Pruebas_Performance.sql';
-PRINT '-- :r scripts/Cap11_Indices/03_Resultados_Analisis.sql';
+PRINT '-- :r script/Cap11_Indices/01_Carga_Masiva.sql';
+PRINT '-- :r script/Cap11_Indices/02_Pruebas_Performance.sql';
+PRINT '-- :r script/Cap11_Indices/03_Resultados_Analisis.sql';
 PRINT '';
 
 -- Descomentar las siguientes líneas para ejecutar automáticamente
 -- ADVERTENCIA: Insertará 1M+ registros y tardará varios minutos
--- :r scripts/Cap11_Indices/01_Carga_Masiva.sql
--- :r scripts/Cap11_Indices/02_Pruebas_Performance.sql
--- :r scripts/Cap11_Indices/03_Resultados_Analisis.sql
+-- :r script/Cap11_Indices/01_Carga_Masiva.sql
+-- :r script/Cap11_Indices/02_Pruebas_Performance.sql
+-- :r script/Cap11_Indices/03_Resultados_Analisis.sql
 
 -- =========================================================
 -- RESUMEN FINAL

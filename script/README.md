@@ -5,7 +5,7 @@ Este directorio contiene todos los scripts SQL del proyecto, organizados por fun
 ## Estructura de Directorios
 
 ```
-scripts/
+script/
 ├── 00_Maestro_Ejecucion.sql          # Script maestro que ejecuta todo en orden
 ├── Cap09_Seguridad/                   # Anexo I: Seguridad y Permisos
 │   ├── 01_Configuracion_Usuarios.sql

@@ -67,9 +67,9 @@
 ## Anexos técnicos avanzados
 | Anexo | Descripción | Scripts | Documentación |
 | --- | --- | --- | --- |
-| Anexo I | Seguridad y permisos: configuración de usuarios, roles y pruebas | [scripts/Cap09_Seguridad](scripts/Cap09_Seguridad/) | [anexo-1-seguridad.md](docs/anexo-1-seguridad.md) |
-| Anexo II | Procedimientos y funciones almacenadas con pruebas comparativas | [scripts/Cap10_Procedimientos_Funciones](scripts/Cap10_Procedimientos_Funciones/) | [anexo-2-procedimientos-funciones.md](docs/anexo-2-procedimientos-funciones.md) |
-| Anexo III | Optimización con índices: carga masiva y análisis de performance | [scripts/Cap11_Indices](scripts/Cap11_Indices/) | [anexo-3-indices.md](docs/anexo-3-indices.md) |
+| Anexo I | Seguridad y permisos: configuración de usuarios, roles y pruebas | [script/Cap09_Seguridad](script/Cap09_Seguridad/) | [anexo-1-seguridad.md](docs/anexo-1-seguridad.md) |
+| Anexo II | Procedimientos y funciones almacenadas con pruebas comparativas | [script/Cap10_Procedimientos_Funciones](script/Cap10_Procedimientos_Funciones/) | [anexo-2-procedimientos-funciones.md](docs/anexo-2-procedimientos-funciones.md) |
+| Anexo III | Optimización con índices: carga masiva y análisis de performance | [script/Cap11_Indices](script/Cap11_Indices/) | [anexo-3-indices.md](docs/anexo-3-indices.md) |
 
 Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
 
@@ -87,9 +87,9 @@ Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la tr
 - [script/conteo.sql](script/conteo.sql) — Métricas rápidas para validar volúmenes cargados.
 
 ## Scripts avanzados de seguridad, procedimientos e índices
-- [scripts/Cap09_Seguridad](scripts/Cap09_Seguridad/) — Configuración de usuarios, roles y pruebas de permisos
-- [scripts/Cap10_Procedimientos_Funciones](scripts/Cap10_Procedimientos_Funciones/) — Procedimientos almacenados, funciones y pruebas comparativas
-- [scripts/Cap11_Indices](scripts/Cap11_Indices/) — Carga masiva de datos y optimización con índices
+- [script/Cap09_Seguridad](script/Cap09_Seguridad/) — Configuración de usuarios, roles y pruebas de permisos
+- [script/Cap10_Procedimientos_Funciones](script/Cap10_Procedimientos_Funciones/) — Procedimientos almacenados, funciones y pruebas comparativas
+- [script/Cap11_Indices](script/Cap11_Indices/) — Carga masiva de datos y optimización con índices
 
 Para más detalles de cada script, consulta el Capítulo IV del informe académico.
 
@@ -99,7 +99,7 @@ Para más detalles de cada script, consulta el Capítulo IV del informe académi
 ```sql
 -- Desde SQL Server Management Studio o Azure Data Studio
 -- Abrir y ejecutar el script maestro:
-:r /ruta/completa/scripts/00_Maestro_Ejecucion.sql
+:r /ruta/completa/script/00_Maestro_Ejecucion.sql
 ```
 
 El script maestro ejecuta automáticamente las fases 1-4 y crea procedimientos/funciones. Los anexos opcionales requieren ejecución manual.
