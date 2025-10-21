@@ -37,6 +37,13 @@
 | Capítulo VI | Bibliografía académica y técnica | [docs/capitulo-6-bibliografia.md](docs/capitulo-6-bibliografia.md) |
 | Anexo | Diccionario de datos completo | [docs/diccionario_datos.md](docs/diccionario_datos.md) |
 
+## Anexos técnicos avanzados
+| Anexo | Descripción | Ubicación |
+| --- | --- | --- |
+| Anexo I | Seguridad y permisos: configuración de usuarios, roles y pruebas | [scripts/Cap09_Seguridad](scripts/Cap09_Seguridad/) |
+| Anexo II | Procedimientos y funciones almacenadas con pruebas comparativas | [scripts/Cap10_Procedimientos_Funciones](scripts/Cap10_Procedimientos_Funciones/) |
+| Anexo III | Optimización con índices: carga masiva y análisis de performance | [scripts/Cap11_Indices](scripts/Cap11_Indices/) |
+
 Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
 
 ## Estructura del repositorio
@@ -52,12 +59,35 @@ Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la tr
 - [script/verificacion.sql](script/verificacion.sql) — Consultas de control de integridad referencial y de negocio.
 - [script/conteo.sql](script/conteo.sql) — Métricas rápidas para validar volúmenes cargados.
 
+## Scripts avanzados de seguridad, procedimientos e índices
+- [scripts/Cap09_Seguridad](scripts/Cap09_Seguridad/) — Configuración de usuarios, roles y pruebas de permisos
+- [scripts/Cap10_Procedimientos_Funciones](scripts/Cap10_Procedimientos_Funciones/) — Procedimientos almacenados, funciones y pruebas comparativas
+- [scripts/Cap11_Indices](scripts/Cap11_Indices/) — Carga masiva de datos y optimización con índices
+
 Para más detalles de cada script, consulta el Capítulo IV del informe académico.
 
 ## Guía rápida de ejecución
+### Esquema básico
 1. Crear una base de datos vacía en SQL Server (por ejemplo, `Tribuneros`).
-2. Ejecutar en orden los scripts anteriores con **SQL Server Management Studio**, **Azure Data Studio** o `sqlcmd`.
+2. Ejecutar en orden los scripts del directorio `script/` con **SQL Server Management Studio**, **Azure Data Studio** o `sqlcmd`:
+   - `creacion.sql` — Crea el esquema completo
+   - `carga_inicial.sql` — Inserta datos de prueba
+   - `verificacion.sql` — Valida la integridad
+   - `conteo.sql` — Verifica cantidades
 3. Revisar el capítulo de Resultados y el [diccionario de datos](docs/diccionario_datos.md) para interpretar las entidades y relaciones.
+
+### Funcionalidades avanzadas (opcional)
+4. **Seguridad y permisos** (Anexo I):
+   - Ejecutar scripts en orden desde `scripts/Cap09_Seguridad/`
+   - Configurar modo de autenticación mixto en SQL Server
+   - Probar permisos con diferentes usuarios
+5. **Procedimientos y funciones** (Anexo II):
+   - Ejecutar scripts desde `scripts/Cap10_Procedimientos_Funciones/`
+   - Ejecutar pruebas comparativas de eficiencia
+6. **Optimización con índices** (Anexo III):
+   - **ADVERTENCIA**: La carga masiva insertará 1M+ registros y puede tardar 5-15 minutos
+   - Ejecutar scripts desde `scripts/Cap11_Indices/` en orden
+   - Analizar planes de ejecución y resultados de performance
 
 ## Licencia
 - Código SQL: [MIT](LICENSE).

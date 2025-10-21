@@ -28,4 +28,22 @@
    1. [Referencias citadas](capitulo-6-bibliografia.md#referencias-citadas)
    2. [Recursos complementarios](capitulo-6-bibliografia.md#recursos-complementarios)
 
-> A partir de esta sección, continuar con los capítulos en orden ascendente hasta llegar a la bibliografía.
+## Anexos Técnicos
+
+8. Anexo I — Seguridad y Permisos
+   1. Configuración de usuarios y roles
+   2. Pruebas de permisos a nivel de usuarios
+   3. Pruebas de permisos a nivel de roles
+   4. Scripts: [Cap09_Seguridad](../scripts/Cap09_Seguridad/)
+9. Anexo II — Procedimientos y Funciones Almacenadas
+   1. Procedimientos almacenados (INSERT, UPDATE, DELETE)
+   2. Funciones almacenadas (cálculos reutilizables)
+   3. Pruebas comparativas de eficiencia
+   4. Scripts: [Cap10_Procedimientos_Funciones](../scripts/Cap10_Procedimientos_Funciones/)
+10. Anexo III — Optimización con Índices
+    1. Carga masiva de datos (1M+ registros)
+    2. Pruebas de performance sin índices
+    3. Pruebas con índices no agrupados
+    4. Pruebas con índices covering
+    5. Análisis comparativo de resultados
+    6. Scripts: [Cap11_Indices](../scripts/Cap11_Indices/)

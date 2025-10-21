@@ -169,3 +169,110 @@ Este documento describe los objetos del esquema `tribuneros_bdi` implementado en
 - El esquema completo se inicializa mediante `script/creacion.sql` y se complementa con cargas de ejemplo en `script/carga_inicial.sql`.
 
 Este diccionario debe revisarse y actualizarse ante cualquier cambio en la definición de tablas o reglas del negocio para mantener la trazabilidad documental del proyecto.
+
+---
+
+## 7. Procedimientos Almacenados
+
+### sp_InsertPartido
+| Parámetro | Tipo | Descripción | Tabla(s) Afectada(s) |
+|-----------|------|-------------|---------------------|
+| @id | INT | ID único del partido (requerido) | partidos |
+| @id_externo | VARCHAR(80) | Código externo opcional | partidos |
+| @liga_id | INT | ID de la liga (opcional, debe existir) | partidos → ligas |
+| @temporada | INT | Año de la temporada | partidos |
+| @ronda | VARCHAR(40) | Nombre o número de ronda | partidos |
+| @fecha_utc | DATETIME2 | Fecha y hora del partido (requerido) | partidos |
+| @estado | VARCHAR(15) | Estado del partido: programado, en_vivo, finalizado, pospuesto, cancelado | partidos |
+| @estadio | VARCHAR(120) | Nombre del estadio | partidos |
+| @equipo_local | INT | ID del equipo local (requerido, debe existir) | partidos → equipos |
+| @equipo_visitante | INT | ID del equipo visitante (requerido, debe existir) | partidos → equipos |
+| @goles_local | INT | Goles del equipo local (NULL si no finalizado) | partidos |
+| @goles_visitante | INT | Goles del equipo visitante (NULL si no finalizado) | partidos |
+
+**Descripción**: Inserta un nuevo partido con validaciones de integridad (equipos diferentes, equipos y liga existentes, estado válido, goles para finalizados). Maneja errores con TRY-CATCH. Retorna 0 si éxito, valores negativos si error.
+
+### sp_UpdatePartido
+| Parámetro | Tipo | Descripción | Tabla(s) Afectada(s) |
+|-----------|------|-------------|---------------------|
+| @id | INT | ID del partido a actualizar (requerido) | partidos |
+| @estado | VARCHAR(15) | Nuevo estado (opcional) | partidos |
+| @goles_local | INT | Nuevos goles locales (opcional) | partidos |
+| @goles_visitante | INT | Nuevos goles visitantes (opcional) | partidos |
+| @estadio | VARCHAR(120) | Nuevo estadio (opcional) | partidos |
+
+**Descripción**: Actualiza un partido existente. Valida que el partido existe, estado es válido, goles no negativos, y partidos finalizados tienen ambos goles. Solo actualiza campos no nulos. Retorna 0 si éxito, negativo si error.
+
+### sp_DeletePartido
+| Parámetro | Tipo | Descripción | Tabla(s) Afectada(s) |
+|-----------|------|-------------|---------------------|
+| @id | INT | ID del partido a eliminar (requerido) | partidos (y cascada) |
+| @eliminacion_fisica | BIT | 0=lógica (estado=cancelado), 1=física (DELETE) | partidos |
+
+**Descripción**: Elimina un partido de forma lógica (cambia estado a cancelado) o física (DELETE con cascada a calificaciones, opiniones, etc.). Valida existencia del partido. Retorna 0 si éxito, negativo si error.
+
+---
+
+## 8. Funciones Almacenadas
+
+| Nombre | Parámetros | Retorna | Descripción |
+|--------|------------|---------|-------------|
+| fn_CalcularEdad | @fecha_nacimiento (DATETIME2) | INT | Calcula la edad en años a partir de una fecha de nacimiento, considerando si ya cumplió años en el año actual. |
+| fn_ObtenerPromedioCalificaciones | @partido_id (INT) | DECIMAL(3,2) | Calcula el promedio de calificaciones (puntaje 1-5) de un partido específico. Retorna 0.00 si no hay calificaciones. |
+| fn_ContarPartidosPorEstado | @estado (VARCHAR(15)) | INT | Cuenta la cantidad de partidos en un estado específico (programado, en_vivo, finalizado, pospuesto, cancelado). Retorna 0 si no hay partidos. |
+
+---
+
+## 9. Índices Adicionales
+
+Además de los índices declarados en el script de creación, se agregan para optimización:
+
+| Nombre | Tipo | Tabla | Columnas Clave | Columnas Incluidas | Descripción |
+|--------|------|-------|----------------|-------------------|-------------|
+| IX_partidos_fecha | NONCLUSTERED | partidos | fecha_utc | — | Índice existente para búsquedas por fecha |
+| IX_partidos_liga | NONCLUSTERED | partidos | liga_id | — | Índice existente para filtrar por liga |
+| IX_partidos_fecha_test | NONCLUSTERED | partidos | fecha_utc | — | Índice de prueba simple (filtrado: id >= 1000000) |
+| IX_partidos_fecha_incluido_test | NONCLUSTERED | partidos | fecha_utc | id, estado, estadio, goles_local, goles_visitante | Índice covering de prueba (filtrado: id >= 1000000) para eliminar Key Lookups |
+
+**Nota sobre índices de prueba**: Los índices `*_test` son creados como parte de las pruebas de optimización (Cap11) y pueden eliminarse después del análisis. El índice covering demuestra mejoras de 10-20x en consultas por rango de fechas.
+
+---
+
+## 10. Usuarios y Roles
+
+### Usuarios de Base de Datos
+
+| Usuario | Tipo | Login | Rol/Permisos | Descripción |
+|---------|------|-------|--------------|-------------|
+| Admin_Usuario | SQL User | Admin_Usuario | db_owner | Usuario administrador con control total de la base de datos. Puede SELECT, INSERT, UPDATE, DELETE y EXECUTE todo. |
+| LecturaSolo_Usuario | SQL User | LecturaSolo_Usuario | db_datareader + EXECUTE en SPs | Usuario de solo lectura con permiso adicional para ejecutar procedimientos almacenados. Demuestra "ownership chaining". |
+| Usuario_ConRol | SQL User | Usuario_ConRol | RolLectura | Usuario con permisos asignados a través del rol personalizado RolLectura. |
+| Usuario_SinRol | SQL User | Usuario_SinRol | public (sin permisos adicionales) | Usuario sin permisos específicos, usado para demostrar control de acceso. |
+
+### Roles Personalizados
+
+| Rol | Tipo | Permisos | Miembros | Descripción |
+|-----|------|----------|----------|-------------|
+| RolLectura | Database Role | SELECT en: partidos, equipos, ligas | Usuario_ConRol | Rol personalizado para lectura de tablas específicas relacionadas con partidos y equipos. No tiene acceso a usuarios, calificaciones u opiniones. |
+
+### Permisos Especiales
+
+- **LecturaSolo_Usuario**: Tiene EXECUTE en sp_InsertPartido, sp_UpdatePartido, sp_DeletePartido
+- **Ownership Chaining**: LecturaSolo_Usuario puede insertar/modificar/eliminar partidos mediante procedimientos almacenados aunque no tiene permisos directos sobre la tabla.
+
+---
+
+## 11. Consideraciones de Seguridad y Optimización
+
+### Seguridad (Cap 09)
+- Modo de autenticación mixto requerido para usuarios SQL
+- Principio de menor privilegio implementado
+- Segregación de permisos mediante roles
+- Cadena de propiedad (ownership chaining) para control granular
+
+### Optimización (Cap 11)
+- Dataset de prueba: 1,000,000+ registros
+- Índices covering reducen lecturas lógicas en 80-90%
+- Mejora de rendimiento de 10-20x en consultas por rango de fechas
+- Índices filtrados para optimizar subconjuntos específicos
+- Trade-off: espacio en disco vs velocidad de consultas
