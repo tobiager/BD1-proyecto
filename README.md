@@ -14,33 +14,6 @@
 
 **Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **ANSI SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
 
-## ✨ Características destacadas
-
-### 🗄️ Esquema Relacional Completo
-- 12 tablas relacionadas con integridad referencial
-- Restricciones CHECK para validación de dominios
-- Índices optimizados para consultas frecuentes
-- Compatible con SQL Server 2016+
-
-### 🔐 Seguridad y Permisos (Anexo I)
-- Usuarios con diferentes niveles de acceso (admin, lectura, roles personalizados)
-- Demostración de ownership chaining
-- Implementación del principio de menor privilegio
-- 6 pruebas automatizadas de permisos
-
-### ⚙️ Procedimientos y Funciones (Anexo II)
-- 3 procedimientos almacenados con 8+ validaciones cada uno
-- 3 funciones reutilizables para cálculos frecuentes
-- Manejo robusto de errores con TRY-CATCH
-- Pruebas comparativas de rendimiento
-
-### 🚀 Optimización con Índices (Anexo III)
-- Dataset de prueba: 1,000,000+ registros
-- Comparación de 3 estrategias de indexación
-- Mejora demostrada de 10-20x en rendimiento
-- Análisis con planes de ejecución y DMVs
-- Scripts de diagnóstico y mantenimiento
-
 ## Presentación del proyecto
 - Dominio de aplicación: gestión colaborativa de partidos de fútbol y opiniones de la comunidad.
 - Alcance: diseño lógico del esquema `tribuneros_bdi`, definición de restricciones, carga de datos representativos y consultas de verificación.
