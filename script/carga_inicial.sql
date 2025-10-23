@@ -12,9 +12,9 @@ BEGIN TRAN;
 -- Limpieza de datos existentes (en orden inverso por las FK)
 DELETE FROM dbo.recordatorios;
 DELETE FROM dbo.partidos_destacados;
-DELETE FROM dbo.seguimiento_usuarios;  -- Si ya ejecutaste el script de seguimiento
-DELETE FROM dbo.seguimiento_ligas;     -- Si ya ejecutaste el script de seguimiento
-DELETE FROM dbo.seguimiento_equipos;   -- Si ya ejecutaste el script de seguimiento
+DELETE FROM dbo.seguimiento_usuarios;  
+DELETE FROM dbo.seguimiento_ligas;     
+DELETE FROM dbo.seguimiento_equipos;   
 DELETE FROM dbo.visualizaciones;
 DELETE FROM dbo.favoritos;
 DELETE FROM dbo.opiniones;
