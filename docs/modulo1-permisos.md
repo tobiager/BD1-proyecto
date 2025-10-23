@@ -92,13 +92,6 @@
 ### Roles del DBMS por tabla
   ![Roles](/assets/modulo1-permisos-bd/04_roles_lectura_ligas_trib_a_ok_trib_b_error.png)
 
-
-- **Documento de conclusiones:** `CONCLUSIONES.md` (≈1 página) respondiendo:
-  - ¿Qué permisos otorga `db_datareader`?
-  - ¿Por qué `EXECUTE AS OWNER` + `GRANT EXECUTE` permiten DML sin dar permisos directos a tablas?
-  - Ventajas de encapsular DML en Stored Procedures.
-  - ¿Cuándo conviene usar un rol personalizado vs. roles fijos del sistema?
-
 ---
 
 ## Notas
