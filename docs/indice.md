@@ -19,13 +19,18 @@
 5. [Capítulo IV — Resultados](capitulo-4-resultados.md)
    1. [Modelo de datos consolidado](capitulo-4-resultados.md#modelo-de-datos-consolidado)
    2. [Esquema relacional y DDL](capitulo-4-resultados.md#esquema-relacional-y-ddl)
-   3. [Carga representativa y consultas](capitulo-4-resultados.md#carga-representativa-y-consultas)
-   4. [Documentación complementaria](capitulo-4-resultados.md#documentación-complementaria)
+   3. [Modelo de seguridad y permisos](capitulo-4-resultados.md#modelo-de-seguridad-y-permisos)
+   4. [Carga representativa y consultas](capitulo-4-resultados.md#carga-representativa-y-consultas)
+   5. [Documentación complementaria](capitulo-4-resultados.md#documentación-complementaria)
 6. [Capítulo V — Conclusiones](capitulo-5-conclusiones.md)
    1. [Síntesis de hallazgos](capitulo-5-conclusiones.md#síntesis-de-hallazgos)
-   2. [Líneas futuras](capitulo-5-conclusiones.md#líneas-futuras)
-7. [Capítulo VI — Bibliografía](capitulo-6-bibliografia.md)
+   2. [Conclusiones del Módulo 1](capitulo-5-conclusiones.md#conclusiones-del-módulo)
+   3. [Líneas futuras](capitulo-5-conclusiones.md#líneas-futuras)
+7. [Modulo 1 - Manejo de Permisos a Nivel de Usuarios de Base de Datos](modulo1-permisos.md)
+8. [Capítulo VI — Bibliografía](capitulo-6-bibliografia.md)
    1. [Referencias citadas](capitulo-6-bibliografia.md#referencias-citadas)
    2. [Recursos complementarios](capitulo-6-bibliografia.md#recursos-complementarios)
+
+
 
 > A partir de esta sección, continuar con los capítulos en orden ascendente hasta llegar a la bibliografía.

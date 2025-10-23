@@ -13,7 +13,7 @@
 # BD1 — Proyecto de Estudio e Investigación
 
 **Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **ANSI SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
-
+ 
 ## Presentación del proyecto
 - Dominio de aplicación: gestión colaborativa de partidos de fútbol y opiniones de la comunidad.
 - Alcance: diseño lógico del esquema `tribuneros_bdi`, definición de restricciones, carga de datos representativos y consultas de verificación.
@@ -23,6 +23,7 @@
 1. Documentar de forma académica el proceso de diseño y validación de la base de datos Tribuneros.
 2. Proporcionar scripts reproducibles para crear, poblar y auditar el esquema relacional en SQL Server.
 3. Garantizar la trazabilidad entre los capítulos teóricos y la implementación técnica mediante enlaces cruzados.
+4. Implementar y documentar un modelo de seguridad basado en roles y permisos granulares.
 
 ## Tabla de navegación académica
 | Sección | Descripción | Documento |
@@ -36,6 +37,7 @@
 | Capítulo V | Conclusiones y líneas futuras | [docs/capitulo-5-conclusiones.md](docs/capitulo-5-conclusiones.md) |
 | Capítulo VI | Bibliografía académica y técnica | [docs/capitulo-6-bibliografia.md](docs/capitulo-6-bibliografia.md) |
 | Anexo | Diccionario de datos completo | [docs/diccionario_datos.md](docs/diccionario_datos.md) |
+| Modulo 1 |  Manejo de Permisos a Nivel de Usuarios de Base de Datos | [Modulo 1 - Manejo de Permisos a Nivel de Usuarios de Base de Datos](modulo1-permisos.md) |
 
 Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
 
@@ -54,12 +56,16 @@ Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la tr
 │   ├── capitulo-4-resultados.md   — Resultados, modelo final y referencias a scripts.
 │   ├── capitulo-5-conclusiones.md — Conclusiones, limitaciones y líneas futuras.
 │   ├── capitulo-6-bibliografia.md — Bibliografía académica y técnica.
+│   ├── modulo1-permisos.md -  Manejo de Permisos a Nivel de Usuarios de Base de Datos
 │   └── diccionario_datos.md       — Diccionario de datos completo (entidades, atributos, tipos, restricciones y ejemplos).
 ├── script/               # scripts SQL ordenados para creación, carga, verificación y métricas (SQL Server)
-│   ├── creacion.sql       — DDL: creación del esquema `tribuneros_bdi`, tablas, claves, índices y constraints.
-│   ├── carga_inicial.sql  — INSERTs para poblar el esquema con un dataset de ejemplo para pruebas.
-│   ├── verificacion.sql   — Consultas de control de integridad referencial y reglas de negocio.
-│   └── conteo.sql         — Consultas de métricas y conteos para validar volúmenes y consistencia.
+│   ├── creacion.sql          — DDL: creación del esquema `tribuneros_bdi`, tablas, claves, índices y constraints.
+│   ├── carga_inicial.sql     — INSERTs para poblar el esquema con un dataset de ejemplo para pruebas.
+│   ├── verificacion.sql      — Consultas de control de integridad referencial y reglas de negocio.
+│   ├── conteo.sql            — Consultas de métricas y conteos para validar volúmenes y consistencia.
+│   └── modulo1-permisos/     # Scripts para configurar y probar el modelo de seguridad.
+│       ├── 01_logins_y_usuarios.sql
+│       └── (y otros scripts del módulo)
 ├── README.md             — Introducción, guía rápida y navegación del repositorio (este archivo).
 └── LICENSE               — Licencia aplicable: MIT para el código SQL; documento académico bajo CC BY‑NC‑SA 4.0.
 ```

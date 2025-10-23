@@ -93,3 +93,7 @@
 - Cambiá las **contraseñas** de ejemplo por otras fuertes.  
 - El SP de ejemplo usa `MAX(id)+1` para generar el ID. En un entorno de producción, es preferible usar columnas `IDENTITY` o `SEQUENCE` para evitar problemas de concurrencia y garantizar la unicidad de las claves.
 - Si SSMS ejecuta solo la selección, asegurate de incluir los `DECLARE` en el mismo bloque cuando hagas pruebas.
+
+| Anterior | Siguiente |
+| --- | --- |
+| [Capítulo V — Conclusiones](capitulo-5-conclusiones.md) | [Capítulo VI — Bibliografía](capitulo-6-bibliografia.md) |
