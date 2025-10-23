@@ -138,7 +138,7 @@ Table visualizaciones {
   creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
-Table seguidos {
+Table seguimiento_equipos {
   id int [pk]
   usuario_id char(36) [not null]
   equipo_id int [not null]
@@ -147,6 +147,20 @@ Table seguidos {
   indexes {
     (usuario_id, equipo_id) [unique]
   }
+}
+
+Table seguimiento_ligas {
+  id int [pk]
+  usuario_id char(36) [not null]
+  liga_id int [not null]
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+}
+
+Table seguimiento_usuarios {
+  id int [pk]
+  usuario_id char(36) [not null]
+  usuario_seguido char(36) [not null]
+  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
 }
 
 Table partidos_destacados {
@@ -188,8 +202,12 @@ Ref: favoritos.partido_id > partidos.id
 Ref: favoritos.usuario_id > usuarios.id
 Ref: visualizaciones.partido_id > partidos.id
 Ref: visualizaciones.usuario_id > usuarios.id
-Ref: seguidos.usuario_id > usuarios.id
-Ref: seguidos.equipo_id > equipos.id
+Ref: seguimiento_equipos.usuario_id > usuarios.id
+Ref: seguimiento_equipos.equipo_id > equipos.id
+Ref: seguimiento_ligas.usuario_id > usuarios.id
+Ref: seguimiento_ligas.liga_id > ligas.id
+Ref: seguimiento_usuarios.usuario_id > usuarios.id
+Ref: seguimiento_usuarios.usuario_seguido > usuarios.id
 Ref: partidos_destacados.partido_id > partidos.id
 Ref: partidos_destacados.usuario_id > usuarios.id
 Ref: recordatorios.usuario_id > usuarios.id
@@ -204,7 +222,7 @@ Entidades principales:
 - **Catálogos** (`ligas`, `equipos`)
 - **Partidos** (`partidos`)
 - **Interacciones** (`calificaciones`, `opiniones`, `favoritos`, `visualizaciones`)
-- **Social** (`seguidos`)
+- **Social** (`seguimiento_equipos`, `seguimiento_ligas`, `seguimiento_usuarios`)
 - **Curaduría y extras** (`partidos_destacados`, `recordatorios`)
   
 **Highlights de diseño**

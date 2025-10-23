@@ -53,7 +53,7 @@
 8. **Seguimiento y favoritos**
 
    * *Definición operativa*: relación de interés del usuario con `equipos` (`seguidos`) y marcación de `partidos` como favoritos (`favoritos`).
-   * *Rol*: personalización del feed y de las notificaciones.
+   * *Rol*: personalización del feed, descubrimiento de contenido y notificaciones.
 
 9. **Curaduría / Partidos destacados**
 

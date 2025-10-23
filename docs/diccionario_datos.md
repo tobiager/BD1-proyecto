@@ -129,14 +129,40 @@ Este documento describe los objetos del esquema `tribuneros_bdi` implementado en
 
 ---
 
-## 5. Social y curaduría
+## 5. Social, curaduría y recordatorios
 
-### Tabla: `seguidos`
+### Tabla: `seguimiento_equipos`
 | Columna | Tipo | Nulos | Restricciones |
 |---------|------|-------|---------------|
-| `id` | `INT` | NO | `PK_seguidos` |
-| `usuario_id` | `CHAR(36)` | NO | `FK_seguidos_usuario` (CASCADE), `IX_seguidos_usuario` |
-| `equipo_id` | `INT` | NO | `FK_seguidos_equipo` (CASCADE) |
+| `id` | `INT` | NO | `PK_seguimiento_equipos` |
+| `usuario_id` | `CHAR(36)` | NO | `FK_seg_equipos_usuario` (CASCADE), `IX_seg_equipos_usuario` |
+| `equipo_id` | `INT` | NO | `FK_seg_equipos_equipo` (CASCADE) |
+| `creado_en` | `DATETIME2` | NO | — |
+| — | — | — | `UQ_seguimiento_equipos (usuario_id, equipo_id)` |
+
+### Tabla: `seguimiento_ligas`
+| Columna | Tipo | Nulos | Restricciones |
+|---------|------|-------|---------------|
+| `id` | `INT` | NO | `PK_seguimiento_ligas` |
+| `usuario_id` | `CHAR(36)` | NO | `FK_seg_ligas_usuario` (CASCADE), `IX_seg_ligas_usuario` |
+| `liga_id` | `INT` | NO | `FK_seg_ligas_liga` (CASCADE) |
+| `creado_en` | `DATETIME2` | NO | — |
+| — | — | — | `UQ_seguimiento_ligas (usuario_id, liga_id)` |
+
+### Tabla: `seguimiento_usuarios`
+| Columna | Tipo | Nulos | Restricciones |
+|---------|------|-------|---------------|
+| `id` | `INT` | NO | `PK_seguimiento_usuarios` |
+| `usuario_id` | `CHAR(36)` | NO | `FK_seg_usuarios_seguidor` (CASCADE), `IX_seg_usuarios_seguidor` |
+| `usuario_seguido` | `CHAR(36)` | NO | `FK_seg_usuarios_seguido` (NO ACTION) |
+| `creado_en` | `DATETIME2` | NO | — |
+| — | — | — | `UQ_seguimiento_usuarios (usuario_id, usuario_seguido)` |
+| — | — | — | `CK_seg_usuarios_no_self` (usuario_id ≠ usuario_seguido) |
+
+### Tabla: `partidos_destacados`
+| Columna | Tipo | Nulos | Restricciones |
+|---------|------|-------|---------------|
+| `id` | `INT` | NO | `PK_destacados` |
 | `creado_en` | `DATETIME2` | NO | — |
 | — | — | — | `UQ_seguidos (usuario_id, equipo_id)` |
 

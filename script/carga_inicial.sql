@@ -1,8 +1,6 @@
-
 -- =========================================================
 -- Tribuneros - Carga representativa (DML)
 -- =========================================================
-SET NOCOUNT ON;
 SET XACT_ABORT ON;
 GO
 
@@ -10,6 +8,22 @@ USE tribuneros_bdi;
 GO
 
 BEGIN TRAN;
+
+-- Limpieza de datos existentes (en orden inverso por las FK)
+DELETE FROM dbo.recordatorios;
+DELETE FROM dbo.partidos_destacados;
+DELETE FROM dbo.seguimiento_usuarios;  -- Si ya ejecutaste el script de seguimiento
+DELETE FROM dbo.seguimiento_ligas;     -- Si ya ejecutaste el script de seguimiento
+DELETE FROM dbo.seguimiento_equipos;   -- Si ya ejecutaste el script de seguimiento
+DELETE FROM dbo.visualizaciones;
+DELETE FROM dbo.favoritos;
+DELETE FROM dbo.opiniones;
+DELETE FROM dbo.calificaciones;
+DELETE FROM dbo.partidos;
+DELETE FROM dbo.equipos;
+DELETE FROM dbo.ligas;
+DELETE FROM dbo.perfiles;
+DELETE FROM dbo.usuarios;
 
 -- ================== 1) Usuarios y perfiles ==================
 INSERT INTO dbo.usuarios (id, correo, creado_en) VALUES
@@ -78,9 +92,20 @@ INSERT INTO dbo.visualizaciones (
 );
 
 -- ================== 6) Social / Seguimientos ==================
-INSERT INTO dbo.seguidos (id, usuario_id, equipo_id, creado_en) VALUES
-(1, '11111111-1111-1111-1111-111111111111', 1, SYSDATETIME()),
-(2, '11111111-1111-1111-1111-111111111111', 2, SYSDATETIME());
+-- IMPORTANTE: No especificar 'id' porque tiene IDENTITY(1,1)
+
+-- El usuario 'tobiager' sigue a River y a Boca
+INSERT INTO dbo.seguimiento_equipos (usuario_id, equipo_id, creado_en) VALUES
+('11111111-1111-1111-1111-111111111111', 1, SYSDATETIME()),
+('11111111-1111-1111-1111-111111111111', 2, SYSDATETIME());
+
+-- El usuario 'tobiager' sigue la Copa Libertadores
+INSERT INTO dbo.seguimiento_ligas (usuario_id, liga_id, creado_en) VALUES
+('11111111-1111-1111-1111-111111111111', 2, SYSDATETIME());
+
+-- El usuario 'tobiager' sigue a la usuaria 'anaferro'
+INSERT INTO dbo.seguimiento_usuarios (usuario_id, usuario_seguido, creado_en) VALUES
+('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222', SYSDATETIME());
 
 -- ================== 7) Recordatorio (histórico, 15 min antes) ==================
 INSERT INTO dbo.recordatorios (id, usuario_id, partido_id, recordar_en, estado, creado_en) VALUES
@@ -99,3 +124,7 @@ INSERT INTO dbo.partidos_destacados (id, usuario_id, partido_id, destacado_en, n
 COMMIT;
 
 PRINT 'Datos cargados correctamente.';
+PRINT '';
+PRINT '========== Verificacion de seguimientos ==========';
+SELECT * FROM dbo.vw_resumen_seguimientos WHERE usuario_id = '11111111-1111-1111-1111-111111111111';
+GO

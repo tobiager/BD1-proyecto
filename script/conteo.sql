@@ -15,7 +15,11 @@ SELECT 'Favoritos', COUNT(*) FROM favoritos
 UNION ALL
 SELECT 'Visualizaciones', COUNT(*) FROM visualizaciones
 UNION ALL
-SELECT 'Seguidos', COUNT(*) FROM seguidos
+SELECT 'Seguimiento_Equipos', COUNT(*) FROM seguimiento_equipos
+UNION ALL
+SELECT 'Seguimiento_Ligas', COUNT(*) FROM seguimiento_ligas
+UNION ALL
+SELECT 'Seguimiento_Usuarios', COUNT(*) FROM seguimiento_usuarios
 UNION ALL
 SELECT 'Recordatorios', COUNT(*) FROM recordatorios
 UNION ALL

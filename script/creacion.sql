@@ -14,7 +14,9 @@ GO
 -- Limpieza (orden inverso)
 IF OBJECT_ID('dbo.recordatorios')        IS NOT NULL DROP TABLE dbo.recordatorios;
 IF OBJECT_ID('dbo.partidos_destacados')  IS NOT NULL DROP TABLE dbo.partidos_destacados;
-IF OBJECT_ID('dbo.seguidos')             IS NOT NULL DROP TABLE dbo.seguidos;
+IF OBJECT_ID('dbo.seguimiento_equipos')  IS NOT NULL DROP TABLE dbo.seguimiento_equipos;
+IF OBJECT_ID('dbo.seguimiento_ligas')    IS NOT NULL DROP TABLE dbo.seguimiento_ligas;
+IF OBJECT_ID('dbo.seguimiento_usuarios') IS NOT NULL DROP TABLE dbo.seguimiento_usuarios;
 IF OBJECT_ID('dbo.visualizaciones')      IS NOT NULL DROP TABLE dbo.visualizaciones;
 IF OBJECT_ID('dbo.favoritos')            IS NOT NULL DROP TABLE dbo.favoritos;
 IF OBJECT_ID('dbo.opiniones')            IS NOT NULL DROP TABLE dbo.opiniones;
@@ -165,15 +167,40 @@ CREATE TABLE dbo.visualizaciones (
 GO
 
 /* ===================== 5) Social / Curaduría / Recordatorios ===================== */
-CREATE TABLE dbo.seguidos (
+CREATE TABLE dbo.seguimiento_equipos (
   id         INT        NOT NULL,
   usuario_id CHAR(36)   NOT NULL,
   equipo_id  INT        NOT NULL,
   creado_en  DATETIME2  NOT NULL,
-  CONSTRAINT PK_seguidos PRIMARY KEY (id),
-  CONSTRAINT UQ_seguidos UNIQUE (usuario_id, equipo_id),
-  CONSTRAINT FK_seguidos_usuario FOREIGN KEY (usuario_id) REFERENCES dbo.usuarios(id) ON DELETE CASCADE,
-  CONSTRAINT FK_seguidos_equipo FOREIGN KEY (equipo_id)  REFERENCES dbo.equipos(id)  ON DELETE CASCADE
+  CONSTRAINT PK_seguimiento_equipos PRIMARY KEY (id),
+  CONSTRAINT UQ_seguimiento_equipos UNIQUE (usuario_id, equipo_id),
+  CONSTRAINT FK_seg_equipos_usuario FOREIGN KEY (usuario_id) REFERENCES dbo.usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT FK_seg_equipos_equipo FOREIGN KEY (equipo_id)  REFERENCES dbo.equipos(id)  ON DELETE CASCADE
+);
+
+CREATE TABLE dbo.seguimiento_ligas (
+  id         INT        NOT NULL,
+  usuario_id CHAR(36)   NOT NULL,
+  liga_id    INT        NOT NULL,
+  creado_en  DATETIME2  NOT NULL,
+  CONSTRAINT PK_seguimiento_ligas PRIMARY KEY (id),
+  CONSTRAINT UQ_seguimiento_ligas UNIQUE (usuario_id, liga_id),
+  CONSTRAINT FK_seg_ligas_usuario FOREIGN KEY (usuario_id) REFERENCES dbo.usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT FK_seg_ligas_liga FOREIGN KEY (liga_id)    REFERENCES dbo.ligas(id)    ON DELETE CASCADE
+);
+
+CREATE TABLE dbo.seguimiento_usuarios (
+  id              INT        NOT NULL,
+  usuario_id      CHAR(36)   NOT NULL, -- El que sigue
+  usuario_seguido CHAR(36)   NOT NULL, -- El seguido
+  creado_en       DATETIME2  NOT NULL,
+  CONSTRAINT PK_seguimiento_usuarios PRIMARY KEY (id),
+  CONSTRAINT UQ_seguimiento_usuarios UNIQUE (usuario_id, usuario_seguido),
+  CONSTRAINT CK_seg_usuarios_no_self CHECK (usuario_id <> usuario_seguido),
+  CONSTRAINT FK_seg_usuarios_seguidor FOREIGN KEY (usuario_id) 
+    REFERENCES dbo.usuarios(id) ON DELETE CASCADE,
+  CONSTRAINT FK_seg_usuarios_seguido FOREIGN KEY (usuario_seguido) 
+    REFERENCES dbo.usuarios(id) ON DELETE NO ACTION
 );
 
 CREATE TABLE dbo.partidos_destacados (
@@ -205,6 +232,8 @@ CREATE INDEX IX_calif_usuario      ON dbo.calificaciones(usuario_id);
 CREATE INDEX IX_opiniones_usuario  ON dbo.opiniones(usuario_id);
 CREATE INDEX IX_fav_usuario        ON dbo.favoritos(usuario_id);
 CREATE INDEX IX_vis_usuario        ON dbo.visualizaciones(usuario_id);
-CREATE INDEX IX_seguidos_usuario   ON dbo.seguidos(usuario_id);
+CREATE INDEX IX_seg_equipos_usuario ON dbo.seguimiento_equipos(usuario_id);
+CREATE INDEX IX_seg_ligas_usuario   ON dbo.seguimiento_ligas(usuario_id);
+CREATE INDEX IX_seg_usuarios_seguidor ON dbo.seguimiento_usuarios(usuario_id);
 CREATE INDEX IX_recordatorios_when ON dbo.recordatorios(recordar_en);
 GO

@@ -16,7 +16,8 @@ SELECT * FROM favoritos;
 SELECT * FROM visualizaciones;
 
 -- Social
-SELECT * FROM seguidos;
+SELECT * FROM seguimiento_equipos;
+SELECT * FROM seguimiento_ligas;
+SELECT * FROM seguimiento_usuarios;
 SELECT * FROM recordatorios;
 SELECT * FROM partidos_destacados;
-
