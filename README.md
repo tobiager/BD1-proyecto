@@ -37,7 +37,7 @@
 | Capítulo V | Conclusiones y líneas futuras | [docs/capitulo-5-conclusiones.md](docs/capitulo-5-conclusiones.md) |
 | Capítulo VI | Bibliografía académica y técnica | [docs/capitulo-6-bibliografia.md](docs/capitulo-6-bibliografia.md) |
 | Anexo | Diccionario de datos completo | [docs/diccionario_datos.md](docs/diccionario_datos.md) |
-| Modulo 1 |  Manejo de Permisos a Nivel de Usuarios de Base de Datos | [Modulo 1 - Manejo de Permisos a Nivel de Usuarios de Base de Datos](modulo1-permisos.md) |
+| Modulo 1 |  Manejo de Permisos a Nivel de Usuarios de Base de Datos | [Modulo 1 - Manejo de Permisos a Nivel de Usuarios de Base de Datos](docs/modulo1-permisos.md) |
 
 Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
 
