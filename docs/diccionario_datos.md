@@ -17,6 +17,7 @@ Este documento describe los objetos del esquema `tribuneros_bdi` implementado en
 |-------------|------------|-------|-------------------|---------------|-------------|
 | `id`        | `CHAR(36)` | NO    | —                 | `PK_usuarios` | UUID (formato 36 chars) |
 | `correo`    | `VARCHAR(255)` | NO | —                 | `UQ_usuarios_correo` | Correo único |
+| `password_hash`| `VARBINARY(64)`| SÍ | —              | —             | Hash de la contraseña (SHA2_512) |
 | `creado_en` | `DATETIME2`| NO    | — (se carga a mano)| —             | Fecha de alta |
 
 ### Tabla: `perfiles`
@@ -191,6 +192,7 @@ Este documento describe los objetos del esquema `tribuneros_bdi` implementado en
 - Todas las claves foráneas apuntan a claves primarias definidas explícitamente y contemplan reglas de eliminación (`CASCADE`, `SET NULL`, `NO ACTION`).
 - Las restricciones `CHECK` aseguran dominios válidos para estados, medios y rangos numéricos.
 - Los índices secundarios (`IX_*`) facilitan consultas frecuentes por usuario, partido y fechas clave.
+- Se han implementado procedimientos almacenados (`dbo.sp_usuario_set_password_simple`, `dbo.sp_usuario_login_simple`) para la gestión segura de contraseñas mediante hashing SHA2_512.
 - El modelo fue verificado con los scripts de carga y validación incluidos en la carpeta `script/` empleando PostgreSQL 15 en modo ANSI SQL.
 - El esquema completo se inicializa mediante `script/creacion.sql` y se complementa con cargas de ejemplo en `script/carga_inicial.sql`.
 

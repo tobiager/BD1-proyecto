@@ -16,6 +16,7 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 - **Definición del esquema**: el script [`script/creacion.sql`](../script/creacion.sql) crea la base `tribuneros_bdi`, define tablas y restricciones y aplica índices de apoyo.
 - **Poblado inicial**: [`script/carga_inicial.sql`](../script/carga_inicial.sql) inserta un conjunto representativo de ligas, equipos, partidos y actividades de usuarios para ejercitar las restricciones.
 - **Validaciones**: [`script/verificacion.sql`](../script/verificacion.sql) incluye consultas de consistencia y verificaciones funcionales; [`script/conteo.sql`](../script/conteo.sql) provee métricas rápidas para auditoría.
+- **Procedimientos almacenados**: se incluyen procedimientos para la gestión segura de contraseñas (`sp_usuario_set_password_simple`) y la verificación de credenciales (`sp_usuario_login_simple`).
 - **Orden de ejecución**: se recomienda el flujo indicado en el [README](../README.md#cómo-ejecutar-los-scripts) utilizando `:r` desde SQL Server Management Studio o `sqlcmd`.
 
 ## Herramientas y control de calidad
@@ -43,6 +44,7 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 Table usuarios {
   id char(36) [pk, not null]
   correo varchar(255) [not null, unique]
+  password_hash varbinary(64) [note: 'Hash de la contraseña (SHA2_512)']
   creado_en datetime2 [not null]
   
   indexes {

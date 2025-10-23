@@ -32,6 +32,7 @@ GO
 CREATE TABLE dbo.usuarios (
   id         CHAR(36)      NOT NULL,
   correo     VARCHAR(255)  NOT NULL,
+  password_hash VARBINARY(64) NULL, -- Hash de la contraseña (SHA2_512)
   creado_en  DATETIME2     NOT NULL,
   CONSTRAINT PK_usuarios PRIMARY KEY (id),
   CONSTRAINT UQ_usuarios_correo UNIQUE (correo)
