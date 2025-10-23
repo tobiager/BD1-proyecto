@@ -40,11 +40,29 @@
 Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
 
 ## Estructura del repositorio
-- [`docs/`](docs/) — Circuito documental académico (portada, índice, capítulos y anexos).
-- [`script/`](script/) — Scripts SQL ordenados para creación, carga, verificación y métricas.
-- [`assets/`](assets/) — Recursos gráficos utilizados en presentaciones y documentación.
-- [`README.md`](README.md) — Introducción y guía rápida del proyecto.
-- [`LICENSE`](LICENSE) — Licencia abierta aplicable a código y documentos.
+```text
+.
+├── assets/               # imágenes y recursos gráficos usados en la documentación
+│   ├── badge-bdi.png     — Badge/logo que se muestra en el README.
+│   └── (otros archivos de imagen/diagramas usados en docs/)
+├── docs/                 # circuito documental académico (capítulos, índices y anexos)
+│   ├── portada.md                — Portada con datos institucionales, autores y versión.
+│   ├── indice.md                 — Índice general y mapa de navegación del informe.
+│   ├── capitulo-1-introduccion.md — Introducción, planteo del problema y objetivos.
+│   ├── capitulo-2-marco-conceptual.md — Marco teórico, definiciones y glosario.
+│   ├── capitulo-3-metodologia.md  — Metodología de relevamiento y decisiones de diseño.
+│   ├── capitulo-4-resultados.md   — Resultados, modelo final y referencias a scripts.
+│   ├── capitulo-5-conclusiones.md — Conclusiones, limitaciones y líneas futuras.
+│   ├── capitulo-6-bibliografia.md — Bibliografía académica y técnica.
+│   └── diccionario_datos.md       — Diccionario de datos completo (entidades, atributos, tipos, restricciones y ejemplos).
+├── script/               # scripts SQL ordenados para creación, carga, verificación y métricas (SQL Server)
+│   ├── creacion.sql       — DDL: creación del esquema `tribuneros_bdi`, tablas, claves, índices y constraints.
+│   ├── carga_inicial.sql  — INSERTs para poblar el esquema con un dataset de ejemplo para pruebas.
+│   ├── verificacion.sql   — Consultas de control de integridad referencial y reglas de negocio.
+│   └── conteo.sql         — Consultas de métricas y conteos para validar volúmenes y consistencia.
+├── README.md             — Introducción, guía rápida y navegación del repositorio (este archivo).
+└── LICENSE               — Licencia aplicable: MIT para el código SQL; documento académico bajo CC BY‑NC‑SA 4.0.
+```
 
 ## Scripts SQL clave
 - [script/creacion.sql](script/creacion.sql) — DDL del esquema `tribuneros_bdi` (tablas, claves y restricciones).
