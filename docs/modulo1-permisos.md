@@ -76,11 +76,23 @@
   - `04_roles_lectura_por_tabla.sql`
   - `99_cleanup_demo.sql` (opcional)
 - **Capturas** (en `/assets/modulo1-permisos-bd/`):
-  - `00_auth_mode_mixed.png` — Comprobación de modo mixto (Mixed SQL + Windows).
-  - `01_logins_y_usuarios_ok.png` — Creación de logins/usuarios y asignación de roles (`trib_admin` → `db_owner`, `trib_ro` → `db_datareader`).
-  - `02_sp_insert_y_grant_execute_ok.png` — SP `sp_calificacion_insertar` creado con `EXECUTE AS OWNER` + `GRANT EXECUTE` vía rol `app_exec`.
-  - `03_trib_ro_select_ok_insert_error_sp_ok.png` — Con `trib_ro`: `SELECT` OK, `INSERT` directo denegado, `INSERT` vía SP OK (se ve el registro insertado).
-  - `04_roles_lectura_ligas_trib_a_ok_trib_b_error.png` — Rol `rol_lectura_ligas`: `trib_a` lee ligas (OK) y `trib_b` falla (permission denied).
+
+### Comprobación de modo mixto (Mixed SQL + Windows)
+   ![Modulo Mixto](/assets/modulo1-permisos-bd/00_uth_mode_mixed.png) 
+
+### Logins y usuarios
+  ![Logins](/assets/modulo1-permisos-bd/01_logins_y_usuarios_ok.png) 
+
+### Procedimiento y permisos de ejecución
+  ![Permisos](/assets/modulo1-permisos-bd/02_sp_insert_y_grant_execute_ok.png) 
+
+### Pruebas de usuarios
+  ![Pruebas](/assets/modulo1-permisos-bd/03_trib_ro_select_ok_insert_error_sp_ok.png) 
+
+### Roles del DBMS por tabla
+  ![Roles](/assets/modulo1-permisos-bd/04_roles_lectura_ligas_trib_a_ok_trib_b_error.png)
+
+
 - **Documento de conclusiones:** `CONCLUSIONES.md` (≈1 página) respondiendo:
   - ¿Qué permisos otorga `db_datareader`?
   - ¿Por qué `EXECUTE AS OWNER` + `GRANT EXECUTE` permiten DML sin dar permisos directos a tablas?
