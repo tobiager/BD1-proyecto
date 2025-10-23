@@ -36,182 +36,192 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
   
   ```
   
-  Table usuarios {
-  id char(36) [pk]
-  correo varchar [unique, not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  // =========================================================
+// Tribuneros - Schema para dbdiagram.io
+// =========================================================
+
+Table usuarios {
+  id char(36) [pk, not null]
+  correo varchar(255) [not null, unique]
+  creado_en datetime2 [not null]
+  
+  indexes {
+    correo [unique, name: "UQ_usuarios_correo"]
+  }
 }
 
 Table perfiles {
-  usuario_id char(36) [pk]
-  nombre_usuario varchar [unique, not null]
-  nombre_mostrar varchar
-  avatar_url varchar
-  biografia varchar
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-  actualizado_en timestamp
+  usuario_id char(36) [pk, not null, ref: - usuarios.id]
+  nombre_usuario varchar(30) [not null, unique]
+  nombre_mostrar varchar(60)
+  avatar_url varchar(400)
+  biografia varchar(400)
+  creado_en datetime2 [not null]
+  actualizado_en datetime2
+  
+  indexes {
+    nombre_usuario [unique, name: "UQ_perfiles_usuario"]
+  }
 }
 
 Table ligas {
-  id int [pk]
-  nombre varchar [not null]
-  pais varchar
-  slug varchar [unique]
-  id_externo varchar
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  id int [pk, not null]
+  nombre varchar(120) [not null]
+  pais varchar(80)
+  slug varchar(120) [unique]
+  id_externo varchar(80)
+  creado_en datetime2 [not null]
+  
+  indexes {
+    slug [unique, name: "UQ_ligas_slug"]
+  }
 }
 
 Table equipos {
-  id int [pk]
-  nombre varchar [not null]
-  nombre_corto varchar
-  pais varchar
-  escudo_url varchar
-  liga_id int
-  id_externo varchar
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  id int [pk, not null]
+  nombre varchar(120) [not null]
+  nombre_corto varchar(50)
+  pais varchar(80)
+  escudo_url varchar(400)
+  liga_id int [ref: > ligas.id]
+  id_externo varchar(80)
+  creado_en datetime2 [not null]
 }
 
 Table partidos {
-  id int [pk]
-  id_externo varchar
-  liga_id int
+  id int [pk, not null]
+  id_externo varchar(80)
+  liga_id int [ref: > ligas.id]
   temporada int
-  ronda varchar
-  fecha_utc timestamp with time zone [not null]
-  estado varchar [not null]
-  estadio varchar
-  equipo_local int [not null]
-  equipo_visitante int [not null]
+  ronda varchar(40)
+  fecha_utc datetime2 [not null]
+  estado varchar(15) [not null, note: 'programado, en_vivo, finalizado, pospuesto, cancelado']
+  estadio varchar(120)
+  equipo_local int [not null, ref: > equipos.id]
+  equipo_visitante int [not null, ref: > equipos.id]
   goles_local int
   goles_visitante int
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  creado_en datetime2 [not null]
+  
+  indexes {
+    fecha_utc [name: "IX_partidos_fecha"]
+    liga_id [name: "IX_partidos_liga"]
+  }
 }
 
 Table calificaciones {
-  id int [pk]
-  partido_id int [not null]
-  usuario_id char(36) [not null]
-  puntaje int [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-
+  id int [pk, not null]
+  partido_id int [not null, ref: > partidos.id]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  puntaje smallint [not null, note: '1-5']
+  creado_en datetime2 [not null]
+  
   indexes {
-    (partido_id, usuario_id) [unique]
+    (partido_id, usuario_id) [unique, name: "UQ_calif"]
+    usuario_id [name: "IX_calif_usuario"]
   }
 }
 
 Table opiniones {
-  id int [pk]
-  partido_id int [not null]
-  usuario_id char(36) [not null]
-  titulo varchar
-  cuerpo clob
-  publica boolean [not null, default: 'TRUE']
-  tiene_spoilers boolean [not null, default: 'FALSE']
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-  actualizado_en timestamp
-
+  id int [pk, not null]
+  partido_id int [not null, ref: > partidos.id]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  titulo varchar(120)
+  cuerpo varchar(4000)
+  publica smallint [not null, note: '1=pública, 0=privada']
+  tiene_spoilers smallint [not null, note: '1=sí, 0=no']
+  creado_en datetime2 [not null]
+  actualizado_en datetime2
+  
   indexes {
-    (partido_id, usuario_id) [unique]
+    (partido_id, usuario_id) [unique, name: "UQ_opiniones"]
+    usuario_id [name: "IX_opiniones_usuario"]
   }
 }
 
 Table favoritos {
-  id int [pk]
-  partido_id int [not null]
-  usuario_id char(36) [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-
+  id int [pk, not null]
+  partido_id int [not null, ref: > partidos.id]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  creado_en datetime2 [not null]
+  
   indexes {
-    (partido_id, usuario_id) [unique]
+    (partido_id, usuario_id) [unique, name: "UQ_favoritos"]
+    usuario_id [name: "IX_fav_usuario"]
   }
 }
 
 Table visualizaciones {
-  id int [pk]
-  partido_id int [not null]
-  usuario_id char(36) [not null]
-  medio varchar [not null]
-  visto_en timestamp with time zone [not null]
-  minutos_vistos int
-  ubicacion varchar
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  id int [pk, not null]
+  partido_id int [not null, ref: > partidos.id]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  medio varchar(12) [not null, note: 'estadio, tv, streaming, repeticion']
+  visto_en datetime2 [not null]
+  minutos_vistos int [note: '0-200']
+  ubicacion varchar(120)
+  creado_en datetime2 [not null]
+  
+  indexes {
+    usuario_id [name: "IX_vis_usuario"]
+  }
 }
 
 Table seguimiento_equipos {
-  id int [pk]
-  usuario_id char(36) [not null]
-  equipo_id int [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-
+  id int [pk, not null]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  equipo_id int [not null, ref: > equipos.id]
+  creado_en datetime2 [not null]
+  
   indexes {
-    (usuario_id, equipo_id) [unique]
+    (usuario_id, equipo_id) [unique, name: "UQ_seguimiento_equipos"]
+    usuario_id [name: "IX_seg_equipos_usuario"]
   }
 }
 
 Table seguimiento_ligas {
-  id int [pk]
-  usuario_id char(36) [not null]
-  liga_id int [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  id int [pk, not null]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  liga_id int [not null, ref: > ligas.id]
+  creado_en datetime2 [not null]
+  
+  indexes {
+    (usuario_id, liga_id) [unique, name: "UQ_seguimiento_ligas"]
+    usuario_id [name: "IX_seg_ligas_usuario"]
+  }
 }
 
 Table seguimiento_usuarios {
-  id int [pk]
-  usuario_id char(36) [not null]
-  usuario_seguido char(36) [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
+  id int [pk, not null]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  usuario_seguido char(36) [not null, ref: > usuarios.id]
+  creado_en datetime2 [not null]
+  
+  indexes {
+    (usuario_id, usuario_seguido) [unique, name: "UQ_seguimiento_usuarios"]
+    usuario_id [name: "IX_seg_usuarios_seguidor"]
+  }
 }
 
 Table partidos_destacados {
-  id int [pk]
-  usuario_id char(36)
-  partido_id int [not null]
-  destacado_en DATE [not null]
-  nota varchar
-
-  indexes {
-    (partido_id) [unique]
-  }
+  id int [pk, not null]
+  usuario_id char(36) [ref: > usuarios.id]
+  partido_id int [not null, ref: > partidos.id]
+  destacado_en date [not null]
+  nota varchar(240)
 }
 
 Table recordatorios {
-  id int [pk]
-  usuario_id char(36) [not null]
-  partido_id int [not null]
-  recordar_en timestamp with time zone [not null]
-  estado varchar [not null]
-  creado_en timestamp with time zone [not null, default: 'CURRENT_TIMESTAMP']
-
+  id int [pk, not null]
+  usuario_id char(36) [not null, ref: > usuarios.id]
+  partido_id int [not null, ref: > partidos.id]
+  recordar_en datetime2 [not null]
+  estado varchar(12) [not null, note: 'pendiente, enviado, cancelado']
+  creado_en datetime2 [not null]
+  
   indexes {
-    (usuario_id, partido_id, recordar_en) [unique]
+    recordar_en [name: "IX_recordatorios_when"]
   }
 }
-
-/* Relaciones */
-Ref: perfiles.usuario_id > usuarios.id
-Ref: equipos.liga_id > ligas.id
-Ref: partidos.liga_id > ligas.id
-Ref: partidos.equipo_local > equipos.id
-Ref: partidos.equipo_visitante > equipos.id
-Ref: calificaciones.partido_id > partidos.id
-Ref: calificaciones.usuario_id > usuarios.id
-Ref: opiniones.partido_id > partidos.id
-Ref: opiniones.usuario_id > usuarios.id
-Ref: favoritos.partido_id > partidos.id
-Ref: favoritos.usuario_id > usuarios.id
-Ref: visualizaciones.partido_id > partidos.id
-Ref: visualizaciones.usuario_id > usuarios.id
-Ref: seguimiento_equipos.usuario_id > usuarios.id
-Ref: seguimiento_equipos.equipo_id > equipos.id
-Ref: seguimiento_ligas.usuario_id > usuarios.id
-Ref: seguimiento_ligas.liga_id > ligas.id
-Ref: seguimiento_usuarios.usuario_id > usuarios.id
-Ref: seguimiento_usuarios.usuario_seguido > usuarios.id
-Ref: partidos_destacados.partido_id > partidos.id
-Ref: partidos_destacados.usuario_id > usuarios.id
-Ref: recordatorios.usuario_id > usuarios.id
-Ref: recordatorios.partido_id > partidos.id
 
 ```
 
