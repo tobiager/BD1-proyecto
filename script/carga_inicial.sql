@@ -30,6 +30,16 @@ INSERT INTO dbo.usuarios (id, correo, creado_en) VALUES
 ('11111111-1111-1111-1111-111111111111', 'tobiager@example.com', SYSDATETIME()),
 ('22222222-2222-2222-2222-222222222222', 'ana.ferro@example.com', SYSDATETIME());
 
+-- Asignar contraseñas a los usuarios iniciales
+EXEC dbo.sp_usuario_set_password_simple
+  @usuario_id = '11111111-1111-1111-1111-111111111111',
+  @password   = N'RiverPlate2018!'; -- Contraseña de ejemplo para Tobias
+
+EXEC dbo.sp_usuario_set_password_simple
+  @usuario_id = '22222222-2222-2222-2222-222222222222',
+  @password   = N'VelezSarsfield!'; -- Contraseña de ejemplo para Ana
+
+
 INSERT INTO dbo.perfiles (usuario_id, nombre_usuario, nombre_mostrar, avatar_url, biografia, creado_en, actualizado_en) VALUES
 ('11111111-1111-1111-1111-111111111111', 'tobiager', 'Tobias Orban', NULL, 'Hincha de River Plate', SYSDATETIME(), NULL),
 ('22222222-2222-2222-2222-222222222222', 'anaferro', 'Ana Ferro',     NULL, 'Hincha de Velez',      SYSDATETIME(), NULL);

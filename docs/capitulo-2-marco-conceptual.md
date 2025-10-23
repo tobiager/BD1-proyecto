@@ -18,7 +18,7 @@
 1. **Plataforma social (social network)**
 
    * *Definición operativa*: sistema multiusuario con perfiles, publicaciones y vínculos (seguir equipos, marcar favoritos), persistidos en tablas `usuarios`, `perfiles`, `opiniones`, `favoritos` y `seguidos`.
-   * *Rol*: infraestructura sociotécnica que habilita la interacción y el efecto red.
+   * *Rol*: infraestructura sociotécnica que habilita la interacción, el efecto red y la gestión segura de acceso.
 
 2. **Contenido generado por usuarios (UGC)**
 
@@ -71,6 +71,13 @@
     * *Rol*: ordenar el feed y priorizar contenido de calidad.
 
 12. **Integridad e interoperabilidad de datos**
+
+    * *Definición operativa*: claves foráneas y estados válidos (`estado` en `partidos`, `medio` en `visualizaciones`, `estado` en `recordatorios`) que garantizan consistencia entre `ligas`, `equipos` y `partidos`.
+    * *Rol*: base para reportes confiables y evolución del modelo.
+
+13. **Autenticación y Seguridad**
+    * *Definición operativa*: Uso de hashes criptográficos (SHA2_512) para almacenar contraseñas de usuarios en `usuarios.password_hash` y procedimientos almacenados para la gestión (`sp_usuario_set_password_simple`) y verificación (`sp_usuario_login_simple`) de credenciales.
+    * *Rol*: Proteger el acceso a las cuentas de usuario y asegurar la confidencialidad de las contraseñas.
 
     * *Definición operativa*: claves foráneas y estados válidos (`estado` en `partidos`, `medio` en `visualizaciones`, `estado` en `recordatorios`) que garantizan consistencia entre `ligas`, `equipos` y `partidos`.
     * *Rol*: base para reportes confiables y evolución del modelo.
