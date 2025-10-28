@@ -238,3 +238,32 @@ CREATE INDEX IX_seg_ligas_usuario   ON dbo.seguimiento_ligas(usuario_id);
 CREATE INDEX IX_seg_usuarios_seguidor ON dbo.seguimiento_usuarios(usuario_id);
 CREATE INDEX IX_recordatorios_when ON dbo.recordatorios(recordar_en);
 GO
+
+/* ===================== 6) Procedimientos Almacenados ===================== */
+
+-- Procedimiento para establecer/cambiar contraseña de forma segura
+CREATE OR ALTER PROCEDURE dbo.sp_usuario_set_password_simple
+  @usuario_id CHAR(36),
+  @password   NVARCHAR(4000)
+AS
+BEGIN
+  SET NOCOUNT ON;
+  UPDATE dbo.usuarios
+     SET password_hash = HASHBYTES('SHA2_512', CONVERT(VARBINARY(4000), @password))
+   WHERE id = @usuario_id;
+  IF @@ROWCOUNT = 0
+    RAISERROR('Usuario no encontrado.', 16, 1);
+END
+GO
+
+-- Procedimiento para verificar credenciales de login
+CREATE OR ALTER PROCEDURE dbo.sp_usuario_login_simple
+  @correo   VARCHAR(255),
+  @password NVARCHAR(4000)
+AS
+BEGIN
+  SET NOCOUNT ON;
+  DECLARE @hash VARBINARY(64) = HASHBYTES('SHA2_512', CONVERT(VARBINARY(4000), @password));
+  SELECT ok = CAST(IIF(EXISTS(SELECT 1 FROM dbo.usuarios WHERE correo = @correo AND password_hash = @hash), 1, 0) AS BIT);
+END
+GO

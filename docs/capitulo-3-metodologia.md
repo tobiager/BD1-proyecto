@@ -27,7 +27,6 @@ Se parte de los requisitos funcionales definidos en el [Capítulo I](capitulo-1-
 
 
 
-
 ## Esquema relacional  
 
 ![DER](/assets/der-tribuneros.png)  

@@ -1,3 +1,11 @@
+-- =========================================================
+-- Tribuneros - Verificación de datos y lógica (DML & DCL)
+-- =========================================================
+-- Propósito: Este script contiene consultas para verificar
+--            la integridad de los datos cargados y probar
+--            la lógica de negocio (como la autenticación).
+-- =========================================================
+
 -- Usuarios cargados
 SELECT * FROM usuarios;
 SELECT * FROM perfiles;
@@ -22,54 +30,32 @@ SELECT * FROM seguimiento_usuarios;
 SELECT * FROM recordatorios;
 SELECT * FROM partidos_destacados;
 
-PRINT '========== Verificación de Autenticación ==========';
-
--- 1) Procedimiento para establecer/cambiar contraseña
-CREATE OR ALTER PROCEDURE dbo.sp_usuario_set_password_simple
-  @usuario_id CHAR(36),
-  @password   NVARCHAR(4000)
-AS
-BEGIN
-  SET NOCOUNT ON;
-  UPDATE dbo.usuarios
-     SET password_hash = HASHBYTES('SHA2_512', CONVERT(VARBINARY(4000), @password))
-   WHERE id = @usuario_id;
-  IF @@ROWCOUNT = 0
-    RAISERROR('Usuario no encontrado.', 16, 1);
-END
 GO
 
--- 2) Procedimiento para verificar login
-CREATE OR ALTER PROCEDURE dbo.sp_usuario_login_simple
-  @correo   VARCHAR(255),
-  @password NVARCHAR(4000)
-AS
-BEGIN
-  SET NOCOUNT ON;
-  DECLARE @hash VARBINARY(64) = HASHBYTES('SHA2_512', CONVERT(VARBINARY(4000), @password));
-  IF EXISTS (SELECT 1 FROM dbo.usuarios WHERE correo = @correo AND password_hash = @hash)
-    SELECT CAST(1 AS BIT) AS ok;   -- credenciales válidas
-  ELSE
-    SELECT CAST(0 AS BIT) AS ok;   -- inválidas
-END
-GO
+PRINT '=================================================';
+PRINT '======= Verificación de Autenticación =========';
+PRINT '=================================================';
 
--- Test login para 'tobiager@example.com' con contraseña correcta
-PRINT 'Intentando login para tobiager@example.com con contraseña correcta (RiverPlate2018!):';
+-- Caso 1: Login exitoso con contraseña correcta
+PRINT '-> Test 1: Login para tobiager@example.com con contraseña correcta (RiverPlate2018!). Esperado: ok=1.';
 EXEC dbo.sp_usuario_login_simple @correo = 'tobiager@example.com', @password = N'RiverPlate2018!';
+GO
 
--- Test login para 'tobiager@example.com' con contraseña incorrecta
-PRINT 'Intentando login para tobiager@example.com con contraseña incorrecta:';
+-- Caso 2: Login fallido con contraseña incorrecta
+PRINT '-> Test 2: Login para tobiager@example.com con contraseña incorrecta. Esperado: ok=0.';
 EXEC dbo.sp_usuario_login_simple @correo = 'tobiager@example.com', @password = N'ContrasenaFalsa!';
+GO
 
--- Test login para 'ana.ferro@example.com' con contraseña correcta
-PRINT 'Intentando login para ana.ferro@example.com con contraseña correcta (VelezSarsfield!):';
+-- Caso 3: Login exitoso para otro usuario
+PRINT '-> Test 3: Login para ana.ferro@example.com con contraseña correcta (VelezSarsfield!). Esperado: ok=1.';
 EXEC dbo.sp_usuario_login_simple @correo = 'ana.ferro@example.com', @password = N'VelezSarsfield!';
+GO
 
--- Test cambio de contraseña y re-login
-PRINT 'Cambiando contraseña para tobiager@example.com a NewRiverPass! y re-intentando login:';
+-- Caso 4: Cambio de contraseña y nuevo login
+PRINT '-> Test 4: Cambiando contraseña para tobiager@example.com a "NewRiverPass!"...';
 EXEC dbo.sp_usuario_set_password_simple @usuario_id = '11111111-1111-1111-1111-111111111111', @password = N'NewRiverPass!';
+PRINT '-> Test 4.1: Re-intentando login con la nueva contraseña. Esperado: ok=1.';
 EXEC dbo.sp_usuario_login_simple @correo = 'tobiager@example.com', @password = N'NewRiverPass!';
-PRINT 'Intentando login con la contraseña antigua (debería fallar):';
+PRINT '-> Test 4.2: Intentando login con la contraseña antigua. Esperado: ok=0.';
 EXEC dbo.sp_usuario_login_simple @correo = 'tobiager@example.com', @password = N'RiverPlate2018!';
 GO
