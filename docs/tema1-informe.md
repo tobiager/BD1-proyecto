@@ -11,37 +11,36 @@ Las bases de datos relacionales modernas requieren mecanismos para encapsular l�
 
 ## 2. Marco teórico (sintético y aplicado)
 
-- Procedimientos almacenados (SP): son rutinas precompiladas en el motor de la base de datos que ejecutan operaciones (posiblemente con efectos secundarios). Ventajas: encapsulación, reutilización, control de permisos, posibilidad de ejecutar lógica transaccional. (Ver: Microsoft Docs sobre Stored Procedures)  
-  Aplicado: se usan para insertar, actualizar y borrar opiniones con validaciones transaccionales (unicidad, FK, permisos por usuario).
+**Procedimientos almacenados (SP).** Rutinas en el motor que, al ejecutarse por primera vez, generan un **plan de ejecución cacheado** (reutilizable y recompilable). Permiten **encapsular lógica de negocio**, **reutilizar código**, **controlar permisos** (p. ej., `GRANT EXECUTE` / `EXECUTE AS`) y ejecutar **lógica transaccional** (`BEGIN/COMMIT/ROLLBACK` con manejo de errores).  
+*Aplicado:* insertar, actualizar y borrar opiniones con validaciones (unicidad `(partido_id, usuario_id)`, FKs y ownership por `usuario_id`) bajo transacción.
 
-- Funciones definidas por el usuario (UDF): rutinas que devuelven un valor (escalares) o una tabla. No pueden, en general, realizar efectos secundarios. Ventajas: se pueden usar en consultas SELECT, vistas y expresar cálculos reutilizables. (Ver: Microsoft Docs sobre User-Defined Functions)  
-  Aplicado: funciones para obtener el nombre de usuario, calcular puntajes promedio y formatear resultados para presentación en consultas.
+**Funciones definidas por el usuario (UDF).** Devuelven **un valor** (escalares) o **una tabla** (table-valued). En T-SQL **no tienen efectos secundarios**: no pueden modificar tablas ni invocar SP. Las **iTVF (inline)** suelen ofrecer mejores estimaciones y rendimiento que las **mTVF (multi-statement)**.  
+*Aplicado:* obtener `nombre_usuario`, calcular promedios y formatear resultados directamente en consultas.
 
-- Consideraciones de rendimiento: SP y UDF pueden afectar planes de ejecución y caché de planes. Para operaciones masivas, las operaciones "set-based" son preferibles a los llamados por fila. (Ver comparativa: SQLShack y W3Schools para conceptos básicos)
+**Consideraciones de rendimiento.** SP y UDF influyen en **planes** y **caché**. En SP puede aparecer **parameter sniffing**; se mitiga con `OPTION (RECOMPILE)`, captura de parámetros en variables locales o `OPTIMIZE FOR`. En SQL Server 2019+ algunas **UDF escalares** pueden **inlinarse**, reduciendo su sobrecarga. Para volúmenes altos, preferir enfoques **set-based**.
 
-Inserciones (Inserts): teoría y aplicación
-- Definición y rol: Las operaciones INSERT agregan filas nuevas a una tabla y son básicas para la persistencia de datos en OLTP. Aunque funcionalmente simples, las inserciones interaccionan con restricciones (FK, UQ), triggers, índices y transacciones, por lo que su impacto en rendimiento e integridad debe analizarse.
-- Set-based vs row-by-row:
-  - Set-based: operar sobre conjuntos (INSERT INTO ... SELECT ... o BULK INSERT) aprovecha optimizaciones del motor, minimiza round-trips y suele ser mucho más eficiente para cargas masivas.
-  - Row-by-row (RBAR — “row by agonizing row”): ejecutar muchas inserciones individuales (por ejemplo, múltiples EXEC de un SP que inserta una fila) introduce overhead por cada llamada (parsing, planificación, contexto de ejecución) y puede reducir rendimiento.
-- Inserciones vía SP vs INSERT directo:
-  - Ventajas de SP: encapsulan validaciones, permiten control transaccional y autorizaciones, y centralizan lógica. Para operaciones unitarias o que requieren validación compleja, el overhead es aceptable.
-  - Desventajas: si el SP está diseñado por fila, puede penalizar en cargas masivas. Mejor diseñar SP set-based o usar Table-Valued Parameters (TVP) para pasar múltiples filas y procesarlas en bloque.
-- Mecanismos para cargas masivas:
-  - Table-Valued Parameters (TVP) y operaciones set-based.
-  - BULK INSERT / bcp / OPENROWSET(BULK ...) para importar grandes volúmenes.
-  - Deshabilitar índices no-clustered temporalmente (si aplica) y reconstruir después para mejorar throughput en import masivo.
-- Integridad y concurrencia:
-  - Validaciones (FK, UQ) ejecutadas por el motor generan lecturas y pueden afectar IO; planificar índices y orden de operaciones.
-  - Aislamiento de transacciones y bloqueos: elegir nivel de aislamiento apropiado (READ COMMITTED por defecto, considerar READ COMMITTED SNAPSHOT o SNAPSHOT para reducir bloqueos de lectura en alta concurrencia).
-- Impacto de triggers y UDF:
-  - Triggers AFTER/INSTEAD pueden añadir lógica y sobrecarga adicional en inserts masivos.
-  - UDF escalares llamadas por fila en una consulta pueden degradar rendimiento; considerar funciones de tabla o incorporar la lógica en la consulta/consulta derivada.
-- Medición y buenas prácticas:
-  - Medir con SET STATISTICS IO/TIME y analizar planes de ejecución.
-  - Para pruebas reproducibles comparar: (a) INSERT set-based directo, (b) INSERT mediante SP set-based o TVP, (c) múltiples EXEC de SP por fila — y registrar LReads, CPU y elapsed time.
-  - Documentar el balance entre la necesidad de validación centralizada (calidad) y la eficiencia en throughput (rendimiento).
+### Inserciones (INSERT) — teoría y aplicación
 
+- **Definición y rol.** INSERT añade filas y dispara validaciones del motor (FK, UNIQUE), posibles **triggers** y mantenimiento de **índices**; todo ello afecta IO y tiempos.
+- **Set-based vs row-by-row (RBAR).**  
+  - **Set-based:** `INSERT ... SELECT ...`, `MERGE`, **TVP**, **BULK INSERT**; minimizan round-trips y aprovechan el optimizador.  
+  - **RBAR:** múltiples `EXEC` por fila añaden overhead (cambio de contexto, invocación y plan) y escalan peor.
+- **Vía SP vs INSERT directo.**  
+  - **SP:** encapsulan validaciones, transacciones y permisos; el pequeño overhead por llamada es aceptable en operaciones unitarias/oltp con reglas.  
+  - **Masivo:** evitar SP “por fila”; diseñar **SP set-based** o usar **Table-Valued Parameters (TVP)** para procesar en bloque.
+- **Mecanismos de carga masiva.**  
+  - **TVP** y operaciones set-based; **BULK INSERT / bcp / OPENROWSET(BULK ...)**.  
+  - Valorar **deshabilitar/reconstruir índices nonclustered** en cargas gigantes y ajustar **recovery model** (SIMPLE/BULK_LOGGED) si la política lo permite.
+- **Integridad y concurrencia.**  
+  - FKs/UQ generan lecturas y bloqueos; planificar **índices de soporte** y orden de operaciones.  
+  - Niveles de aislamiento: por defecto **READ COMMITTED**; considerar **READ COMMITTED SNAPSHOT/SNAPSHOT** para reducir bloqueos de lectura (costo: `tempdb`).
+- **Impacto de triggers y UDF.**  
+  - Triggers `AFTER/INSTEAD OF` agregan lógica y costo en lotes grandes.  
+  - UDF escalares por fila pueden degradar; preferir **iTVF** o reescribir en consultas set-based cuando el volumen es alto.
+- **Medición y buenas prácticas.**  
+  - Medir con `SET STATISTICS IO/TIME` y analizar planes (seek vs scan, key lookups, cardinalidad).  
+  - Comparar: (a) INSERT set-based directo, (b) INSERT set-based vía SP/TVP, (c) múltiples `EXEC` por fila; registrar **LReads, CPU, elapsed**.  
+  - Documentar el trade-off entre **validación centralizada** (calidad/seguridad) y **throughput** (rendimiento).
 
 
 ## 3. Implementación de Procedimientos Almacenados (≥3)
