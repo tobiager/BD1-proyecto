@@ -1,18 +1,50 @@
-# Informe: Implementación de Procedimientos y Funciones
+# Informe: Implementación de Procedimientos Almacenados (SP) y Funciones Definidas por el Usuario (UDF)
+
+
+### Resumen ejecutivo  
+Este documento describe el diseño, implementación y pruebas de procedimientos almacenados (SP) y funciones definidas por el usuario (UDF) para la base de datos `tribuneros_bdi`. Se justifica su uso, se explican decisiones de diseño y se documentan pruebas reproducibles que comparan inserciones directas vs inserciones a través de SP. Los scripts fuente están disponibles en `script/tema1-procs-funciones`.
 
 ## 1. Introducción
 
-Este informe detalla la implementación de procedimientos almacenados (SP) y funciones definidas por el usuario (UDF) en la base de datos `tribuneros_bdi`. El objetivo es encapsular la lógica de negocio, mejorar la seguridad, optimizar el rendimiento y facilitar la reutilización de código.
-
-Se han desarrollado SPs para las operaciones CRUD (Crear, Leer, Actualizar, Borrar) sobre la tabla `opiniones` y funciones escalares para realizar cálculos y formatear datos relevantes del dominio.
+Las bases de datos relacionales modernas requieren mecanismos para encapsular lógica de negocio, validar integridad y mejorar la mantenibilidad. Procedimientos y funciones almacenadas permiten centralizar reglas, reducir errores por duplicación de lógica y, en muchos escenarios, mejorar la seguridad y la trazabilidad de cambios. Este informe presenta una implementación práctica aplicada al dominio de opiniones sobre partidos deportivos y evalúa el coste/beneficio de usar SP frente a instrucciones SQL directas para inserciones.
 
 
-## 2. Procedimientos Almacenados
+## 2. Marco teórico (sintético y aplicado)
 
-Los procedimientos almacenados son bloques de código SQL precompilados que se guardan en la base de datos. Ofrecen ventajas como:
-- **Seguridad:** Permiten a los usuarios ejecutar operaciones complejas sin darles permisos directos sobre las tablas.
-- **Rendimiento:** El plan de ejecución se almacena en caché, reduciendo el tiempo de compilación en llamadas sucesivas.
-- **Abstracción:** Ocultan la complejidad de las tablas subyacentes y centralizan la lógica de negocio.
+- Procedimientos almacenados (SP): son rutinas precompiladas en el motor de la base de datos que ejecutan operaciones (posiblemente con efectos secundarios). Ventajas: encapsulación, reutilización, control de permisos, posibilidad de ejecutar lógica transaccional. (Ver: Microsoft Docs sobre Stored Procedures)  
+  Aplicado: se usan para insertar, actualizar y borrar opiniones con validaciones transaccionales (unicidad, FK, permisos por usuario).
+
+- Funciones definidas por el usuario (UDF): rutinas que devuelven un valor (escalares) o una tabla. No pueden, en general, realizar efectos secundarios. Ventajas: se pueden usar en consultas SELECT, vistas y expresar cálculos reutilizables. (Ver: Microsoft Docs sobre User-Defined Functions)  
+  Aplicado: funciones para obtener el nombre de usuario, calcular puntajes promedio y formatear resultados para presentación en consultas.
+
+- Consideraciones de rendimiento: SP y UDF pueden afectar planes de ejecución y caché de planes. Para operaciones masivas, las operaciones "set-based" son preferibles a los llamados por fila. (Ver comparativa: SQLShack y W3Schools para conceptos básicos)
+
+Inserciones (Inserts): teoría y aplicación
+- Definición y rol: Las operaciones INSERT agregan filas nuevas a una tabla y son básicas para la persistencia de datos en OLTP. Aunque funcionalmente simples, las inserciones interaccionan con restricciones (FK, UQ), triggers, índices y transacciones, por lo que su impacto en rendimiento e integridad debe analizarse.
+- Set-based vs row-by-row:
+  - Set-based: operar sobre conjuntos (INSERT INTO ... SELECT ... o BULK INSERT) aprovecha optimizaciones del motor, minimiza round-trips y suele ser mucho más eficiente para cargas masivas.
+  - Row-by-row (RBAR — “row by agonizing row”): ejecutar muchas inserciones individuales (por ejemplo, múltiples EXEC de un SP que inserta una fila) introduce overhead por cada llamada (parsing, planificación, contexto de ejecución) y puede reducir rendimiento.
+- Inserciones vía SP vs INSERT directo:
+  - Ventajas de SP: encapsulan validaciones, permiten control transaccional y autorizaciones, y centralizan lógica. Para operaciones unitarias o que requieren validación compleja, el overhead es aceptable.
+  - Desventajas: si el SP está diseñado por fila, puede penalizar en cargas masivas. Mejor diseñar SP set-based o usar Table-Valued Parameters (TVP) para pasar múltiples filas y procesarlas en bloque.
+- Mecanismos para cargas masivas:
+  - Table-Valued Parameters (TVP) y operaciones set-based.
+  - BULK INSERT / bcp / OPENROWSET(BULK ...) para importar grandes volúmenes.
+  - Deshabilitar índices no-clustered temporalmente (si aplica) y reconstruir después para mejorar throughput en import masivo.
+- Integridad y concurrencia:
+  - Validaciones (FK, UQ) ejecutadas por el motor generan lecturas y pueden afectar IO; planificar índices y orden de operaciones.
+  - Aislamiento de transacciones y bloqueos: elegir nivel de aislamiento apropiado (READ COMMITTED por defecto, considerar READ COMMITTED SNAPSHOT o SNAPSHOT para reducir bloqueos de lectura en alta concurrencia).
+- Impacto de triggers y UDF:
+  - Triggers AFTER/INSTEAD pueden añadir lógica y sobrecarga adicional en inserts masivos.
+  - UDF escalares llamadas por fila en una consulta pueden degradar rendimiento; considerar funciones de tabla o incorporar la lógica en la consulta/consulta derivada.
+- Medición y buenas prácticas:
+  - Medir con SET STATISTICS IO/TIME y analizar planes de ejecución.
+  - Para pruebas reproducibles comparar: (a) INSERT set-based directo, (b) INSERT mediante SP set-based o TVP, (c) múltiples EXEC de SP por fila — y registrar LReads, CPU y elapsed time.
+  - Documentar el balance entre la necesidad de validación centralizada (calidad) y la eficiencia en throughput (rendimiento).
+
+
+
+## 3. Implementación de Procedimientos Almacenados (≥3)
 
 Se implementaron los siguientes procedimientos para la tabla `opiniones`:
 
@@ -69,7 +101,7 @@ EXEC dbo.sp_Borrar_Opinion
 ![Procedimientos almacenados](/assets/tema1-procs-funciones/06_pruebas_procedimientos.png)  
 
 
-## 3. Funciones Definidas por el Usuario (UDF)
+## 4. Implementación de Funciones Definidas por el Usuario (UDF)
 
 Las funciones son rutinas que aceptan parámetros, realizan una acción y devuelven un resultado. A diferencia de los procedimientos, las funciones **deben devolver un valor** y pueden ser utilizadas directamente en sentencias `SELECT`.
 
@@ -149,4 +181,19 @@ Con `SET STATISTICS IO ON; SET STATISTICS TIME ON;` en SSMS.
 
 ## 5. Conclusión
 
-La incorporación de procedimientos almacenados y funciones es un paso fundamental para la madurez del proyecto. Proporciona una capa de abstracción robusta que protege la integridad de los datos y simplifica el desarrollo de la capa de aplicación, al tiempo que ofrece mecanismos para optimizar consultas complejas.
+- SP y UDF aportan una capa de abstracción y control que mejora la calidad de los datos y la seguridad de la aplicación.  
+- El coste de IO observado en pruebas pequeñas puede ser comparable entre inserciones directas y vía SP; el SP introduce una sobrecarga temporal por ejecución individual, relevancia según la escala.  
+- Para producción: usar SP para encapsular lógica crítica; diseñar SP set-based o TVP para cargas masivas.  
+
+
+## 6. Referencias (y uso específico)
+
+- Microsoft Docs — Stored Procedures (SQL Server): https://learn.microsoft.com/es-es/sql/relational-databases/stored-procedures/stored-procedures-database-engine?view=sql-server-ver17  
+  - Se usó para: patrones de creación, permisos y comportamiento del motor con SP.  
+- Microsoft Docs — User-Defined Functions (SQL Server): https://learn.microsoft.com/es-es/sql/relational-databases/user-defined-functions/user-defined-functions?view=sql-server-ver17  
+  - Se usó para: límites y recomendaciones sobre UDF, opciones de binding y rendimiento.  
+- SQLShack — Funciones frente a Procedimientos Almacenados en SQL Server: https://www.sqlshack.com/es/funciones-frente-a-los-procedimientos-almacenados-en-sql-server/  
+  - Se usó para: discusión práctica de cuándo elegir SP vs UDF.  
+- W3Schools — Stored Procedures (introducción): https://www.w3schools.com/sql/sql_stored_procedures.asp  
+  - Se usó para: ejemplos introductorios y sintaxis básica.
+
