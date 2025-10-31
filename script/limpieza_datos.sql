@@ -12,7 +12,7 @@ GO
 USE tribuneros_bdi;
 GO
 
-PRINT 'Iniciando limpieza de datos...';
+PRINT N'Iniciando limpieza de datos...';
 
 -- La eliminación se hace en orden inverso a la creación para respetar las FK.
 DELETE FROM dbo.recordatorios;
@@ -30,5 +30,5 @@ DELETE FROM dbo.ligas;
 DELETE FROM dbo.perfiles;
 DELETE FROM dbo.usuarios;
 
-PRINT 'Todas las tablas han sido limpiadas.';
+PRINT N'Todas las tablas han sido limpiadas.';
 GO

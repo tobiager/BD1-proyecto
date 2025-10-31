@@ -1,26 +1,26 @@
 
-SELECT 'Usuarios' AS tabla, COUNT(*) AS filas FROM usuarios
+SELECT N'Usuarios' AS tabla, COUNT(*) AS filas FROM usuarios
 UNION ALL
-SELECT 'Ligas', COUNT(*) FROM ligas
+SELECT N'Ligas', COUNT(*) FROM ligas
 UNION ALL
-SELECT 'Equipos', COUNT(*) FROM equipos
+SELECT N'Equipos', COUNT(*) FROM equipos
 UNION ALL
-SELECT 'Partidos', COUNT(*) FROM partidos
+SELECT N'Partidos', COUNT(*) FROM partidos
 UNION ALL
-SELECT 'Calificaciones', COUNT(*) FROM calificaciones
+SELECT N'Calificaciones', COUNT(*) FROM calificaciones
 UNION ALL
-SELECT 'Opiniones', COUNT(*) FROM opiniones
+SELECT N'Opiniones', COUNT(*) FROM opiniones
 UNION ALL
-SELECT 'Favoritos', COUNT(*) FROM favoritos
+SELECT N'Favoritos', COUNT(*) FROM favoritos
 UNION ALL
-SELECT 'Visualizaciones', COUNT(*) FROM visualizaciones
+SELECT N'Visualizaciones', COUNT(*) FROM visualizaciones
 UNION ALL
-SELECT 'Seguimiento_Equipos', COUNT(*) FROM seguimiento_equipos
+SELECT N'Seguimiento_Equipos', COUNT(*) FROM seguimiento_equipos
 UNION ALL
-SELECT 'Seguimiento_Ligas', COUNT(*) FROM seguimiento_ligas
+SELECT N'Seguimiento_Ligas', COUNT(*) FROM seguimiento_ligas
 UNION ALL
-SELECT 'Seguimiento_Usuarios', COUNT(*) FROM seguimiento_usuarios
+SELECT N'Seguimiento_Usuarios', COUNT(*) FROM seguimiento_usuarios
 UNION ALL
-SELECT 'Recordatorios', COUNT(*) FROM recordatorios
+SELECT N'Recordatorios', COUNT(*) FROM recordatorios
 UNION ALL
-SELECT 'Partidos_Destacados', COUNT(*) FROM partidos_destacados;
+SELECT N'Partidos_Destacados', COUNT(*) FROM partidos_destacados;
