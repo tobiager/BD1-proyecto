@@ -1,86 +1,123 @@
 -- =================================================================
 -- TEMA 1: PROCEDIMIENTOS Y FUNCIONES
--- 06_pruebas_procedimientos.sql
---
--- Script para probar el ciclo de vida CRUD de una opinión
--- utilizando los procedimientos almacenados.
+-- 06_pruebas_procedimientos.sql 
+-- Prueba CRUD completa usando los procedimientos adaptados al nuevo esquema.
+-- Importante:
+--  - Ejecutar después de carga_inicial.sql (crea usuarios, partidos, equipos, etc).
 -- =================================================================
 USE tribuneros_bdi;
 GO
 
-PRINT '-----------------------------------------------------'
-PRINT '--- INICIO: Pruebas de Procedimientos CRUD ---'
-PRINT '-----------------------------------------------------'
-GO
+SET NOCOUNT ON;
+PRINT '-----------------------------------------------------';
+PRINT '--- INICIO: Pruebas de Procedimientos CRUD ---';
+PRINT '-----------------------------------------------------';
 
--- Declaramos variables para la prueba
-DECLARE @opinion_id_prueba INT;
-DECLARE @usuario_prueba CHAR(36) = '33333333-3333-3333-3333-333333333333'; -- Usuario 'ana.ferro'
-DECLARE @partido_prueba INT = 2; -- Partido: Man City vs Man United
+-- Variables de prueba (usar usuarios/partidos creados en carga_inicial.sql)
+DECLARE @opinion_id_prueba INT = NULL;
+DECLARE @usuario_prueba INT = 2; -- usuario 'ana.ferro' según carga_inicial.sql
+DECLARE @partido_prueba INT = 2; -- partido de ejemplo
+DECLARE @obtenida_id INT = NULL;
+DECLARE @id_a_borrar INT = NULL;
 
--- Usaremos una transacción para poder revertir los cambios al final si queremos
+-- Usamos una única transacción para las 3 operaciones y la revertimos al final
 BEGIN TRAN;
-
--- 1. INSERTAR una nueva opinión
-PRINT '--- 1. Intentando INSERTAR una nueva opinión para el usuario ''ana.ferro'' ---';
 BEGIN TRY
+    -------------------------------------------------------------
+    -- 1) INSERTAR una nueva opinión
+    -------------------------------------------------------------
+    PRINT '--- 1. Intentando INSERTAR una nueva opinión ---';
+
     EXEC dbo.sp_Insertar_Opinion
         @partido_id = @partido_prueba,
         @usuario_id = @usuario_prueba,
-        @titulo = 'Derby de Manchester',
-        @cuerpo = 'Un partido muy táctico, el City dominó la posesión.',
+        @titulo = N'Derby de Manchester (test)',
+        @cuerpo = N'Un partido muy táctico, el City dominó la posesión.',
         @publica = 1,
         @tiene_spoilers = 0,
         @opinion_id = @opinion_id_prueba OUTPUT;
 
-    PRINT '-> Opinión insertada con éxito. Nuevo ID: ' + CAST(@opinion_id_prueba AS VARCHAR);
+    PRINT '-> Opinión insertada con éxito. Nuevo ID: ' + CAST(@opinion_id_prueba AS VARCHAR(20));
 
-    -- Verificamos que se haya insertado
+    -- Mostrar la fila recién insertada
     SELECT * FROM dbo.opiniones WHERE id = @opinion_id_prueba;
+
+    -------------------------------------------------------------
+    -- 2) MODIFICAR la opinión recién creada
+    -------------------------------------------------------------
+    PRINT '--- 2. Intentando MODIFICAR la opinión recién creada ---';
+
+    -- Obtenemos el id de la opinión insertada (por seguridad, si no vino por OUTPUT)
+    IF @opinion_id_prueba IS NOT NULL
+        SET @obtenida_id = @opinion_id_prueba;
+    ELSE
+        SELECT TOP 1 @obtenida_id = id FROM dbo.opiniones WHERE usuario_id = @usuario_prueba AND partido_id = @partido_prueba ORDER BY creado_en DESC;
+
+    IF @obtenida_id IS NOT NULL
+    BEGIN
+        EXEC dbo.sp_Modificar_Opinion
+            @opinion_id = @obtenida_id,
+            @usuario_id = @usuario_prueba,
+            @titulo = N'Derby de Manchester (Editado)',
+            @cuerpo = N'Edición de prueba: mejor detalle del partido.',
+            @publica = 1,
+            @tiene_spoilers = 1;
+
+        PRINT '-> Opinión modificada con éxito. ID: ' + CAST(@obtenida_id AS VARCHAR(20));
+        SELECT * FROM dbo.opiniones WHERE id = @obtenida_id;
+    END
+    ELSE
+    BEGIN
+        PRINT '-> No se encontró la opinión para modificar.';
+    END
+
+    -------------------------------------------------------------
+    -- 3) BORRAR la opinión
+    -------------------------------------------------------------
+    PRINT '--- 3. Intentando BORRAR la opinión ---';
+
+    -- Determinamos el id a borrar (la misma creada/modificada)
+    IF @obtenida_id IS NOT NULL
+        SET @id_a_borrar = @obtenida_id;
+    ELSE
+        SELECT TOP 1 @id_a_borrar = id FROM dbo.opiniones WHERE usuario_id = @usuario_prueba AND partido_id = @partido_prueba ORDER BY creado_en DESC;
+
+    IF @id_a_borrar IS NOT NULL
+    BEGIN
+        EXEC dbo.sp_Borrar_Opinion @opinion_id = @id_a_borrar, @usuario_id = @usuario_prueba;
+        PRINT '-> Procedimiento de borrado ejecutado. ID borrado: ' + CAST(@id_a_borrar AS VARCHAR(20));
+
+        IF NOT EXISTS (SELECT 1 FROM dbo.opiniones WHERE id = @id_a_borrar)
+            PRINT '-> Verificación: La opinión fue borrada correctamente.';
+        ELSE
+            PRINT '-> Verificación: ERROR, la opinión todavía existe.';
+    END
+    ELSE
+    BEGIN
+        PRINT '-> No se encontró la opinión para borrar.';
+    END
+
+    -- Terminamos bien: revertimos para no dejar datos de prueba
+    PRINT '--- Revirtiendo transacción de prueba (ROLLBACK) ---';
+    ROLLBACK TRAN;
+
+    PRINT '--- FIN: Pruebas completadas (cambios revertidos). ---';
 END TRY
 BEGIN CATCH
-    PRINT '-> ERROR al insertar: ' + ERROR_MESSAGE();
-END CATCH
-GO
+    DECLARE @err_msg NVARCHAR(4000) = ERROR_MESSAGE();
+    DECLARE @err_sev INT = ERROR_SEVERITY();
+    DECLARE @err_state INT = ERROR_STATE();
 
--- 2. MODIFICAR la opinión recién creada
-PRINT '--- 2. Intentando MODIFICAR la opinión recién creada ---';
-DECLARE @opinion_id_prueba INT = (SELECT id FROM dbo.opiniones WHERE usuario_id = '33333333-3333-3333-3333-333333333333' AND partido_id = 2);
-DECLARE @usuario_prueba CHAR(36) = '33333333-3333-3333-3333-333333333333';
+    PRINT '-> ERROR detectado durante las pruebas: ' + ISNULL(@err_msg, '(sin mensaje)');
+    -- Si hay una transacción abierta, revertimos
+    IF XACT_STATE() <> 0
+    BEGIN
+        ROLLBACK TRAN;
+        PRINT '-> Transacción revertida por error.';
+    END
 
-BEGIN TRY
-    EXEC dbo.sp_Modificar_Opinion
-        @opinion_id = @opinion_id_prueba,
-        @usuario_id = @usuario_prueba,
-        @titulo = 'Derby de Manchester (Editado)',
-        @cuerpo = 'Un partido muy táctico, el City dominó la posesión. El resultado fue justo.',
-        @publica = 1,
-        @tiene_spoilers = 1;
+    -- Re-lanzamos el error para visibilidad si se desea (opcional)
+    -- THROW;
+END CATCH;
 
-    PRINT '-> Opinión modificada con éxito.';
-    -- Verificamos la modificación
-    SELECT * FROM dbo.opiniones WHERE id = @opinion_id_prueba;
-END TRY
-BEGIN CATCH
-    PRINT '-> ERROR al modificar: ' + ERROR_MESSAGE();
-END CATCH
-GO
-
--- 3. BORRAR la opinión
-PRINT '--- 3. Intentando BORRAR la opinión ---';
-DECLARE @opinion_id_prueba INT = (SELECT id FROM dbo.opiniones WHERE usuario_id = '33333333-3333-3333-3333-333333333333' AND partido_id = 2);
-DECLARE @usuario_prueba CHAR(36) = '33333333-3333-3333-3333-333333333333';
-
-EXEC dbo.sp_Borrar_Opinion @opinion_id = @opinion_id_prueba, @usuario_id = @usuario_prueba;
-PRINT '-> Procedimiento de borrado ejecutado.';
-
--- Verificamos que ya no exista
-IF NOT EXISTS (SELECT 1 FROM dbo.opiniones WHERE id = @opinion_id_prueba)
-    PRINT '-> Verificación: La opinión fue borrada correctamente.';
-ELSE
-    PRINT '-> Verificación: ERROR, la opinión todavía existe.';
-
--- Revertimos la transacción para no dejar datos de prueba en la BD
-ROLLBACK TRAN;
-PRINT '--- Cambios revertidos. La base de datos está en su estado original. ---';
 GO

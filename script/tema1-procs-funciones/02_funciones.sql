@@ -1,18 +1,14 @@
 -- =================================================================
 -- TEMA 1: PROCEDIMIENTOS Y FUNCIONES
--- 02_funciones.sql
---
--- Implementación de funciones escalares para cálculos y
--- formato de datos.
+-- 02_funciones.sql 
 -- =================================================================
 USE tribuneros_bdi;
 GO
 
 -------------------------------------------------------------------
 -- 1. Función para obtener el nombre de usuario a partir de su ID
---    Útil para no tener que hacer JOIN con la tabla de perfiles.
 -------------------------------------------------------------------
-CREATE OR ALTER FUNCTION dbo.fn_ObtenerNombreUsuario(@usuario_id CHAR(36))
+CREATE OR ALTER FUNCTION dbo.fn_ObtenerNombreUsuario(@usuario_id INT)
 RETURNS VARCHAR(30)
 AS
 BEGIN
@@ -28,7 +24,6 @@ GO
 
 -------------------------------------------------------------------
 -- 2. Función para calcular el puntaje promedio de un partido
---    Permite obtener rápidamente la valoración de la comunidad.
 -------------------------------------------------------------------
 CREATE OR ALTER FUNCTION dbo.fn_CalcularPuntajePromedioPartido(@partido_id INT)
 RETURNS DECIMAL(3, 2)
@@ -46,7 +41,6 @@ GO
 
 -------------------------------------------------------------------
 -- 3. Función para formatear el resultado de un partido
---    Devuelve un string "GolesLocal - GolesVisitante" o "vs" si no se jugó.
 -------------------------------------------------------------------
 CREATE OR ALTER FUNCTION dbo.fn_FormatearResultadoPartido(@partido_id INT)
 RETURNS VARCHAR(20)

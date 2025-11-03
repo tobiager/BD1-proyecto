@@ -43,7 +43,7 @@ Se implementaron los siguientes procedimientos para la tabla `opiniones`:
 DECLARE @nueva_opinion_id INT;
 EXEC dbo.sp_Insertar_Opinion
     @partido_id = 1,
-    @usuario_id = '44444444-4444-4444-4444-444444444444',
+    @usuario_id = 2, -- ID de 'ana.ferro'
     @titulo = 'Visto desde la neutralidad',
     @cuerpo = 'Un partido que quedará en la historia del fútbol sudamericano.',
     @publica = 1,
@@ -61,8 +61,8 @@ SELECT * FROM dbo.opiniones WHERE id = @nueva_opinion_id;
 **Ejemplo de uso:**
 ```sql
 EXEC dbo.sp_Modificar_Opinion
-    @opinion_id = 1, -- ID de la opinión de 'tobiager'
-    @usuario_id = '11111111-1111-1111-1111-111111111111',
+    @opinion_id = 1, -- ID de la opinión creada por 'tobiager'
+    @usuario_id = 1,  -- ID de 'tobiager'
     @titulo = 'La gloria eterna en Madrid (editado)',
     @cuerpo = 'Partidazo histórico. River campeón con autoridad. 3-1 y a casa. Inolvidable.',
     @publica = 1,
@@ -76,10 +76,10 @@ EXEC dbo.sp_Modificar_Opinion
 
 **Ejemplo de uso:**
 ```sql
--- Suponiendo que la opinión con ID 101 fue creada por el usuario '1111...'
+-- Suponiendo que la opinión con ID 101 fue creada por el usuario con ID 1
 EXEC dbo.sp_Borrar_Opinion
     @opinion_id = 101,
-    @usuario_id = '11111111-1111-1111-1111-111111111111';
+    @usuario_id = 1;
 ```
 
 ### Procedimientos de prueba
@@ -181,4 +181,3 @@ Con `SET STATISTICS IO ON; SET STATISTICS TIME ON;` en SSMS.
   - Se usó para: discusión práctica de cuándo elegir SP vs UDF.  
 - W3Schools — Stored Procedures (introducción): https://www.w3schools.com/sql/sql_stored_procedures.asp  
   - Se usó para: ejemplos introductorios y sintaxis básica.
-
