@@ -138,7 +138,7 @@ ORDER BY p.liga_id, anio;
 - Plan: `Clustered Index Scan (Clustered)` sobre `dbo.partidos`, seguido de `Sort` y `Stream Aggregate`.  
 - El motor recorre toda la tabla y agrupa manualmente.  
 
-![Plan Bloque A](assets/tema4-vistas/Plan_BloqueA.png)
+![Plan Bloque A](/assets/tema4-vistas/Plan_BloqueA.png)
 
 ---
 
@@ -152,7 +152,7 @@ ORDER BY v.liga_id, v.anio;
 - Plan: `Clustered Index Scan (ViewClustered)` sobre `IX_vw_partidos_por_liga_y_anio`.  
 - No existen operaciones de agregación: lee el resultado ya materializado.  
 
-![Plan Bloque B](assets\tema4-vistas\Plan_BloqueB.png)
+![Plan Bloque B](/assets/tema4-vistas/Plan_BloqueB.png)
 
 ---
 
@@ -168,7 +168,7 @@ En la comparación de planes se observa:
 | Costo estimado | más alto | más bajo |
 | Lecturas lógicas (Statistics IO) | > tabla base completa | menor (usa índice materializado) |
 
-![Comparación de planes](assets/tema4-vistas/ComparacionAvsB.png)
+![Comparación de planes](/assets/tema4-vistas/ComparacionAvsB.png)
 
 ### d) Observaciones del comportamiento del optimizador
 Una vez creada la vista indexada, SQL Server es capaz de **reutilizarla automáticamente** incluso si la consulta se escribe sobre la tabla base.  
