@@ -29,6 +29,7 @@
 | Documento | Descripción |
 |---|---|
 | [`docs/tema1-informe.md`](./docs/tema1-informe.md) | Informe del **Tema 1: Procedimientos y Funciones** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema4-informe.md`](./docs/tema4-informe.md) | Informe del **Tema 4: Vistas y Vistas Indexadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/diccionario_datos.md`](./docs/diccionario_datos.md) | Diccionario de datos del esquema `tribuneros_bdi`. |
 | [`docs/Proyecto_Integrador_Grupo39.pdf`](./docs/Proyecto_Integrador_Grupo39.pdf) | **Consolidado del informe académico** (Cap. I–VI). Falta completar contenido por tema. |
 
@@ -41,25 +42,22 @@
 ├─ assets/
 │  ├─ badge-bdi.png
 │  ├─ der-tribuneros.png
-│  └─ tema1-procs-funciones/        # recursos del tema 1
+│  ├─ tema1-procs-funciones/        # recursos del tema 1
+│  └─ tema4-vistas/        # recursos del tema 4
 ├─ docs/
 │  ├─ diccionario_datos.md
 │  ├─ Proyecto_Integrador_Grupo39.pdf
-│  └─ tema1-informe.md
+│  ├─ tema1-informe.md
+│  └─ tema4-informe.md
 ├─ script/
 │  ├─ creacion.sql                   # DDL: esquema, PK/FK, constraints, índices base
 │  ├─ carga_inicial.sql              # datos representativos
 │  ├─ verificacion.sql               # controles de integridad y de negocio
 │  ├─ conteo.sql                     # métricas y conteos rápidos
 │  ├─ limpieza_datos.sql             # utilitario de limpieza básica (dataset)
-│  └─ tema1-procs-funciones/
-│     ├─ 01_procedimientos.sql
-│     ├─ 02_funciones.sql
-│     ├─ 03_datos_insert_directo.sql
-│     ├─ 04_datos_insert_via_sp.sql
-│     ├─ 05_pruebas_funciones.sql
-│     ├─ 06_pruebas_procedimientos.sql
-│     └─ 07_limpieza_total.sql       # rollback de datos de pruebas del Tema 1
+│  ├─ tema1-procs-funciones/
+│  ├─ tema2-indices/
+│  └─ tema4-vistas/
 ├─ LICENSE
 └─ README.md                         # este archivo
 ```
