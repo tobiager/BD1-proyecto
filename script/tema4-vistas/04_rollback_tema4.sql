@@ -1,6 +1,5 @@
 -- =========================================================
 -- Tema 4: Rollback / limpieza - Tribuneros
--- Autor: [Tu Nombre Aquí]
 -- Fecha: 2025-11-04
 -- Descripción:
 --   Revierte los cambios introducidos en el Tema 4 (vistas, índices, datos de prueba).

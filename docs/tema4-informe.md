@@ -1,6 +1,5 @@
 # Tema 4: Vistas y vistas indexadas en SQL Server  
-**Proyecto integrador:** *Tribuneros*  
-**Fecha:** 2025-11-04  
+
 
 ---
 
