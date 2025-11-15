@@ -39,15 +39,17 @@ BEGIN
     VALUES (@usuario_id, @nombre_usuario, @nombre_mostrar, @biografia, SYSDATETIME());
 
     COMMIT TRANSACTION;
-    PRINT 'Usuario registrado exitosamente: ' + @nombre_usuario;
 
+    PRINT 'Usuario registrado exitosamente: ' + @nombre_usuario;
   END TRY
+
   BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
 
-    SELECT @ErrorMessage = ERROR_MESSAGE(),
-           @ErrorSeverity = ERROR_SEVERITY(),
-           @ErrorState = ERROR_STATE();
+    SELECT
+      @ErrorMessage = ERROR_MESSAGE(),
+      @ErrorSeverity = ERROR_SEVERITY(),
+      @ErrorState = ERROR_STATE();
 
     RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
   END CATCH
@@ -77,7 +79,9 @@ BEGIN
   SET XACT_ABORT ON;
 
   DECLARE @estado_partido VARCHAR(15);
-  DECLARE @ErrorMsg NVARCHAR(500);
+  DECLARE @ErrorMessage NVARCHAR(4000);
+  DECLARE @ErrorSeverity INT;
+  DECLARE @ErrorState INT;
 
   BEGIN TRY
     BEGIN TRANSACTION;
@@ -106,15 +110,17 @@ BEGIN
     VALUES (@opinion_id, @partido_id, @usuario_id, @titulo, @cuerpo, 1, @tiene_spoilers, SYSDATETIME());
 
     COMMIT TRANSACTION;
-
-    PRINT 'Calificación y opinión registradas exitosamente.';
-    PRINT 'ID Calificación: ' + CAST(@calificacion_id AS VARCHAR);
-    PRINT 'ID Opinión: ' + CAST(@opinion_id AS VARCHAR);
-
   END TRY
+
   BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-    RAISERROR(ERROR_MESSAGE(), ERROR_SEVERITY(), ERROR_STATE());
+
+    SELECT
+      @ErrorMessage = ERROR_MESSAGE(),
+      @ErrorSeverity = ERROR_SEVERITY(),
+      @ErrorState = ERROR_STATE();
+
+    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
   END CATCH
 END;
 GO
@@ -141,6 +147,10 @@ BEGIN
   DECLARE @recordatorio_id INT;
   DECLARE @contador INT = 0;
 
+  DECLARE @ErrorMessage NVARCHAR(4000);
+  DECLARE @ErrorSeverity INT;
+  DECLARE @ErrorState INT;
+
   BEGIN TRY
     BEGIN TRANSACTION TxnPrincipal;
 
@@ -149,11 +159,9 @@ BEGIN
     INSERT INTO dbo.seguimiento_equipos (id, usuario_id, equipo_id, creado_en)
     VALUES (@seguimiento_id, @usuario_id, @equipo_id, SYSDATETIME());
 
-    PRINT 'Seguimiento agregado para equipo ID: ' + CAST(@equipo_id AS VARCHAR);
-
     SAVE TRANSACTION SavePointRecordatorios;
 
-    DECLARE cursor_partidos CURSOR FOR
+    DECLARE cursor_partidos CURSOR LOCAL FOR
       SELECT id, fecha_utc
       FROM dbo.partidos
       WHERE (equipo_local = @equipo_id OR equipo_visitante = @equipo_id)
@@ -185,7 +193,7 @@ BEGIN
         PRINT 'Error al crear recordatorio para partido ' + CAST(@partido_id AS VARCHAR) + ': ' + ERROR_MESSAGE();
         ROLLBACK TRANSACTION SavePointRecordatorios;
         SAVE TRANSACTION SavePointRecordatorios;
-      END CATCH
+      END CATCH;
 
       FETCH NEXT FROM cursor_partidos INTO @partido_id, @fecha_partido;
     END
@@ -195,19 +203,24 @@ BEGIN
 
     COMMIT TRANSACTION TxnPrincipal;
 
-    PRINT 'Se crearon ' + CAST(@contador AS VARCHAR) + ' recordatorios para partidos futuros.';
-
+    PRINT 'Recordatorios creados: ' + CAST(@contador AS VARCHAR);
   END TRY
+
   BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION TxnPrincipal;
 
-    IF CURSOR_STATUS('local', 'cursor_partidos') >= 0
+    IF CURSOR_STATUS('local','cursor_partidos') >= 0
     BEGIN
       CLOSE cursor_partidos;
       DEALLOCATE cursor_partidos;
     END
 
-    RAISERROR(ERROR_MESSAGE(), ERROR_SEVERITY(), ERROR_STATE());
+    SELECT
+      @ErrorMessage = ERROR_MESSAGE(),
+      @ErrorSeverity = ERROR_SEVERITY(),
+      @ErrorState = ERROR_STATE();
+
+    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
   END CATCH
 END;
 GO
@@ -232,6 +245,10 @@ BEGIN
   DECLARE @favoritos_copiados INT = 0;
   DECLARE @favoritos_origen INT;
 
+  DECLARE @ErrorMessage NVARCHAR(4000);
+  DECLARE @ErrorSeverity INT;
+  DECLARE @ErrorState INT;
+
   BEGIN TRY
     BEGIN TRANSACTION;
 
@@ -250,7 +267,7 @@ BEGIN
 
     IF @favoritos_origen = 0
     BEGIN
-      PRINT 'El usuario origen no tiene favoritos para transferir.';
+      PRINT 'No hay favoritos para transferir.';
       COMMIT TRANSACTION;
       RETURN;
     END
@@ -258,7 +275,6 @@ BEGIN
     IF @sobrescribir = 1
     BEGIN
       DELETE FROM dbo.favoritos WHERE usuario_id = @usuario_destino;
-      PRINT 'Favoritos existentes del usuario destino eliminados.';
     END
 
     INSERT INTO dbo.favoritos (id, partido_id, usuario_id, creado_en)
@@ -280,18 +296,21 @@ BEGIN
 
     COMMIT TRANSACTION;
 
-    PRINT 'Transferencia completada:';
-    PRINT '  - Favoritos en origen: ' + CAST(@favoritos_origen AS VARCHAR);
-    PRINT '  - Favoritos copiados: ' + CAST(@favoritos_copiados AS VARCHAR);
-
+    PRINT 'Transferencia completada.';
   END TRY
+
   BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
-    RAISERROR(ERROR_MESSAGE(), ERROR_SEVERITY(), ERROR_STATE());
+
+    SELECT
+      @ErrorMessage = ERROR_MESSAGE(),
+      @ErrorSeverity = ERROR_SEVERITY(),
+      @ErrorState = ERROR_STATE();
+
+    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
   END CATCH
 END;
 GO
-
 
 PRINT 'Procedimientos transaccionales creados exitosamente.';
 GO
