@@ -282,13 +282,13 @@ Muestra paso a paso cómo cambia el contador de transacciones.
 El Script 03 demuestra una transacción que incluye dos inserciones válidas.
 Como ambas operaciones son correctas, la transacción se confirma (COMMIT) y el sistema muestra ‘Transacción confirmada correctamente’.
 
-<img width="1363" height="640" alt="image" src="https://github.com/user-attachments/assets/tema3-transacciones/03.png" />
+![Prueba exitosa](../assets/tema3-transacciones/03.png)
 
 En esta prueba forzamos un error de duplicidad de clave primaria (insertando dos veces el ID 3001) dentro de una transacción. 
 Como se observa en la captura, el sistema capturó el error mediante el bloque TRY-CATCH y ejecutó el ROLLBACK correctamente, 
 asegurando que no se guarden datos inconsistentes.
 
-<img width="1550" height="432" alt="image" src="https://github.com/user-attachments/assets/tema3-transacciones/04.png" />
+![Prueba de Rollback](../assets/tema3-transacciones/04.png)
 
 ### 5.1 Casos de éxito (03_pruebas_transacciones.sql)
 
