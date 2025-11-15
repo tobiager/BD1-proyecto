@@ -19,6 +19,8 @@ PRINT '-----------------------------------------------------';
 -- Probar consultas optimizadas
 SET STATISTICS TIME ON;
 SET STATISTICS IO ON;
+SET STATISTICS XML ON;  
+GO
 
 PRINT 'Consulta con índice compuesto 1: Partidos finalizados por período';
 SELECT 
@@ -52,6 +54,8 @@ GROUP BY estado;
 
 SET STATISTICS IO OFF;
 SET STATISTICS TIME OFF;
+SET STATISTICS XML OFF;  
+GO
 
 PRINT '=====================================================';
 GO

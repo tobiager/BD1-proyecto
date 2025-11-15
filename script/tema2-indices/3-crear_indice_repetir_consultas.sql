@@ -17,6 +17,8 @@ PRINT '-----------------------------------------------------';
 -- Repetir las mismas consultas CON índice
 SET STATISTICS TIME ON;
 SET STATISTICS IO ON;
+SET STATISTICS XML ON;  
+GO
 
 PRINT 'Consulta 1: Partidos en 2023 (CON índice)';
 SELECT COUNT(*) AS total_partidos_2023
@@ -58,6 +60,8 @@ ORDER BY anio, mes;
 
 SET STATISTICS IO OFF;
 SET STATISTICS TIME OFF;
+SET STATISTICS XML OFF;  
+GO
 
 PRINT '=====================================================';
 GO

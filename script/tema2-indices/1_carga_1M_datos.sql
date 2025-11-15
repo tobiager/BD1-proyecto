@@ -89,3 +89,4 @@ PRINT 'Fin de carga: ' + CAST(@fin_carga AS VARCHAR(30));
 PRINT 'Tiempo de carga SIN índice: ' + CAST(DATEDIFF(SECOND, @inicio_carga, @fin_carga) AS VARCHAR(20)) + ' segundos';
 PRINT '=====================================================';
 GO
+

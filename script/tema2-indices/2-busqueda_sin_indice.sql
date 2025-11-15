@@ -1,12 +1,16 @@
 -- =========================================================
 -- TAREA 2: BÚSQUEDA SIN ÍNDICE Y REGISTRO DE TIEMPOS
 -- =========================================================
+USE tribuneros_bdi;
+GO
 
 PRINT '=== TAREA 2: Consultas SIN índice en fecha ===';
 
 -- Habilitar estadísticas
 SET STATISTICS TIME ON;
 SET STATISTICS IO ON;
+SET STATISTICS XML ON;  
+GO
 
 -- Consulta 1: Búsqueda por período de fecha
 PRINT 'Consulta 1: Partidos en 2023';
@@ -51,6 +55,7 @@ ORDER BY anio, mes;
 
 SET STATISTICS IO OFF;
 SET STATISTICS TIME OFF;
+SET STATISTICS XML OFF; 
 
 PRINT '=====================================================';
 GO
