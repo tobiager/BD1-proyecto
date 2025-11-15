@@ -12,7 +12,7 @@
 
 # BD1 — Proyecto de Estudio e Investigación
 
-**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **ANSI SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
+**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
  
 ## Presentación del proyecto
 - Dominio de aplicación: gestión colaborativa de partidos de fútbol y opiniones de la comunidad.
@@ -29,6 +29,7 @@
 | Documento | Descripción |
 |---|---|
 | [`docs/tema1-informe.md`](./docs/tema1-informe.md) | Informe del **Tema 1: Procedimientos y Funciones** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema3-informe.md`](./docs/tema3-informe.md) | Informe del **Tema 3: Manejo de Transacciones y Transacciones Anidadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/tema4-informe.md`](./docs/tema4-informe.md) | Informe del **Tema 4: Vistas y Vistas Indexadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/diccionario_datos.md`](./docs/diccionario_datos.md) | Diccionario de datos del esquema `tribuneros_bdi`. |
 | [`docs/Proyecto_Integrador_Grupo39.pdf`](./docs/Proyecto_Integrador_Grupo39.pdf) | **Consolidado del informe académico** (Cap. I–VI). Falta completar contenido por tema. |
@@ -43,11 +44,13 @@
 │  ├─ badge-bdi.png
 │  ├─ der-tribuneros.png
 │  ├─ tema1-procs-funciones/        # recursos del tema 1
+│  ├─ tema3-transacciones/        # recursos del tema 3
 │  └─ tema4-vistas/        # recursos del tema 4
 ├─ docs/
 │  ├─ diccionario_datos.md
 │  ├─ Proyecto_Integrador_Grupo39.pdf
 │  ├─ tema1-informe.md
+│  ├─ tema3-informe.md
 │  └─ tema4-informe.md
 ├─ script/
 │  ├─ creacion.sql                   # DDL: esquema, PK/FK, constraints, índices base
@@ -57,6 +60,7 @@
 │  ├─ limpieza_datos.sql             # utilitario de limpieza básica (dataset)
 │  ├─ tema1-procs-funciones/
 │  ├─ tema2-indices/
+│  ├─ tema3-transacciones/
 │  └─ tema4-vistas/
 ├─ LICENSE
 └─ README.md                         # este archivo
