@@ -29,6 +29,7 @@
 | Documento | Descripción |
 |---|---|
 | [`docs/tema1-informe.md`](./docs/tema1-informe.md) | Informe del **Tema 1: Procedimientos y Funciones** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema2-informe.md`](./docs/tema2-informe.md) | Informe del **Tema 2: Optimización de Consultas a Través de Índices** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/tema3-informe.md`](./docs/tema3-informe.md) | Informe del **Tema 3: Manejo de Transacciones y Transacciones Anidadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/tema4-informe.md`](./docs/tema4-informe.md) | Informe del **Tema 4: Vistas y Vistas Indexadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/diccionario_datos.md`](./docs/diccionario_datos.md) | Diccionario de datos del esquema `tribuneros_bdi`. |
@@ -44,12 +45,14 @@
 │  ├─ badge-bdi.png
 │  ├─ der-tribuneros.png
 │  ├─ tema1-procs-funciones/        # recursos del tema 1
+│  ├─ tema2-indices/        # recursos del tema 2
 │  ├─ tema3-transacciones/        # recursos del tema 3
 │  └─ tema4-vistas/        # recursos del tema 4
 ├─ docs/
 │  ├─ diccionario_datos.md
 │  ├─ Proyecto_Integrador_Grupo39.pdf
 │  ├─ tema1-informe.md
+│  ├─ tema2-informe.md
 │  ├─ tema3-informe.md
 │  └─ tema4-informe.md
 ├─ script/
