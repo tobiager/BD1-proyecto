@@ -1,19 +1,38 @@
 -- =========================================================
--- TAREA 4: ÍNDICE COMPUESTO (COVERING INDEX)
+-- TAREA 4: ÍNDICE COMPUESTO (COVERING INDEX) - CORREGIDO
 -- =========================================================
-
 PRINT '=== TAREA 4: Índice compuesto con columnas incluidas ===';
 
--- Eliminar índice simple anterior
-DROP INDEX IX_partidos_fecha ON dbo.partidos;
+-- Eliminar índice simple anterior SI EXISTE
+IF EXISTS (SELECT 1 FROM sys.indexes 
+           WHERE name = 'IX_partidos_fecha' 
+           AND object_id = OBJECT_ID('dbo.partidos'))
+BEGIN
+    PRINT 'Eliminando índice simple anterior...';
+    DROP INDEX IX_partidos_fecha ON dbo.partidos;
+    PRINT 'Índice simple eliminado.';
+END
+ELSE
+BEGIN
+    PRINT 'El índice simple no existe (ya fue eliminado).';
+END
 
--- Crear índice compuesto que incluya las columnas más consultadas
+-- Eliminar índice compuesto SI YA EXISTE
+IF EXISTS (SELECT 1 FROM sys.indexes 
+           WHERE name = 'IX_partidos_fecha_compuesto' 
+           AND object_id = OBJECT_ID('dbo.partidos'))
+BEGIN
+    PRINT 'Eliminando índice compuesto existente...';
+    DROP INDEX IX_partidos_fecha_compuesto ON dbo.partidos;
+    PRINT 'Índice compuesto eliminado.';
+END
+
+-- Crear índice compuesto optimizado
 PRINT 'Creando índice compuesto optimizado...';
 CREATE INDEX IX_partidos_fecha_compuesto 
 ON dbo.partidos(fecha_utc, estado)
 INCLUDE (liga_id, equipo_local, equipo_visitante, goles_local, goles_visitante, estadio);
-
-PRINT 'Índice compuesto creado.';
+PRINT 'Índice compuesto creado exitosamente.';
 PRINT '-----------------------------------------------------';
 
 -- Probar consultas optimizadas

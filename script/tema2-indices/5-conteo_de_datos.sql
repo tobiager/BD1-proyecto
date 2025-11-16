@@ -22,7 +22,9 @@ SELECT 'calificaciones', COUNT(*) FROM dbo.calificaciones
 UNION ALL
 SELECT 'favoritos', COUNT(*) FROM dbo.favoritos
 UNION ALL
-SELECT 'visualizaciones', COUNT(*) FROM dbo.visualizaciones;
+SELECT 'visualizaciones', COUNT(*) FROM dbo.visualizaciones
+UNION ALL
+SELECT 'opiniones', COUNT(*) FROM dbo.opiniones;
 
 -- Ver índices creados en partidos
 SELECT 
