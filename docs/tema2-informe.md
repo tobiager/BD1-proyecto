@@ -1,95 +1,143 @@
-# Informe: Manejo de Transacciones y Transacciones Anidadas
+# Informe: Optimización de Consultas a Través de Índices
 
 ## Resumen ejecutivo
 
-Este documento describe el diseño, implementación y pruebas de procedimientos almacenados que utilizan transacciones explícitas, transacciones anidadas y puntos de guardado (SAVE TRANSACTION) en la base de datos `tribuneros_bdi`. Se justifica el uso de transacciones, se explican las decisiones de diseño y se documentan pruebas que demuestran el comportamiento correcto de commits y rollbacks. Los scripts fuente están disponibles en `script/tema3-transacciones`.
-
----
+Este documento describe el diseño, implementación y pruebas de optimización de consultas a través de índices en la base de datos `tribuneros_bdi`. Se justifica el uso de índices y su eliminación, se explican las decisiones de diseño y se documentan pruebas que demuestran el consumo de tiempo de consultas con y sin índices. Los scripts fuente están disponibles en `script/tema2-indices`.
 
 ## 1. Introducción
 
-Las transacciones son fundamentales para mantener la integridad y consistencia de los datos en bases de datos relacionales. Una transacción agrupa múltiples operaciones en una unidad atómica que se ejecuta completamente o se revierte por completo. Este informe presenta una implementación práctica de transacciones explícitas y anidadas aplicada al dominio de una plataforma de opiniones sobre partidos deportivos.
-
-### 1.1 Objetivos del proyecto
-
-- Implementar procedimientos almacenados con manejo robusto de transacciones
-- Demostrar el uso de transacciones anidadas y puntos de guardado (SAVE TRANSACTION)
-- Validar el comportamiento de COMMIT y ROLLBACK en diferentes escenarios
-- Aplicar mejores prácticas de manejo de errores con TRY/CATCH
-
----
+Piense en un libro corriente: al final del libro hay un índice en el que puede localizar rápidamente la información del libro. El índice es una lista ordenada de palabras clave y, junto a cada palabra clave, hay un conjunto de números de página que redirigen a las páginas en las que aparece cada palabra clave. Este informe presenta el costo de realizar consultas con índices y sin índices en al menos 1 millón de registros, además de mostrar los tipos de índices existentes en SQL Server.
 
 ## 2. Marco teórico
 
-### 2.1 Transacciones en SQL Server
+### 2.1 Índices en SQL Server
 
-Una **transacción** es una secuencia de operaciones que se ejecutan como una sola unidad lógica de trabajo. Las transacciones deben cumplir con las propiedades ACID:
+Un **índice** es una estructura en disco o en memoria asociada con una tabla o vista que acelera la recuperación de filas de la tabla o vista. El diseño de los índices adecuados para una base de datos y su carga de trabajo es un acto de equilibrio complejo entre la velocidad de consulta, el costo de actualización de índices y el costo de almacenamiento. Los índices se pueden agregar, modificar y quitar sin afectar al diseño de la aplicación o el esquema de la base de datos. Por lo tanto, se debe experimentar con índices diferentes. Los tipos de índices que se pueden crear en SQL Server son:
 
-- **Atomicidad**: Todas las operaciones se completan o ninguna se completa
-- **Consistencia**: La base de datos pasa de un estado válido a otro estado válido
-- **Aislamiento**: Las transacciones concurrentes no interfieren entre sí
-- **Durabilidad**: Una vez confirmada, la transacción persiste incluso ante fallos del sistema
-
-### 2.2 Transacciones explícitas
-
-En SQL Server, las transacciones explícitas se controlan mediante:
-
-- `BEGIN TRANSACTION` - Inicia una transacción explícita
-- `COMMIT TRANSACTION` - Confirma todos los cambios realizados
-- `ROLLBACK TRANSACTION` - Revierte todos los cambios realizados
-- `SAVE TRANSACTION` - Crea un punto de guardado dentro de la transacción
-
-### 2.3 Transacciones anidadas y @@TRANCOUNT
-
-SQL Server **no soporta verdaderas transacciones anidadas**. Cuando se ejecuta `BEGIN TRANSACTION` dentro de otra transacción, simplemente incrementa el contador `@@TRANCOUNT`:
+- **Hash**: Con un índice hash, se accede a los datos a través de una tabla hash en memoria. Los índices hash utilizan una cantidad fija de memoria, que es una función del número de cubos.
 
 ```sql
--- @@TRANCOUNT = 0 (sin transacción activa)
-BEGIN TRANSACTION Txn1;  -- @@TRANCOUNT = 1
-  BEGIN TRANSACTION Txn2;  -- @@TRANCOUNT = 2 (no es una transacción real)
-  COMMIT TRANSACTION;      -- @@TRANCOUNT = 1 (solo decrementa)
-COMMIT TRANSACTION;        -- @@TRANCOUNT = 0 (commit real)
+CREATE NONCLUSTERED HASH INDEX IX_MiTabla_ID_Hash
+ON MiTablaOptimized (ID)
+WITH (BUCKET_COUNT = 1000); -- Crea un índice hash en la columna 'ID' de la tabla 'MiTablaOptimized' con 1000 cubos
 ```
 
-**Comportamiento importante:**
-- `COMMIT` solo decrementa `@@TRANCOUNT`
-- Solo el último `COMMIT` (cuando `@@TRANCOUNT` llega a 0) confirma realmente los cambios
-- `ROLLBACK` siempre pone `@@TRANCOUNT` en 0 y revierte **toda** la transacción
+❌ **NO se utiliza en cualquier caso:**
+-  Los índices hash solo se pueden crear en tablas optimizadas para memoria. Significa que su implementación está ligada a la tecnología In-Memory OLTP de SQL Server, diseñada para un rendimiento excepcional en cargas de trabajo transaccionales de alto rendimiento.
 
-### 2.4 Puntos de guardado (SAVE TRANSACTION)
 
-Los puntos de guardado permiten revertir parcialmente una transacción:
+- **Optimizado para memoria no agrupado**: Para los índices no agrupados optimizados para memoria, el consumo de memoria depende del número de filas y del tamaño de las columnas de clave de índice.
 
 ```sql
-BEGIN TRANSACTION;
-  INSERT INTO tabla1 VALUES (1);
-  SAVE TRANSACTION SavePoint1;
-  
-  INSERT INTO tabla2 VALUES (2);  -- Esta operación puede fallar
-  
-  IF ERROR
-    ROLLBACK TRANSACTION SavePoint1;  -- Solo revierte desde el savepoint
-  
-COMMIT TRANSACTION;  -- Confirma tabla1 pero no tabla2
+CREATE NONCLUSTERED INDEX IX_MiTabla_Columna1_Columna2
+ON MiTablaOptimized (Columna1, Columna2); -- Crea un índice no agrupado en las columnas 'Columna1' y 'Columna2' de la tabla 'MiTablaOptimized'
 ```
 
-### 2.5 Mejores prácticas
+- **Agrupado (Clustered)**: Un índice clúster ordena y almacena las filas de datos de la tabla o vista por orden en función de la clave del índice clúster. El índice clúster se implementa como una estructura de árbol b que admite la recuperación rápida de las filas a partir de los valores de las claves del índice clúster. Organiza los datos de la tabla por columna índice.
 
-1. **SET XACT_ABORT ON**: Aborta automáticamente la transacción ante cualquier error
-2. **SET NOCOUNT ON**: Mejora el rendimiento al suprimir mensajes de conteo
-3. **Uso de TRY/CATCH**: Captura errores y ejecuta rollback apropiado
-4. **Validaciones tempranas**: Verificar condiciones antes de iniciar operaciones DML
-5. **Manejo explícito de @@TRANCOUNT**: Verificar que exista una transacción activa antes de hacer rollback
+```sql
+CREATE CLUSTERED INDEX CIX_nombre_empleado ON empleados (id_empleado); -- Crea un índice agrupado en la columna 'id_empleado' de la tabla 'empleados'
+```
 
----
+- **No Agrupado (Nonclustered)**: Los índices no clúster se pueden definir en una tabla o vista con un índice clúster o en un montón. Cada fila del índice no clúster contiene un valor de clave no agrupada y un localizador de fila. Este localizador apunta a la fila de datos del índice clúster o el montón que contiene el valor de clave. Las filas del índice se almacenan en el orden de los valores de clave de índice, pero no se garantiza que las filas de datos estén en ningún orden determinado a menos que se cree un índice agrupado en la tabla. Estructuras separadas que apuntan a filas.
 
-## 3. Implementación de procedimientos transaccionales
+```sql
+CREATE INDEX IX_nombre_cliente ON nombre_tabla (cliente); -- Crea un índice no agrupado en la columna 'cliente' de la tabla 'nombre_tabla'
+```
 
-Se implementaron 4 procedimientos almacenados que demuestran diferentes aspectos del manejo de transacciones:
+- **Almacén de columnas (Columnstore)**: Un índice columnar o de almacén de columnas almacena datos en formato de columna en lugar de en formato de fila. Funcionan correctamente para las cargas de trabajo de almacenamiento de datos que ejecutan principalmente cargas masivas y consultas de solo lectura. Se usan para aumentar hasta en diez veces el rendimiento de las consultas en relación con el almacenamiento tradicional orientado a filas, y hasta en siete veces la compresión de datos en relación con el tamaño de los datos sin comprimir.
 
-### 3.1 sp_Registrar_Usuario_Completo
+```sql
+CREATE COLUMNSTORE INDEX CSIX_Ventas ON Ventas; -- Crea un índice de almacén de columnas en la tabla 'Ventas'
+```
 
-**Propósito:** Crear un usuario y su perfil en una transacción atómica.
+- **Único (Unique)**: Un índice único se asegura de que la clave de índice no contenga valores duplicados y, por tanto, cada fila de la tabla o vista sea en cierta forma única. La unicidad puede ser una propiedad tanto de índices agrupados como de índices no agrupados. Garantiza que todos los valores son distintos.
+
+```sql
+CREATE UNIQUE INDEX UX_Email ON Usuarios (Email); -- Crea un índice único en la columna 'Email' de la tabla 'Usuarios'
+```
+
+- **Índice con columnas incluidas**: Índice no agrupado que se extiende para incluir columnas sin clave, además de las columnas de clave. Abarca varias columnas.
+
+```sql
+CREATE NONCLUSTERED INDEX IX_Pedidos_Fecha_Cliente
+ON Pedidos (FechaPedido) -- Crea un índice no agrupado en la columna 'FechaPedido' de la tabla 'Pedidos'
+INCLUDE (ClienteID, Total); -- Incluye las columnas 'ClienteID' y 'Total' en el índice
+```
+
+- **Índice en columnas calculadas**: Índice creado en una columna calculada. Mejora el rendimiento de las consultas que usan columnas calculadas en las cláusulas WHERE, JOIN y en las expresiones de ordenación.
+
+```sql
+CREATE INDEX IX_Productos_PrecioTotal
+ON dbo.Productos (PrecioTotal); -- Crea un índice en la columna calculada 'PrecioTotal' de la tabla 'Productos'
+```
+
+- **Filtrada (Filtered)**: Índice no clúster optimizado, especialmente indicado para cubrir consultas que seleccionan de un subconjunto bien definido de datos. Utiliza un predicado de filtro para indizar una parte de las filas de la tabla. Un índice filtrado bien diseñado puede mejorar el rendimiento de las consultas y reducir los costos de almacenamiento del índice en relación con los índices de tabla completa, así como los costos de mantenimiento.
+
+```sql
+CREATE NONCLUSTERED INDEX index_name 
+ON table_name (column1, column2, ...) -- Crea un índice no agrupado en las columnas especificadas
+INCLUDE (column3, column4, ...) -- Opcional: columnas incluidas que no son clave
+WHERE filter_predicate; -- La condición que define el subconjunto de filas
+```
+
+- **Espacial (Spatial)**: Un índice espacial permite realizar de forma más eficaz determinadas operaciones en objetos espaciales (datos espaciales) en una columna del tipo de datos de geometry. El índice espacial reduce el número de objetos a los que es necesario aplicar las operaciones espaciales, que son relativamente costosas.
+
+```sql
+CREATE SPATIAL INDEX index_name
+ON table_name (spatial_column_name)
+USING <GEOMETRY_AUTO_GRID | GEOGRAPHY_AUTO_GRID | GEOMETRY_GRID | GEOGRAPHY_GRID>
+WITH (
+    BOUNDING_BOX = (xmin, ymin, xmax, ymax), -- Solo para GEOMETRY
+    GRIDS = (nivel1, nivel2, nivel3, nivel4), -- Opcional, para control manual de la rejilla
+    CELLS_PER_OBJECT = n, -- Opcional
+);
+```
+
+- **XML**: Representación dividida y persistente de los objetos binarios grandes (BLOB) XML de la columna de tipo de datos xml. Mejora el rendimiento de las consultas que acceden a datos XML. 
+
+```sql
+CREATE XML INDEX index_name 
+ON table_name (xml_column_name)
+USING PRIMARY XML INDEX; -- Crea un índice XML primario en la columna 'xml_column_name' de la tabla 'table_name'
+```
+
+- **Texto completo(Full-text)**: Un tipo especial de índice funcional basado en símbolos token que compila y mantiene el motor de texto completo de Microsoft para SQL Server. Proporciona la compatibilidad adecuada para búsquedas de texto complejas en datos de cadenas de caracteres.
+
+```sql
+CREATE FULLTEXT INDEX ON table_name (column_name LANGUAGE 'language_term')
+KEY INDEX unique_index_name; -- Crea un índice de texto completo en la columna 'column_name' de la tabla 'table_name' utilizando el índice único 'unique_index_name' como clave
+```
+
+### 2.2 Costo y beneficios de los índices
+El uso de índices en una base de datos tiene tanto costos como beneficios. A continuación, se describen algunos de ellos:
+
+**Beneficios:**
+- Búsqueda: Los índices en SQL nos ayudan a encontrar un registro o una lista de registros haciendo coincidir las condiciones de el WHERE. Puede ayudar a las consultas a buscar un valor específico o dentro de un rango de valores. Hace que la búsqueda sea más rápida, lo que en última instancia conduce a una mejora del rendimiento de la consulta. Declaraciones como SELECT, UPDATE y DELETE aprovechen al máximo los índices para aumentar la ejecución de la búsqueda.
+- Ordenamiento: Utilizamos índices para ordenar conjuntos de datos. La base de datos encuentra el índice para evitar la clasificación durante la ejecución de la consulta. El orden se especifica mediante las palabras clave ASC y DESC para ascender y descender, respectivamente. La cláusula ORDER BY especifica campos únicos o múltiples para limitar la clasificación del conjunto de datos. 
+- Unicidad: Los índices únicos ayudan a mantener la integridad de los datos al garantizar que no haya valores duplicados en una columna o combinación de columnas. Esto es especialmente útil para columnas que actúan como claves primarias o únicas.
+
+**Costos:**
+- Espacio de almacenamiento: Los índices requieren espacio adicional en disco para almacenar la estructura del índice. Cuantos más índices tenga una tabla, más espacio se necesitará.
+- Ralentización de la modificación de datos: Los índices tienen una respuesta deficiente en el rendimiento de las declaraciones de modificación de datos como INSERT, UPDATE, o DELETE. Cada vez que una consulta solicita modificar los datos de la tabla, la base de datos se actualiza con el nuevo índice donde cambian los datos. Los índices nos ayudan a localizar los registros más rápido, lo que genera rendimientos de clasificación y búsqueda más rápidos. Por lo tanto, tener demasiados índices puede ayudarnos a encontrar los registros más rápido, pero afecta poco la velocidad de modificación de los datos.
+- Complejidad de diseño: El diseño y la selección adecuados de índices pueden ser complejos y requieren un análisis cuidadoso de las consultas que se ejecutan con más frecuencia en la base de datos. Una elección incorrecta de índice puede provocar un rendimiento bajo.
+
+
+### 2.3 Plan de Ejecución
+Para poder ejecutar consultas, el motor de base de datos de SQL Server debe analizar la instrucción para determinar una manera eficaz de acceder a los datos necesarios y procesarlos. Este análisis se controla mediante un componente denominado **Optimizador de consultas**. La entrada al Optimizador de consultas consta de la consulta, el esquema de la base de datos (definiciones de tabla e índice) y las estadísticas de base de datos. El optimizador de consultas compila uno o varios planes de ejecución de consultas, a veces denominados planes de consulta o planes de ejecución. 
+Los **planes de ejecución** muestran gráficamente los métodos de recuperación de datos elegidos por el optimizador de consultas de SQL Server. Los planes de ejecución representan el costo de ejecución de instrucciones y consultas específicas en SQL Server mediante iconos en lugar de la representación tabular generada por las instrucciones SET SHOWPLAN_ALL o SET SHOWPLAN_TEXT. Este enfoque gráfico resulta útil para comprender las características de rendimiento de una consulta. Los tipos de planes de ejecución son:
+
+- **Plan de ejecución estimado**: Devuelve el plan compilado generado por el optimizador de consultas, en función de las estimaciones. Este es el plan de consulta que se almacena en la caché de planes. La generación del plan de ejecución estimado no ejecuta realmente la consulta o el lote y, por lo tanto, no contiene ninguna información en tiempo de ejecución, como métricas de uso de recursos reales o advertencias en tiempo de ejecución.
+
+- **Plan de ejecución real**: Devuelve el plan compilado más su contexto de ejecución. Estará disponible una vez finalizada la ejecución de la consulta. Este plan incluye información en tiempo de ejecución real, como advertencias de ejecución, y en versiones más recientes del motor de base de datos, el tiempo transcurrido y la CPU utilizados durante la ejecución.
+
+## 3. Diseño e implementación
+
+Se implementaron 2 scripts para realizar una carga masiva:
+
+### 3.1 01-carga_inicial.sql
+
+**Propósito:** Generar datos para las tablas: usuarios, .
 
 **Características:**
 - Transacción simple con dos operaciones (INSERT en `usuarios` e INSERT en `perfiles`)
