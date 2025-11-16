@@ -12,8 +12,8 @@
 
 # BD1 — Proyecto de Estudio e Investigación
 
-**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **ANSI SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
-
+**Tribuneros** es una red social del fútbol creada para registrar, puntuar y comentar partidos en tiempo real. Este repositorio recopila la documentación académica y los scripts en **SQL** del trabajo práctico integrador de la cátedra **Bases de Datos I (FaCENA–UNNE)**.
+ 
 ## Presentación del proyecto
 - Dominio de aplicación: gestión colaborativa de partidos de fútbol y opiniones de la comunidad.
 - Alcance: diseño lógico del esquema `tribuneros_bdi`, definición de restricciones, carga de datos representativos y consultas de verificación.
@@ -23,45 +23,50 @@
 1. Documentar de forma académica el proceso de diseño y validación de la base de datos Tribuneros.
 2. Proporcionar scripts reproducibles para crear, poblar y auditar el esquema relacional en SQL Server.
 3. Garantizar la trazabilidad entre los capítulos teóricos y la implementación técnica mediante enlaces cruzados.
+4. Implementar y documentar un modelo de seguridad basado en roles y permisos granulares.
 
-## Tabla de navegación académica
-| Sección | Descripción | Documento |
-| --- | --- | --- |
-| Portada | Datos institucionales y autores | [docs/portada.md](docs/portada.md) |
-| Índice general | Sumario completo del informe | [docs/indice.md](docs/indice.md) |
-| Capítulo I | Introducción, problema y objetivos específicos | [docs/capitulo-1-introduccion.md](docs/capitulo-1-introduccion.md) |
-| Capítulo II | Marco conceptual y glosario de términos | [docs/capitulo-2-marco-conceptual.md](docs/capitulo-2-marco-conceptual.md) |
-| Capítulo III | Metodología de relevamiento y modelado | [docs/capitulo-3-metodologia.md](docs/capitulo-3-metodologia.md) |
-| Capítulo IV | Resultados, modelos finales y validación | [docs/capitulo-4-resultados.md](docs/capitulo-4-resultados.md) |
-| Capítulo V | Conclusiones y líneas futuras | [docs/capitulo-5-conclusiones.md](docs/capitulo-5-conclusiones.md) |
-| Capítulo VI | Bibliografía académica y técnica | [docs/capitulo-6-bibliografia.md](docs/capitulo-6-bibliografia.md) |
-| Anexo | Diccionario de datos completo | [docs/diccionario_datos.md](docs/diccionario_datos.md) |
+## Documentación
+| Documento | Descripción |
+|---|---|
+| [`docs/tema1-informe.md`](./docs/tema1-informe.md) | Informe del **Tema 1: Procedimientos y Funciones** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema2-informe.md`](./docs/tema2-informe.md) | Informe del **Tema 2: Optimización de Consultas a Través de Índices** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema3-informe.md`](./docs/tema3-informe.md) | Informe del **Tema 3: Manejo de Transacciones y Transacciones Anidadas** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/tema4-informe.md`](./docs/tema4-informe.md) | Informe del **Tema 4: Vistas y Vistas Indexadas** (objetivos, implementación, pruebas y conclusiones). |
+| [`docs/diccionario_datos.md`](./docs/diccionario_datos.md) | Diccionario de datos del esquema `tribuneros_bdi`. |
+| [`docs/Proyecto_Integrador_Grupo39.pdf`](./docs/Proyecto_Integrador_Grupo39.pdf) | **Consolidado del informe académico** (Cap. I–VI). Falta completar contenido por tema. |
 
-Cada capítulo enlaza con los scripts relevantes en `script/` para ampliar la trazabilidad técnica.
+> Cada documento técnico referencia los scripts correspondientes en `script/` para garantizar trazabilidad.
+
 
 ## Estructura del repositorio
 ```text
 .
-├── assets/               # imágenes y recursos gráficos usados en la documentación
-│   ├── badge-bdi.png     — Badge/logo que se muestra en el README.
-│   └── (otros archivos de imagen/diagramas usados en docs/)
-├── docs/                 # circuito documental académico (capítulos, índices y anexos)
-│   ├── portada.md                — Portada con datos institucionales, autores y versión.
-│   ├── indice.md                 — Índice general y mapa de navegación del informe.
-│   ├── capitulo-1-introduccion.md — Introducción, planteo del problema y objetivos.
-│   ├── capitulo-2-marco-conceptual.md — Marco teórico, definiciones y glosario.
-│   ├── capitulo-3-metodologia.md  — Metodología de relevamiento y decisiones de diseño.
-│   ├── capitulo-4-resultados.md   — Resultados, modelo final y referencias a scripts.
-│   ├── capitulo-5-conclusiones.md — Conclusiones, limitaciones y líneas futuras.
-│   ├── capitulo-6-bibliografia.md — Bibliografía académica y técnica.
-│   └── diccionario_datos.md       — Diccionario de datos completo (entidades, atributos, tipos, restricciones y ejemplos).
-├── script/               # scripts SQL ordenados para creación, carga, verificación y métricas (SQL Server)
-│   ├── creacion.sql       — DDL: creación del esquema `tribuneros_bdi`, tablas, claves, índices y constraints.
-│   ├── carga_inicial.sql  — INSERTs para poblar el esquema con un dataset de ejemplo para pruebas.
-│   ├── verificacion.sql   — Consultas de control de integridad referencial y reglas de negocio.
-│   └── conteo.sql         — Consultas de métricas y conteos para validar volúmenes y consistencia.
-├── README.md             — Introducción, guía rápida y navegación del repositorio (este archivo).
-└── LICENSE               — Licencia aplicable: MIT para el código SQL; documento académico bajo CC BY‑NC‑SA 4.0.
+├─ assets/
+│  ├─ badge-bdi.png
+│  ├─ der-tribuneros.png
+│  ├─ tema1-procs-funciones/        # recursos del tema 1
+│  ├─ tema2-indices/        # recursos del tema 2
+│  ├─ tema3-transacciones/        # recursos del tema 3
+│  └─ tema4-vistas/        # recursos del tema 4
+├─ docs/
+│  ├─ diccionario_datos.md
+│  ├─ Proyecto_Integrador_Grupo39.pdf
+│  ├─ tema1-informe.md
+│  ├─ tema2-informe.md
+│  ├─ tema3-informe.md
+│  └─ tema4-informe.md
+├─ script/
+│  ├─ creacion.sql                   # DDL: esquema, PK/FK, constraints, índices base
+│  ├─ carga_inicial.sql              # datos representativos
+│  ├─ verificacion.sql               # controles de integridad y de negocio
+│  ├─ conteo.sql                     # métricas y conteos rápidos
+│  ├─ limpieza_datos.sql             # utilitario de limpieza básica (dataset)
+│  ├─ tema1-procs-funciones/
+│  ├─ tema2-indices/
+│  ├─ tema3-transacciones/
+│  └─ tema4-vistas/
+├─ LICENSE
+└─ README.md                         # este archivo
 ```
 
 ## Scripts SQL clave

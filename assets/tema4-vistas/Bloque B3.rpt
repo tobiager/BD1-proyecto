@@ -1,0 +1,11 @@
+﻿SQL Server parse and compile time: 
+   CPU time = 0 ms, elapsed time = 3 ms.
+
+(6 rows affected)
+Table 'ligas'. Scan count 0, logical reads 12, physical reads 1, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+Table 'vw_partidos_por_liga_y_anio'. Scan count 1, logical reads 2, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+
+ SQL Server Execution Times:
+   CPU time = 0 ms,  elapsed time = 4 ms.
+
+Completion time: 2025-11-04T09:49:04.2099645-03:00
