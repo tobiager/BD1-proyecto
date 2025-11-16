@@ -133,431 +133,219 @@ Los **planes de ejecución** muestran gráficamente los métodos de recuperació
 
 ## 3. Diseño e implementación
 
-Se implementaron 2 scripts para realizar una carga masiva:
+Se implementó un script para realizar una carga masiva:
 
 ### 3.1 01-carga_inicial.sql
 
-**Propósito:** Generar datos para las tablas: usuarios, .
+**Propósito:** Cargar datos masivos para las tablas: Ligas (50 registros), Equipos (500 registros) y Partidos (1.000.000 registros).
 
 **Características:**
-- Transacción simple con dos operaciones (INSERT en `usuarios` e INSERT en `perfiles`)
-- Si cualquier operación falla, se revierten ambas
-- Usa `SET XACT_ABORT ON` para abortar automáticamente ante errores
-- Manejo de errores con TRY/CATCH
-
-**Parámetros:**
-- `@usuario_id` (CHAR(36)): ID único del usuario
-- `@correo` (VARCHAR(255)): Correo electrónico
-- `@password` (VARCHAR(255)): Contraseña en texto plano (se hashea internamente)
-- `@nombre_usuario` (VARCHAR(30)): Nombre de usuario único
-- `@nombre_mostrar` (VARCHAR(60)): Nombre para mostrar (opcional)
-- `@biografia` (VARCHAR(400)): Biografía del usuario (opcional)
-
-**Ejemplo de uso:**
+- Inserción controlada mediante WHILE: Controla la secuencia de IDs para permitir ejecuciones múltiples.
+- País asignado de manera cíclica: Usa CASE para generar 10 países diferentes.
+- Campos generados: nombre, país, slug, id_externo, creado_en.
+- Idempotente: Si se vuelve a ejecutar, continúa desde el último ID.
+- Inserción con asignación automática de liga: Usa la fórmula cíclica:
 ```sql
-DECLARE @nuevo_id CHAR(36) = NEWID();
-
-EXEC dbo.sp_Registrar_Usuario_Completo
-  @usuario_id = @nuevo_id,
-  @correo = 'usuario@example.com',
-  @password = 'password123',
-  @nombre_usuario = 'mi_usuario',
-  @nombre_mostrar = 'Mi Usuario',
-  @biografia = 'Fanático del fútbol';
+@min_liga + ((@equipo - @ultimo_equipo - 1) % (@max_liga - @min_liga + 1))
 ```
+- URLs realistas para escudos: https://escudos.tribuneros.com/{id}.png
+- Muestra progreso cada 100 registros
 
-### 3.2 sp_Calificar_y_Opinar
+**Buenas practicas aplicadas**
+- Script totalmente idempotente: No rompe si se ejecuta múltiples veces.
+- Carga por lotes en lugar de fila por fila: Muchísimo más eficiente.
+- Eliminación temporal de índice para mejorar velocidad: Técnica estándar de ETL.
+- Control exacto de IDENTITY manual: Útil para migraciones o importaciones.
+- Fechas en formato DATETIME2(0) para mayor rendimiento.
+- Evita valores inválidos en foreign keys (fk): Liga, equipos, equipos distintos, etc.
 
-**Propósito:** Insertar una calificación y una opinión sobre un partido en una sola transacción.
 
-**Características:**
-- Validaciones previas (partido existe, está finalizado, usuario existe)
-- Dos inserciones atómicas (calificación + opinión)
-- Retorna los IDs generados como parámetros OUTPUT
-- Si falla cualquier operación, se revierten ambas
+### 3.2 02-busqueda_sin_indice.sql
 
-**Parámetros:**
-- `@partido_id` (INT): ID del partido
-- `@usuario_id` (CHAR(36)): ID del usuario
-- `@puntaje` (SMALLINT): Calificación de 1 a 5
-- `@titulo` (VARCHAR(120)): Título de la opinión
-- `@cuerpo` (VARCHAR(4000)): Contenido de la opinión
-- `@tiene_spoilers` (SMALLINT): 1 si contiene spoilers, 0 si no
-- `@calificacion_id` (INT OUTPUT): ID de la calificación creada
-- `@opinion_id` (INT OUTPUT): ID de la opinión creada
+**Propósito:** Medir rendimiento real de consultas sin un índice en la columna fecha_utc, justo después de haber cargado millones de partidos.
 
-**Ejemplo de uso:**
-```sql
-DECLARE @calif_id INT, @op_id INT;
-
-EXEC dbo.sp_Calificar_y_Opinar
-  @partido_id = 1,
-  @usuario_id = 'user-guid-here',
-  @puntaje = 5,
-  @titulo = 'Partidazo',
-  @cuerpo = 'Excelente partido de principio a fin',
-  @tiene_spoilers = 1,
-  @calificacion_id = @calif_id OUTPUT,
-  @opinion_id = @op_id OUTPUT;
-```
-
-### 3.3 sp_Seguir_Equipo_Con_Recordatorios
-
-**Propósito:** Agregar seguimiento a un equipo y crear recordatorios para sus próximos partidos.
-
-**Características:**
-- **Transacción anidada con SAVE TRANSACTION**
-- Inserta el seguimiento del equipo (transacción externa)
-- Itera sobre partidos futuros e inserta recordatorios (transacción interna)
-- Si falla un recordatorio, revierte solo ese recordatorio (usa ROLLBACK TO SavePoint)
-- El seguimiento del equipo y otros recordatorios se mantienen
-
-**Parámetros:**
-- `@usuario_id` (CHAR(36)): ID del usuario
-- `@equipo_id` (INT): ID del equipo a seguir
-- `@dias_anticipacion` (INT): Días antes del partido para enviar el recordatorio (default: 1)
-
-**Ejemplo de uso:**
-```sql
-EXEC dbo.sp_Seguir_Equipo_Con_Recordatorios
-  @usuario_id = 'user-guid-here',
-  @equipo_id = 1,
-  @dias_anticipacion = 2;
-```
-
-**Diagrama de flujo de transacciones:**
-```
-BEGIN TRANSACTION TxnPrincipal
-  ├─ INSERT seguimiento_equipos ✓
-  ├─ SAVE TRANSACTION SavePointRecordatorios
-  │
-  ├─ CURSOR sobre partidos futuros
-  │   ├─ Partido 1: INSERT recordatorio ✓
-  │   ├─ Partido 2: INSERT recordatorio ✗ (error)
-  │   │   └─ ROLLBACK TO SavePointRecordatorios
-  │   └─ Partido 3: INSERT recordatorio ✓
-  │
-COMMIT TRANSACTION TxnPrincipal
-```
-
-### 3.4 sp_Transferir_Favoritos
-
-**Propósito:** Copiar todos los favoritos de un usuario a otro.
-
-**Características:**
-- Validaciones de usuarios (origen y destino existen, no son el mismo)
-- Opción de sobrescribir favoritos existentes del destino
-- Evita duplicados al copiar
-- Usa una sola transacción con múltiples operaciones DML
-
-**Parámetros:**
-- `@usuario_origen` (CHAR(36)): ID del usuario origen
-- `@usuario_destino` (CHAR(36)): ID del usuario destino
-- `@sobrescribir` (BIT): Si es 1, elimina favoritos existentes del destino (default: 0)
-
-**Ejemplo de uso:**
-```sql
-EXEC dbo.sp_Transferir_Favoritos
-  @usuario_origen = 'guid-usuario-1',
-  @usuario_destino = 'guid-usuario-2',
-  @sobrescribir = 0;
-```
-
----
-
-## 4. Ejemplos de transacciones anidadas
-
-El archivo `02_transacciones_anidadas.sql` incluye 4 ejemplos didácticos:
-
-### 4.1 SAVE TRANSACTION básico
-
-Demuestra cómo crear puntos de guardado y revertir parcialmente:
+**Consulta 1: Búsqueda por período de fecha**
 
 ```sql
-BEGIN TRANSACTION TxnPrincipal;
-  INSERT usuario;  -- Éxito
+SELECT COUNT(*) AS total_partidos_2023
+FROM dbo.partidos
+WHERE fecha_utc >= '2023-01-01' 
+  AND fecha_utc < '2024-01-01';
+```
+
+- **características:**
+- Es una consulta de rango por fecha, típica para verificar el impacto de un índice.
+- Sin índice, SQL Server realizará: Table Scan sobre millones de filas.
+- Evalúa rendimiento para filtros simples.
+
+**Consulta 2: Búsqueda específica con JOINs**
+
+```sql
+SELECT p.id, p.fecha_utc, …
+FROM partidos p
+JOIN equipos el ON p.equipo_local = el.id
+JOIN equipos ev ON p.equipo_visitante = ev.id
+WHERE p.fecha_utc >= '2024-01-01'
+  AND p.fecha_utc < '2024-04-01'
+  AND p.estado = 2;
+```
+
+- **características:**
+- Filtrado por fecha + estado.
+- Selección de columnas descriptivas.
+- Traducción de estado con CASE.
+- Dos JOINs con tabla equipos.
+- Recupera datos de texto (equipos) y datos numéricos (goles).
+
+**Consulta 3: Agregación mensual**
+
+```sql
+SELECT YEAR(fecha_utc), MONTH(fecha_utc), COUNT(*), SUM(...)
+FROM partidos
+WHERE fecha_utc >= '2023-01-01'
+  AND fecha_utc < '2024-01-01'
+GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)
+ORDER BY anio, mes;
+```
+
+- **características:**
+- Agregación por año y mes.
+- Requiere leer todas las filas del año completo.
+- SUM de estados finalizados (técnica de conteo condicional).
+- Ordenamiento al final.
+
+### 3.3 03-crear_indice_repetir_consultas.sql
+
+**Propósito:** Crear un índice en la columna fecha_utc de la tabla partidos y medir cuánto tarda en crearse.
+
+**Creación del índice:**
+
+```sql
+CREATE INDEX IX_partidos_fecha ON dbo.partidos(fecha_utc);
+```
+
+**Características:** Un índice sobre fecha_utc permite que SQL Server:
+- Pueda buscar por rango de fechas usando Index Seek.
+- Mejore de forma muy importante las consultas como:
+
+```sql
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
+```
+
+### 3.4 04-indice_compuesto.sql
+
+**Propósito:** Optimiza aún más las consultas usando un índice compuesto con columnas incluidas.
+
+**Eliminar índice simple si existe** 
+Esto se hace porque: Solo podés crear un índice con un nombre determinado una sola vez. Y porque ahora se va a reemplazar con uno mejor.
+
+```sql
+DROP INDEX IX_partidos_fecha ON dbo.partidos;
+```
+
+**Eliminar índice compuesto si ya existía**
+Esto evita errores al recrearlo.
+
+```sql
+DROP INDEX IX_partidos_fecha_compuesto ON dbo.partidos;
+```
+
+**Crear el índice compuesto optimizado**
+La consulta queda COMPLETAMENTE cubierta por el índice.
+
+```sql
+CREATE INDEX IX_partidos_fecha_compuesto 
+ON dbo.partidos(fecha_utc, estado)
+INCLUDE (liga_id, equipo_local, equipo_visitante, goles_local, goles_visitante, estadio);
+```
+
+**Consulta optimizada 1**
+
+```sql
+WHERE p.fecha_utc >= '2024-01-01' AND p.fecha_utc < '2024-04-01' AND p.estado = 2;
+```
+
+**Consulta optimizada 2**
+Consulta con agregación:
+
+```sql
+SELECT estado, COUNT(*), AVG(goles_local + goles_visitante)
+FROM dbo.partidos
+WHERE fecha_utc BETWEEN '2023' AND '2024'
+GROUP BY estado;
+```
+
+## 6. Pruebas de rendimiento
+
+### 6.1 Comparación de los costos estimados
+
+**Plan sin índice**
+
+- Costo 1.5307 -> más de 3 veces más costoso que el plan con índice simple.
+- - La consulta obliga al motor a realizar un table scan.
+- - Esto implica leer todas las filas de la tabla, independientemente del filtro.
+- - Es el escenario más costoso y menos eficiente.
+
+**Plan con índice simple**
+- Costo 0.466 -> 69.5% más rápido respecto al plan sin índice.
+- - El motor puede realizar un index seek o index scan, según el filtro y la selectividad.
+- - Gran mejora respecto al scan completo.
+- - Se reduce drásticamente la cantidad de páginas leídas.
+
+**Plan con índice compuesto (fecha_utc, estado) + INCLUDE (…)**
+- Costo 0.23385 -> 49.8% más rápido respecto al plan con índice simple y 84.7% más rápido respecto al plan sin índice.
+- - Aprovecha la combinación de columnas consultadas.
+- - Proporciona el patrón de acceso más selectivo y eficiente.
+- - Reduce aún más la lectura de páginas y operaciones internas.
+- - Es el plan más óptimo del conjunto.
+
+## 7. Conclusiones finales y recomendaciones
+
+### 7.1 Conclusiones sobre índices
+
+- El índice compuesto ofrece el mejor rendimiento, con una reducción total del costo del plan del 84.7% respecto al escenario sin índices.
+- El índice simple también mejora significativamente, pero no tanto como el compuesto.
+- Esto demuestra la importancia de:
+- - Definir índices basados en los patrones reales de consulta.
+- - Utilizar índices compuestos cuando se filtra por más de una columna.
+- - Analizar planes de ejecución para validar decisiones de optimización.
+
+### 7.2 Recomendaciones
+- Utilizar índices compuestos para consultas que filtran y ordenan por múltiples columnas con alta selectividad, ya que maximizan la eficiencia del motor de SQL Server.
   
-  SAVE TRANSACTION SavePoint1;
-  INSERT seguimiento_equipo1;  -- Éxito
-  
-  SAVE TRANSACTION SavePoint2;
-  INSERT seguimiento_equipo2;  -- Éxito
-  
-  SAVE TRANSACTION SavePoint3;
-  INSERT seguimiento_equipo_inexistente;  -- Error
-  ROLLBACK TO SavePoint3;  -- Solo revierte esta operación
-  
-COMMIT TRANSACTION;  -- Usuario + equipos 1 y 2 se confirman
-```
+## 8. Referencias
 
-### 4.2 Transacciones multinivel
+- **Microsoft Docs - Indexes**  
+https://learn.microsoft.com/es-es/sql/relational-databases/indexes/indexes?view=sql-server-ver17 
 
-Ilustra el comportamiento de `@@TRANCOUNT` con múltiples niveles:
+- **Microsoft Docs - Guía de diseño y arquitectura de índices**  
+https://learn.microsoft.com/es-es/sql/relational-databases/sql-server-index-design-guide?view=sql-server-ver17
 
-```sql
-BEGIN TRANSACTION Nivel1;  -- @@TRANCOUNT = 1
-  BEGIN TRANSACTION Nivel2;  -- @@TRANCOUNT = 2
-    BEGIN TRANSACTION Nivel3;  -- @@TRANCOUNT = 3
-    COMMIT;  -- @@TRANCOUNT = 2 (solo decrementa)
-  COMMIT;  -- @@TRANCOUNT = 1 (solo decrementa)
-COMMIT;  -- @@TRANCOUNT = 0 (commit real)
-```
+- **Microsoft Docs - Directrices de diseño de índices hash optimizados para memoria**  
+https://learn.microsoft.com/es-es/sql/relational-databases/sql-server-index-design-guide view=sql-server-ver17#memory-optimized-hash-index-design-guidelines
 
-### 4.3 Procesamiento batch con savepoints
+- **Microsoft Docs - Información general sobre el plan de ejecución**  
+https://learn.microsoft.com/es-es/sql/relational-databases/performance/execution-plans?view=sql-server-ver17
 
-Procesa un lote de registros, guardando los exitosos y registrando errores:
+- **Microsoft Docs - Mostrar y guardar planes de ejecución**  
+https://learn.microsoft.com/es-es/sql/relational-databases/performance/display-and-save-execution-plans?view=sql-server-ver17
 
-```sql
-BEGIN TRANSACTION BatchPrincipal;
-  CURSOR sobre registros
-    SAVE TRANSACTION SaveBatchItem;
-    TRY
-      INSERT registro;
-    CATCH
-      ROLLBACK TO SaveBatchItem;
-      -- Continúa con el siguiente registro
-  COMMIT;  -- Confirma todos los registros exitosos
-```
+- **Microsoft Docs - Guardar un plan de ejecución en formato XML**  
+https://learn.microsoft.com/es-es/sql/relational-databases/performance/save-an-execution-plan-in-xml-format?view=sql-server-ver17
 
-### 4.4 Demostración de @@TRANCOUNT
-
-Muestra paso a paso cómo cambia el contador de transacciones.
-
----
-
-## 5. Pruebas y validación
-
-El Script 03 demuestra una transacción que incluye dos inserciones válidas.
-Como ambas operaciones son correctas, la transacción se confirma (COMMIT) y el sistema muestra ‘Transacción confirmada correctamente’.
-
-![Prueba exitosa](../assets/tema3-transacciones/03.png)
-
-En esta prueba forzamos un error de duplicidad de clave primaria (insertando dos veces el ID 3001) dentro de una transacción. 
-Como se observa en la captura, el sistema capturó el error mediante el bloque TRY-CATCH y ejecutó el ROLLBACK correctamente, 
-asegurando que no se guarden datos inconsistentes.
-
-![Prueba de Rollback](../assets/tema3-transacciones/04.png)
-
-### 5.1 Casos de éxito (03_pruebas_transacciones.sql)
-
-Se ejecutaron 5 pruebas exitosas:
-
-| Prueba | Descripción | Resultado |
-|--------|-------------|-----------|
-| 1 | Registrar usuario completo | ✓ Usuario y perfil creados |
-| 2 | Calificar y opinar | ✓ Calificación y opinión creadas |
-| 3 | Seguir equipo con recordatorios | ✓ Seguimiento + 3 recordatorios |
-| 4 | Transferir favoritos | ✓ 5 favoritos copiados |
-| 5 | Análisis de rendimiento | ✓ Métricas IO/TIME capturadas |
-
-### 5.2 Casos de error (04_pruebas_rollback.sql)
-
-Se ejecutaron 5 pruebas de rollback:
-
-| Prueba | Descripción | Comportamiento esperado | Resultado |
-|--------|-------------|-------------------------|-----------|
-| 1 | Correo duplicado | ROLLBACK completo | ✓ Usuario no creado |
-| 2 | Partido no finalizado | ROLLBACK completo | ✓ Calificación rechazada |
-| 3 | Calificación duplicada | ROLLBACK de segunda calificación | ✓ Solo una calificación existe |
-| 4 | Rollback parcial con savepoint | Usuario creado, equipo inválido rechazado | ✓ Usuario + equipo válido existen |
-| 5 | Error crítico (división por 0) | ROLLBACK completo | ✓ Ningún dato persistido |
-
-### 5.3 Resultados de pruebas de rollback parcial
-
-**Escenario:** Crear usuario, seguir equipo válido, intentar seguir equipo inválido
-
-**Código ejecutado:**
-```sql
-BEGIN TRANSACTION;
-  INSERT usuario;  -- ✓
-  SAVE TRANSACTION SavePoint1;
-  INSERT seguir_equipo_valido;  -- ✓
-  SAVE TRANSACTION SavePoint2;
-  INSERT seguir_equipo_invalido;  -- ✗ (error)
-  ROLLBACK TO SavePoint2;
-COMMIT;
-```
-
-**Verificación:**
-- ✓ Usuario existe
-- ✓ Seguimiento de equipo válido existe
-- ✓ Seguimiento de equipo inválido NO existe
-
-### 5.4 Resultados de pruebas de rollback completo
-
-**Escenario:** Error crítico durante transacción compleja
-
-**Código ejecutado:**
-```sql
-BEGIN TRANSACTION;
-  INSERT usuario;  -- ✓
-  INSERT perfil;  -- ✓
-  INSERT seguimiento;  -- ✓
-  DECLARE @x INT = 1/0;  -- ✗ Error crítico
-  -- ROLLBACK automático por SET XACT_ABORT ON
-```
-
-**Verificación:**
-- ✓ Usuario NO existe (rollback exitoso)
-- ✓ Perfil NO existe (rollback exitoso)
-- ✓ Seguimiento NO existe (rollback exitoso)
-
----
-
-## 6. Análisis de rendimiento
-
-### 6.1 Impacto de transacciones explícitas
-
-Se midió el rendimiento de operaciones con y sin transacciones explícitas:
-
-| Operación | Sin transacción explícita | Con BEGIN/COMMIT | Diferencia |
-|-----------|---------------------------|------------------|------------|
-| INSERT simple | ~1 ms | ~1 ms | Despreciable |
-| 3 INSERT relacionados | ~3 ms | ~3 ms | Despreciable |
-| INSERT + validaciones | ~2 ms | ~2-3 ms | <1 ms |
-
-**Conclusión:** El overhead de transacciones explícitas es mínimo para operaciones OLTP típicas. Los beneficios de atomicidad y manejo de errores superan el costo.
-
-### 6.2 Lecturas lógicas (IO)
-
-Mediciones con `SET STATISTICS IO ON`:
-
-```
-Procedimiento: sp_Registrar_Usuario_Completo
-- Tabla usuarios: 2 lecturas lógicas
-- Tabla perfiles: 2 lecturas lógicas
-- Total: 4 lecturas lógicas
-```
-
-```
-Procedimiento: sp_Calificar_y_Opinar
-- Tabla partidos: 1 lectura lógica (validación)
-- Tabla usuarios: 1 lectura lógica (validación)
-- Tabla calificaciones: 3 lecturas lógicas (INSERT + índice único)
-- Tabla opiniones: 3 lecturas lógicas (INSERT + índice único)
-- Total: 8 lecturas lógicas
-```
-
-### 6.3 Optimizaciones aplicadas
-
-1. **SET NOCOUNT ON**: Reduce el tráfico de red al suprimir mensajes "(N filas afectadas)"
-2. **Validaciones tempranas**: Verificar condiciones antes de BEGIN TRANSACTION
-3. **Índices únicos**: Mejoran la validación de duplicados
-4. **SET XACT_ABORT ON**: Simplifica el manejo de errores
-
----
-
-## 7. Decisiones de diseño
-
-### 7.1 ¿Cuándo usar transacciones explícitas?
-
-✅ **SÍ usar transacciones explícitas cuando:**
-- Se ejecutan múltiples operaciones DML relacionadas
-- Se requiere atomicidad (todo o nada)
-- Se necesita revertir operaciones bajo ciertas condiciones
-- Se implementa lógica de negocio compleja
-
-❌ **NO es necesario para:**
-- Una sola operación INSERT/UPDATE/DELETE (autocommit)
-- Operaciones de solo lectura (SELECT)
-
-### 7.2 ¿Cuándo usar SAVE TRANSACTION?
-
-✅ **SÍ usar savepoints cuando:**
-- Se procesa un lote de registros donde algunos pueden fallar
-- Se quiere mantener operaciones exitosas ante errores parciales
-- Se implementa lógica de "intento y continuar"
-
-❌ **NO usar si:**
-- Cualquier error debe revertir toda la transacción
-- La lógica es simple (no hay operaciones parciales)
-
-### 7.3 SET XACT_ABORT ON vs TRY/CATCH
-
-**Recomendación:** Usar **ambos** para máxima robustez:
-
-```sql
-SET XACT_ABORT ON;  -- Aborta automáticamente la transacción
-BEGIN TRY
-  BEGIN TRANSACTION;
-    -- Operaciones
-  COMMIT TRANSACTION;
-END TRY
-BEGIN CATCH
-  IF @@TRANCOUNT > 0
-    ROLLBACK TRANSACTION;
-  -- Manejo del error (log, RAISERROR, etc.)
-END CATCH
-```
-
----
-
-## 8. Lecciones aprendidas
-
-### 8.1 Transacciones "anidadas" en SQL Server
-
-SQL Server **NO soporta verdaderas transacciones anidadas**. `BEGIN TRANSACTION` dentro de otra transacción solo incrementa `@@TRANCOUNT`. Para rollback parcial, se debe usar `SAVE TRANSACTION`.
-
-### 8.2 ROLLBACK siempre es completo (excepto con savepoints)
-
-`ROLLBACK TRANSACTION` **siempre** revierte toda la transacción, independientemente del nivel de anidamiento. Solo `ROLLBACK TO savepoint` permite rollback parcial.
-
-### 8.3 COMMIT debe balancearse con BEGIN
-
-Cada `BEGIN TRANSACTION` debe tener su correspondiente `COMMIT` o `ROLLBACK`. En caso de error, verificar `@@TRANCOUNT > 0` antes de hacer rollback.
-
-### 8.4 Validaciones tempranas mejoran el rendimiento
-
-Realizar validaciones (EXISTS, estado, permisos) antes de `BEGIN TRANSACTION` reduce el tiempo de bloqueo y mejora la concurrencia.
-
----
-
-## 9. Conclusiones
-
-1. **Las transacciones explícitas son esenciales** para mantener la integridad de datos en operaciones complejas. El overhead de rendimiento es despreciable comparado con los beneficios de atomicidad.
-
-2. **SAVE TRANSACTION es una herramienta poderosa** para implementar lógica de recuperación parcial, especialmente útil en procesamiento por lotes.
-
-3. **El patrón SET XACT_ABORT + TRY/CATCH** proporciona el manejo de errores más robusto para procedimientos almacenados transaccionales.
-
-4. **SQL Server no soporta verdaderas transacciones anidadas**, pero `@@TRANCOUNT` y savepoints permiten implementar lógica de rollback selectivo.
-
-5. **Las pruebas exhaustivas** de casos de éxito y error son fundamentales para validar el comportamiento transaccional correcto.
-
----
-
-## 10. Referencias
-
-- **Microsoft Docs - Transacciones (Motor de base de datos)**  
-  https://learn.microsoft.com/es-es/sql/t-sql/language-elements/transactions-transact-sql  
-  *Uso:* Sintaxis de BEGIN TRANSACTION, COMMIT, ROLLBACK y SAVE TRANSACTION
-
-- **Microsoft Docs - TRY...CATCH (Transact-SQL)**  
-  https://learn.microsoft.com/es-es/sql/t-sql/language-elements/try-catch-transact-sql  
-  *Uso:* Patrones de manejo de errores en procedimientos almacenados
-
-- **Microsoft Docs - SET XACT_ABORT (Transact-SQL)**  
-  https://learn.microsoft.com/es-es/sql/t-sql/statements/set-xact-abort-transact-sql  
-  *Uso:* Comportamiento de aborto automático de transacciones
-
-- **SQLShack - Understanding SQL Server Transaction Isolation Levels**  
-  https://www.sqlshack.com/understanding-sql-server-transaction-isolation-levels/  
-  *Uso:* Niveles de aislamiento y su impacto en concurrencia
-
-- **Red Gate - SQL Server Transaction Handling**  
-  https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/sql-server-transactions/  
-  *Uso:* Mejores prácticas y patrones comunes de transacciones
-
+- **Microsoft Docs - Comparación y análisis de los planes de ejecución**  
+https://learn.microsoft.com/es-es/sql/relational-databases/performance/compare-and-analyze-execution-plans?view=sql-server-ver17&source=recommendations
 ---
 
 ## Apéndice: Orden de ejecución de scripts
 
 Para reproducir el proyecto completo, ejecutar los scripts en este orden:
 
-1. `01_procedimientos_transaccionales.sql` - Crear los 4 procedimientos almacenados
-2. `02_transacciones_anidadas.sql` - Ejecutar ejemplos didácticos
-3. `03_pruebas_transacciones.sql` - Ejecutar casos de éxito
-4. `04_pruebas_rollback.sql` - Ejecutar casos de error
-5. `05_limpieza.sql` - Eliminar procedimientos y datos de prueba
+1. `01-carga_inicial.sql` - Crear los datos masivos (ligas, equipos, partidos)
+2. `02-busqueda_sin_indice.sql` - Medir consultas sin índice
+3. `03-crear_indice_repetir_consultas.sql` - Crear índice simple y repetir consultas
+4. `04-indice_compuesto.sql` - Crear índice compuesto y repetir consultas
+5. `05-conteo_de_datos.sql` - Realizar conteo final de datos (opcional)
+6. `06-limpieza_datos.sql` - Eliminar todos los registros e índices (opcional)
 
-**Nota:** Asegurarse de que la base de datos `tribuneros_bdi` tenga datos iniciales (ligas, equipos, partidos) antes de ejecutar las pruebas.
+**Nota:** Asegurarse de que la base de datos `tribuneros_bdi` tenga datos iniciales (ligas, equipos, partidos) antes de ejecutar las búsquedas.

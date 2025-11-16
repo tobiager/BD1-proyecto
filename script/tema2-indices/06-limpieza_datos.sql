@@ -18,8 +18,6 @@ PRINT N'Iniciando limpieza de datos...';
 DELETE FROM dbo.partidos;
 DELETE FROM dbo.equipos;
 DELETE FROM dbo.ligas;
-DELETE FROM dbo.perfiles;
-DELETE FROM dbo.usuarios;
 
 PRINT N'Todas las tablas han sido limpiadas.';
 GO

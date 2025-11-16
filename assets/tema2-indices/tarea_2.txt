@@ -2,6 +2,11 @@
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
+
+ SQL Server Execution Times:
+   CPU time = 0 ms,  elapsed time = 0 ms.
+SQL Server parse and compile time: 
+   CPU time = 375 ms, elapsed time = 453 ms.
 Consulta 1: Partidos en 2023
 
  SQL Server Execution Times:
@@ -10,23 +15,27 @@ SQL Server parse and compile time:
    CPU time = 0 ms, elapsed time = 0 ms.
 
 (1 fila afectada)
-Table 'partidos'. Scan count 1, logical reads 12031, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+Table 'partidos'. Scan count 1, logical reads 1734, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+
+(1 fila afectada)
 
  SQL Server Execution Times:
-   CPU time = 171 ms,  elapsed time = 173 ms.
+   CPU time = 47 ms,  elapsed time = 145 ms.
 Consulta 2: Partidos finalizados en Q1 2024
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
 
-(19805 filas afectadas)
+(19353 filas afectadas)
 Table 'Workfile'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
 Table 'Worktable'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
-Table 'partidos'. Scan count 1, logical reads 12031, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+Table 'partidos'. Scan count 1, logical reads 430, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
 Table 'equipos'. Scan count 2, logical reads 20, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
 
+(1 fila afectada)
+
  SQL Server Execution Times:
-   CPU time = 204 ms,  elapsed time = 430 ms.
+   CPU time = 93 ms,  elapsed time = 471 ms.
 Consulta 3: Partidos por mes en 2023
 
  SQL Server Execution Times:
@@ -35,10 +44,15 @@ Consulta 3: Partidos por mes en 2023
 (12 filas afectadas)
 Table 'Worktable'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
 Table 'Workfile'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
-Table 'partidos'. Scan count 1, logical reads 12031, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+Table 'partidos'. Scan count 1, logical reads 1734, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+
+(1 fila afectada)
 
  SQL Server Execution Times:
-   CPU time = 312 ms,  elapsed time = 301 ms.
+   CPU time = 157 ms,  elapsed time = 232 ms.
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
+=====================================================
+
+Hora de finalización: 2025-11-16T18:34:57.9472616-03:00

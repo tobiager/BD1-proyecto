@@ -1,43 +1,50 @@
 === TAREA 4: Índice compuesto con columnas incluidas ===
+Eliminando índice simple anterior...
+Índice simple eliminado.
+Eliminando índice compuesto existente...
+Índice compuesto eliminado.
 Creando índice compuesto optimizado...
-Índice compuesto creado.
+Índice compuesto creado exitosamente.
 -----------------------------------------------------
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
+
+ SQL Server Execution Times:
+   CPU time = 0 ms,  elapsed time = 0 ms.
+SQL Server parse and compile time: 
+   CPU time = 500 ms, elapsed time = 502 ms.
 Consulta con índice compuesto 1: Partidos finalizados por período
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
 SQL Server parse and compile time: 
    CPU time = 0 ms, elapsed time = 0 ms.
-SQL Server parse and compile time: 
-   CPU time = 0 ms, elapsed time = 2 ms.
-SQL Server parse and compile time: 
-   CPU time = 0 ms, elapsed time = 0 ms.
 
-(19805 filas afectadas)
-Table 'partidos'. Scan count 1, logical reads 264, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+(19353 filas afectadas)
+Table 'partidos'. Scan count 1, logical reads 260, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+
+(1 fila afectada)
 
  SQL Server Execution Times:
-   CPU time = 0 ms,  elapsed time = 322 ms.
+   CPU time = 63 ms,  elapsed time = 332 ms.
 Consulta con índice compuesto 2: Estadísticas de goles por estado
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
-SQL Server parse and compile time: 
-   CPU time = 4 ms, elapsed time = 4 ms.
 
 (4 filas afectadas)
 Table 'Worktable'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
 Table 'Workfile'. Scan count 0, logical reads 0, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
-Table 'partidos'. Scan count 1, logical reads 1037, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+Table 'partidos'. Scan count 1, logical reads 1039, physical reads 0, page server reads 0, read-ahead reads 0, page server read-ahead reads 0, lob logical reads 0, lob physical reads 0, lob page server reads 0, lob read-ahead reads 0, lob page server read-ahead reads 0.
+
+(1 fila afectada)
 
  SQL Server Execution Times:
-   CPU time = 47 ms,  elapsed time = 57 ms.
+   CPU time = 62 ms,  elapsed time = 194 ms.
 
  SQL Server Execution Times:
    CPU time = 0 ms,  elapsed time = 0 ms.
 =====================================================
 
-Hora de finalización: 2025-11-01T14:22:28.1902790-03:00
+Hora de finalización: 2025-11-16T19:08:50.4012031-03:00
