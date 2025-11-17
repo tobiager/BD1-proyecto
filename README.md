@@ -33,7 +33,7 @@
 | [`docs/tema3-informe.md`](./docs/tema3-informe.md) | Informe del **Tema 3: Manejo de Transacciones y Transacciones Anidadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/tema4-informe.md`](./docs/tema4-informe.md) | Informe del **Tema 4: Vistas y Vistas Indexadas** (objetivos, implementación, pruebas y conclusiones). |
 | [`docs/diccionario_datos.md`](./docs/diccionario_datos.md) | Diccionario de datos del esquema `tribuneros_bdi`. |
-| [`docs/Proyecto_Integrador_Grupo39.pdf`](./docs/Proyecto_Integrador_Grupo39.pdf) | **Consolidado del informe académico** (Cap. I–VI). Falta completar contenido por tema. |
+| [`docs/Proyecto_Integrador_Grupo39.pdf`](./docs/Proyecto_Integrador_Grupo39.pdf) | **Consolidado del informe académico** (Cap. I–VI). |
 
 > Cada documento técnico referencia los scripts correspondientes en `script/` para garantizar trazabilidad.
 
