@@ -2,7 +2,7 @@
 
 ## Resumen ejecutivo
 
-Este documento describe el diseño, implementación y pruebas de procedimientos almacenados que utilizan transacciones explícitas, transacciones anidadas y puntos de guardado (SAVE TRANSACTION) en la base de datos `tribuneros_bdi`. Se justifica el uso de transacciones, se explican las decisiones de diseño y se documentan pruebas que demuestran el comportamiento correcto de commits y rollbacks. Los scripts fuente están disponibles en `script/tema3-transacciones`.
+Este documento describe el diseño, implementación y pruebas de procedimientos almacenados que utilizan transacciones explícitas, transacciones anidadas y puntos de guardado (SAVE TRANSACTION) en la base de datos `tribuneros_bdi`. Se justifica el uso de transacciones, se explican las decisiones de diseño y se documentan pruebas que demuestran el comportamiento correcto de commits y rollbacks. Los scripts fuente están disponibles en `script/tema2-transacciones`.
 
 ---
 
@@ -192,28 +192,58 @@ BEGIN TRANSACTION TxnPrincipal
 COMMIT TRANSACTION TxnPrincipal
 ```
 
-### 3.4 sp_Transferir_Favoritos
+### 3.4 sp_Registrar_Actividad_Usuario_Completa (⭐ CUMPLE TAREA 1)
 
-**Propósito:** Copiar todos los favoritos de un usuario a otro.
+**Propósito:** Implementar EXACTAMENTE lo que pide la Tarea 1 de la consigna:
+1. **INSERT** en `visualizaciones` (registrar que el usuario vio el partido)
+2. **INSERT** en `calificaciones` (calificar el partido)
+3. **UPDATE** en `perfiles` (actualizar timestamp de última actividad)
 
 **Características:**
-- Validaciones de usuarios (origen y destino existen, no son el mismo)
-- Opción de sobrescribir favoritos existentes del destino
-- Evita duplicados al copiar
-- Usa una sola transacción con múltiples operaciones DML
+- Demuestra transacción completa con **INSERT → INSERT → UPDATE**
+- Solo confirma si **las tres operaciones** tienen éxito
+- Validaciones previas (partido existe, usuario existe, puntaje válido)
+- Si cualquier operación falla, **se revierten las tres**
 
 **Parámetros:**
-- `@usuario_origen` (CHAR(36)): ID del usuario origen
-- `@usuario_destino` (CHAR(36)): ID del usuario destino
-- `@sobrescribir` (BIT): Si es 1, elimina favoritos existentes del destino (default: 0)
+- `@partido_id` (INT): ID del partido
+- `@usuario_id` (CHAR(36)): ID del usuario
+- `@medio` (VARCHAR(12)): Medio de visualización ('estadio', 'tv', 'streaming', 'repeticion')
+- `@minutos_vistos` (INT): Minutos que vio del partido
+- `@puntaje` (SMALLINT): Calificación de 1 a 5
+- `@visualizacion_id` (INT OUTPUT): ID de la visualización creada
+- `@calificacion_id` (INT OUTPUT): ID de la calificación creada
 
 **Ejemplo de uso:**
 ```sql
-EXEC dbo.sp_Transferir_Favoritos
-  @usuario_origen = 'guid-usuario-1',
-  @usuario_destino = 'guid-usuario-2',
-  @sobrescribir = 0;
+DECLARE @vis_id INT, @cal_id INT;
+
+EXEC dbo.sp_Registrar_Actividad_Usuario_Completa
+  @partido_id = 1,
+  @usuario_id = 'user-guid-here',
+  @medio = 'streaming',
+  @minutos_vistos = 90,
+  @puntaje = 5,
+  @visualizacion_id = @vis_id OUTPUT,
+  @calificacion_id = @cal_id OUTPUT;
 ```
+
+**Flujo de transacción:**
+```
+BEGIN TRANSACTION
+  ├─ Validar partido existe
+  ├─ Validar usuario existe
+  ├─ Validar medio válido
+  ├─ Validar puntaje (1-5)
+  │
+  ├─ INSERT visualizaciones  ✓ (Paso 1)
+  ├─ INSERT calificaciones   ✓ (Paso 2)
+  └─ UPDATE perfiles         ✓ (Paso 3)
+  
+COMMIT TRANSACTION
+```
+
+Si **cualquier paso falla**, se ejecuta **ROLLBACK** y ninguna operación se persiste.
 
 ---
 
@@ -279,17 +309,6 @@ Muestra paso a paso cómo cambia el contador de transacciones.
 
 ## 5. Pruebas y validación
 
-El Script 03 demuestra una transacción que incluye dos inserciones válidas.
-Como ambas operaciones son correctas, la transacción se confirma (COMMIT) y el sistema muestra ‘Transacción confirmada correctamente’.
-
-![Prueba exitosa](../assets/tema3-transacciones/03.png)
-
-En esta prueba forzamos un error de duplicidad de clave primaria (insertando dos veces el ID 3001) dentro de una transacción. 
-Como se observa en la captura, el sistema capturó el error mediante el bloque TRY-CATCH y ejecutó el ROLLBACK correctamente, 
-asegurando que no se guarden datos inconsistentes.
-
-![Prueba de Rollback](../assets/tema3-transacciones/04.png)
-
 ### 5.1 Casos de éxito (03_pruebas_transacciones.sql)
 
 Se ejecutaron 5 pruebas exitosas:
@@ -299,7 +318,7 @@ Se ejecutaron 5 pruebas exitosas:
 | 1 | Registrar usuario completo | ✓ Usuario y perfil creados |
 | 2 | Calificar y opinar | ✓ Calificación y opinión creadas |
 | 3 | Seguir equipo con recordatorios | ✓ Seguimiento + 3 recordatorios |
-| 4 | Transferir favoritos | ✓ 5 favoritos copiados |
+| 4 | Registrar actividad completa (INSERT-INSERT-UPDATE) | ✓ Visualización + Calificación + Perfil actualizado |
 | 5 | Análisis de rendimiento | ✓ Métricas IO/TIME capturadas |
 
 ### 5.2 Casos de error (04_pruebas_rollback.sql)
@@ -313,6 +332,7 @@ Se ejecutaron 5 pruebas de rollback:
 | 3 | Calificación duplicada | ROLLBACK de segunda calificación | ✓ Solo una calificación existe |
 | 4 | Rollback parcial con savepoint | Usuario creado, equipo inválido rechazado | ✓ Usuario + equipo válido existen |
 | 5 | Error crítico (división por 0) | ROLLBACK completo | ✓ Ningún dato persistido |
+| 6 | Error intencional después de INSERT (Tarea 2) | ROLLBACK completo | ✓ Ninguna operación realizada |
 
 ### 5.3 Resultados de pruebas de rollback parcial
 
@@ -335,9 +355,9 @@ COMMIT;
 - ✓ Seguimiento de equipo válido existe
 - ✓ Seguimiento de equipo inválido NO existe
 
-### 5.4 Resultados de pruebas de rollback completo
+### 5.5 Resultados de pruebas de rollback completo
 
-**Escenario:** Error crítico durante transacción compleja
+**Escenario:** Error crítico durante transacción compleja (Prueba 5)
 
 **Código ejecutado:**
 ```sql
@@ -388,6 +408,16 @@ Procedimiento: sp_Calificar_y_Opinar
 - Tabla calificaciones: 3 lecturas lógicas (INSERT + índice único)
 - Tabla opiniones: 3 lecturas lógicas (INSERT + índice único)
 - Total: 8 lecturas lógicas
+```
+
+```
+Procedimiento: sp_Registrar_Actividad_Usuario_Completa (INSERT-INSERT-UPDATE)
+- Tabla partidos: 1 lectura lógica (validación)
+- Tabla usuarios: 1 lectura lógica (validación)
+- Tabla visualizaciones: 2 lecturas lógicas (INSERT)
+- Tabla calificaciones: 3 lecturas lógicas (INSERT + índice único)
+- Tabla perfiles: 2 lecturas lógicas (UPDATE)
+- Total: 9 lecturas lógicas
 ```
 
 ### 6.3 Optimizaciones aplicadas
