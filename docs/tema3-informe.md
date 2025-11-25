@@ -2,7 +2,7 @@
 
 ## Resumen ejecutivo
 
-Este documento describe el diseño, implementación y pruebas de procedimientos almacenados que utilizan transacciones explícitas, transacciones anidadas y puntos de guardado (SAVE TRANSACTION) en la base de datos `tribuneros_bdi`. Se justifica el uso de transacciones, se explican las decisiones de diseño y se documentan pruebas que demuestran el comportamiento correcto de commits y rollbacks. Los scripts fuente están disponibles en `script/tema2-transacciones`.
+Este documento describe el diseño, implementación y pruebas de procedimientos almacenados que utilizan transacciones explícitas, transacciones anidadas y puntos de guardado (SAVE TRANSACTION) en la base de datos `tribuneros_bdi`. Se justifica el uso de transacciones, se explican las decisiones de diseño y se documentan pruebas que demuestran el comportamiento correcto de commits y rollbacks. Los scripts fuente están disponibles en `script/tema3-transacciones`.
 
 ---
 
