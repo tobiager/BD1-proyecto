@@ -22,10 +22,25 @@
 <img src="./assets/infografia.png" alt="Infografia" height="800"/><br/>
 
 ## Objetivos generales
-1. Documentar de forma académica el proceso de diseño y validación de la base de datos Tribuneros.
-2. Proporcionar scripts reproducibles para crear, poblar y auditar el esquema relacional en SQL Server.
-3. Garantizar la trazabilidad entre los capítulos teóricos y la implementación técnica mediante enlaces cruzados.
-4. Implementar y documentar un modelo de seguridad basado en roles y permisos granulares.
+1. Modelar correctamente el dominio del problema, definiendo entidades, relaciones, restricciones de integridad y reglas de negocio coherentes con una red social futbolera.
+(Usuarios, perfiles, partidos, calificaciones, opiniones, seguimientos, recordatorios, etc.)
+
+2. Implementar lógica de negocio robusta mediante Stored Procedures (SP), controlando validaciones, errores y consistencia de datos.
+Ejemplos: registro completo de usuario, calificar y opinar, seguir equipos con recordatorios.
+
+3. Crear y utilizar funciones definidas por el usuario (UDF) para encapsular cálculos reutilizables y mejorar la expresividad de consultas.
+Ej.: obtener nombre de usuario, calcular promedio de puntaje por partido.
+
+4. Optimizar el rendimiento mediante la creación de índices (clustered, nonclustered, con columnas incluidas) evaluando su impacto mediante planes de ejecución y estadísticas.
+
+5. Aplicar transacciones (BEGIN/COMMIT/ROLLBACK) para garantizar integridad ACID en operaciones críticas y evitar datos inconsistentes.
+Incluye manejo de errores con TRY/CATCH y puntos de guardado.
+
+6. Diseñar vistas y vistas indexadas que simplifiquen consultas frecuentes, encapsulen lógica de selección y permitan mejorar la performance de operaciones de lectura intensiva.
+
+7. Estructurar el repositorio de GitHub como un proyecto académico reproducible, con scripts limpìos, ordenados y ejecutables: creación, carga de datos, pruebas y documentación.
+
+8. Validar cada tema mediante pruebas reales (capturas, lotes de datos, mediciones de tiempo, comparaciones de planes), garantizando que lo implementado cumple con los requisitos académicos.
 
 ## Documentación
 | Documento | Descripción |
