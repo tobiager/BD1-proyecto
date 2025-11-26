@@ -19,6 +19,8 @@
 - Alcance: diseño lógico del esquema `tribuneros_bdi`, definición de restricciones, carga de datos representativos y consultas de verificación.
 - Artefactos clave: capítulos académicos, scripts SQL ejecutables y recursos gráficos de apoyo.
 
+<img src="./assets/infografia.png" alt="Infografia" height="800"/><br/>
+
 ## Objetivos generales
 1. Documentar de forma académica el proceso de diseño y validación de la base de datos Tribuneros.
 2. Proporcionar scripts reproducibles para crear, poblar y auditar el esquema relacional en SQL Server.
