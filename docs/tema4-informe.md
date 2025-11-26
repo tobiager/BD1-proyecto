@@ -1,4 +1,4 @@
-# Tema 4: Vistas y vistas indexadas en SQL Server  
+# Informe: Vistas y vistas indexadas en SQL Server  
 
 
 ---

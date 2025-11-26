@@ -192,7 +192,7 @@ BEGIN TRANSACTION TxnPrincipal
 COMMIT TRANSACTION TxnPrincipal
 ```
 
-### 3.4 sp_Registrar_Actividad_Usuario_Completa (⭐ CUMPLE TAREA 1)
+### 3.4 sp_Registrar_Actividad_Usuario_Completa 
 
 **Propósito:** Implementar EXACTAMENTE lo que pide la Tarea 1 de la consigna:
 1. **INSERT** en `visualizaciones` (registrar que el usuario vio el partido)
