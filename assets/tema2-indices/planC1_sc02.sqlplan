@@ -1,0 +1,117 @@
+<ShowPlanXML xmlns="http://schemas.microsoft.com/sqlserver/2004/07/showplan" Version="1.564" Build="16.0.1000.6">
+  <BatchSequence>
+    <Batch>
+      <Statements>
+        <StmtSimple StatementText="SELECT COUNT(*) [total_partidos_2023] FROM [dbo].[partidos] WHERE [fecha_utc]&gt;=@1 AND [fecha_utc]&lt;@2" StatementId="1" StatementCompId="10" StatementType="SELECT" StatementSqlHandle="0x09005E6EAB5CEC49450EF7CFDA97FC51A5DA0000000000000000000000000000000000000000000000000000" DatabaseContextSettingsId="2" ParentObjectId="0" StatementParameterizationType="0" RetrievedFromCache="false" StatementSubTreeCost="10.9483" StatementEstRows="1" SecurityPolicyApplied="false" StatementOptmLevel="FULL" QueryHash="0xE33FEC1AA46DC6BF" QueryPlanHash="0x40FAB1A784D4216D" CardinalityEstimationModelVersion="160">
+          <StatementSetOptions QUOTED_IDENTIFIER="true" ARITHABORT="true" CONCAT_NULL_YIELDS_NULL="true" ANSI_NULLS="true" ANSI_PADDING="true" ANSI_WARNINGS="true" NUMERIC_ROUNDABORT="false"></StatementSetOptions>
+          <QueryPlan DegreeOfParallelism="0" NonParallelPlanReason="NoParallelPlansInDesktopOrExpressEdition" CachedPlanSize="24" CompileTime="1" CompileCPU="1" CompileMemory="272">
+            <MissingIndexes>
+              <MissingIndexGroup Impact="94.8713">
+                <MissingIndex Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]">
+                  <ColumnGroup Usage="INEQUALITY">
+                    <Column Name="[fecha_utc]" ColumnId="6"></Column>
+                  </ColumnGroup>
+                </MissingIndex>
+              </MissingIndexGroup>
+            </MissingIndexes>
+            <MemoryGrantInfo SerialRequiredMemory="0" SerialDesiredMemory="0" GrantedMemory="0" MaxUsedMemory="0"></MemoryGrantInfo>
+            <OptimizerHardwareDependentProperties EstimatedAvailableMemoryGrant="203776" EstimatedPagesCached="50944" EstimatedAvailableDegreeOfParallelism="2" MaxCompileMemory="2470992"></OptimizerHardwareDependentProperties>
+            <OptimizerStatsUsage>
+              <StatisticsInfo LastUpdate="2025-11-27T01:21:00.74" ModificationCount="0" SamplingPercent="11.5805" Statistics="[_WA_Sys_00000006_5006DFF2]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+            </OptimizerStatsUsage>
+            <TraceFlags IsCompileTime="1">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <TraceFlags IsCompileTime="0">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <QueryTimeStats ElapsedTime="186" CpuTime="186"></QueryTimeStats>
+            <RelOp NodeId="0" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="1" EstimateIO="0" EstimateCPU="0" AvgRowSize="11" EstimatedTotalSubtreeCost="10.9483" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+              <OutputList>
+                <ColumnReference Column="Expr1002"></ColumnReference>
+              </OutputList>
+              <ComputeScalar>
+                <DefinedValues>
+                  <DefinedValue>
+                    <ColumnReference Column="Expr1002"></ColumnReference>
+                    <ScalarOperator ScalarString="CONVERT_IMPLICIT(int,[Expr1007],0)">
+                      <Convert DataType="int" Style="0" Implicit="1">
+                        <ScalarOperator>
+                          <Identifier>
+                            <ColumnReference Column="Expr1007"></ColumnReference>
+                          </Identifier>
+                        </ScalarOperator>
+                      </Convert>
+                    </ScalarOperator>
+                  </DefinedValue>
+                </DefinedValues>
+                <RelOp NodeId="1" PhysicalOp="Stream Aggregate" LogicalOp="Aggregate" EstimateRows="1" EstimateIO="0" EstimateCPU="0.0880144" AvgRowSize="11" EstimatedTotalSubtreeCost="10.9483" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                  <OutputList>
+                    <ColumnReference Column="Expr1007"></ColumnReference>
+                  </OutputList>
+                  <RunTimeInformation>
+                    <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="186" ActualCPUms="186" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                  </RunTimeInformation>
+                  <StreamAggregate>
+                    <DefinedValues>
+                      <DefinedValue>
+                        <ColumnReference Column="Expr1007"></ColumnReference>
+                        <ScalarOperator ScalarString="Count(*)">
+                          <Aggregate AggType="countstar" Distinct="0"></Aggregate>
+                        </ScalarOperator>
+                      </DefinedValue>
+                    </DefinedValues>
+                    <RelOp NodeId="2" PhysicalOp="Clustered Index Scan" LogicalOp="Clustered Index Scan" EstimateRows="146690" EstimatedRowsRead="1e+06" EstimateIO="8.88016" EstimateCPU="1.10016" AvgRowSize="13" EstimatedTotalSubtreeCost="9.98032" TableCardinality="1e+06" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                      <OutputList></OutputList>
+                      <RunTimeInformation>
+                        <RunTimeCountersPerThread Thread="0" ActualRows="146681" Batches="0" ActualElapsedms="180" ActualCPUms="180" ActualScans="1" ActualLogicalReads="12031" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRowsRead="1000000" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                      </RunTimeInformation>
+                      <IndexScan Ordered="0" ForcedIndex="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+                        <DefinedValues></DefinedValues>
+                        <Object Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Index="[PK_partidos]" IndexKind="Clustered" Storage="RowStore"></Object>
+                        <Predicate>
+                          <ScalarOperator ScalarString="[tribuneros_bdi].[dbo].[partidos].[fecha_utc]&gt;='2023-01-01 00:00:00.0000000' AND [tribuneros_bdi].[dbo].[partidos].[fecha_utc]&lt;'2024-01-01 00:00:00.0000000'">
+                            <Logical Operation="AND">
+                              <ScalarOperator>
+                                <Compare CompareOp="GE">
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                  <ScalarOperator>
+                                    <Const ConstValue="'2023-01-01 00:00:00.0000000'"></Const>
+                                  </ScalarOperator>
+                                </Compare>
+                              </ScalarOperator>
+                              <ScalarOperator>
+                                <Compare CompareOp="LT">
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                  <ScalarOperator>
+                                    <Const ConstValue="'2024-01-01 00:00:00.0000000'"></Const>
+                                  </ScalarOperator>
+                                </Compare>
+                              </ScalarOperator>
+                            </Logical>
+                          </ScalarOperator>
+                        </Predicate>
+                      </IndexScan>
+                    </RelOp>
+                  </StreamAggregate>
+                </RelOp>
+              </ComputeScalar>
+            </RelOp>
+            <ParameterList>
+              <ColumnReference Column="@2" ParameterDataType="varchar(8000)" ParameterCompiledValue="'2024-01-01'" ParameterRuntimeValue="'2024-01-01'"></ColumnReference>
+              <ColumnReference Column="@1" ParameterDataType="varchar(8000)" ParameterCompiledValue="'2023-01-01'" ParameterRuntimeValue="'2023-01-01'"></ColumnReference>
+            </ParameterList>
+          </QueryPlan>
+        </StmtSimple>
+      </Statements>
+    </Batch>
+  </BatchSequence>
+</ShowPlanXML>

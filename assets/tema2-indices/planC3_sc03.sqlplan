@@ -1,0 +1,277 @@
+<ShowPlanXML xmlns="http://schemas.microsoft.com/sqlserver/2004/07/showplan" Version="1.564" Build="16.0.1000.6">
+  <BatchSequence>
+    <Batch>
+      <Statements>
+        <StmtSimple StatementText="SELECT &#xD;&#xA;    YEAR(fecha_utc) AS anio,&#xD;&#xA;    MONTH(fecha_utc) AS mes,&#xD;&#xA;    COUNT(*) AS total_partidos,&#xD;&#xA;    SUM(CASE WHEN estado = 2 THEN 1 ELSE 0 END) AS finalizados&#xD;&#xA;FROM dbo.partidos&#xD;&#xA;WHERE fecha_utc &gt;= '2023-01-01' AND fecha_utc &lt; '2024-01-01'&#xD;&#xA;GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)&#xD;&#xA;ORDER BY anio, mes" StatementId="3" StatementCompId="6" StatementType="SELECT" StatementSqlHandle="0x090083564D54B65B05A5826ED67AD3B7A8570000000000000000000000000000000000000000000000000000" DatabaseContextSettingsId="2" ParentObjectId="0" StatementParameterizationType="0" RetrievedFromCache="true" StatementSubTreeCost="11.9706" StatementEstRows="24" SecurityPolicyApplied="false" StatementOptmLevel="FULL" QueryHash="0x3C0D8559D0747E9D" QueryPlanHash="0xCA3EB64301336B80" CardinalityEstimationModelVersion="160">
+          <StatementSetOptions QUOTED_IDENTIFIER="true" ARITHABORT="true" CONCAT_NULL_YIELDS_NULL="true" ANSI_NULLS="true" ANSI_PADDING="true" ANSI_WARNINGS="true" NUMERIC_ROUNDABORT="false"></StatementSetOptions>
+          <QueryPlan DegreeOfParallelism="0" MemoryGrant="1584" NonParallelPlanReason="NoParallelPlansInDesktopOrExpressEdition" CachedPlanSize="48" CompileTime="4" CompileCPU="4" CompileMemory="480">
+            <MissingIndexes>
+              <MissingIndexGroup Impact="87.3018">
+                <MissingIndex Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]">
+                  <ColumnGroup Usage="INEQUALITY">
+                    <Column Name="[fecha_utc]" ColumnId="6"></Column>
+                  </ColumnGroup>
+                  <ColumnGroup Usage="INCLUDE">
+                    <Column Name="[estado]" ColumnId="7"></Column>
+                  </ColumnGroup>
+                </MissingIndex>
+              </MissingIndexGroup>
+            </MissingIndexes>
+            <MemoryGrantInfo SerialRequiredMemory="1536" SerialDesiredMemory="1584" RequiredMemory="1536" DesiredMemory="1584" RequestedMemory="1584" GrantWaitTime="0" MaxQueryMemory="600352" GrantedMemory="1584" MaxUsedMemory="328"></MemoryGrantInfo>
+            <OptimizerHardwareDependentProperties EstimatedAvailableMemoryGrant="203776" EstimatedPagesCached="50944" EstimatedAvailableDegreeOfParallelism="2" MaxCompileMemory="2431080"></OptimizerHardwareDependentProperties>
+            <OptimizerStatsUsage>
+              <StatisticsInfo LastUpdate="2025-11-27T01:22:11.89" ModificationCount="0" SamplingPercent="100" Statistics="[IX_partidos_fecha]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+            </OptimizerStatsUsage>
+            <TraceFlags IsCompileTime="1">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <TraceFlags IsCompileTime="0">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <QueryTimeStats ElapsedTime="385" CpuTime="385"></QueryTimeStats>
+            <RelOp NodeId="0" PhysicalOp="Sort" LogicalOp="Sort" EstimateRows="24" EstimateIO="0.0112613" EstimateCPU="0.000271684" AvgRowSize="23" EstimatedTotalSubtreeCost="11.9706" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+              <OutputList>
+                <ColumnReference Column="Expr1002"></ColumnReference>
+                <ColumnReference Column="Expr1003"></ColumnReference>
+                <ColumnReference Column="Expr1004"></ColumnReference>
+                <ColumnReference Column="Expr1005"></ColumnReference>
+              </OutputList>
+              <MemoryFractions Input="0.666667" Output="1"></MemoryFractions>
+              <RunTimeInformation>
+                <RunTimeCountersPerThread Thread="0" ActualRows="12" Batches="0" ActualElapsedms="384" ActualCPUms="384" ActualScans="0" ActualLogicalReads="0" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRebinds="1" ActualRewinds="0" ActualEndOfScans="1" ActualExecutions="1" InputMemoryGrant="544" OutputMemoryGrant="176" UsedMemoryGrant="16" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+              </RunTimeInformation>
+              <Sort Distinct="0">
+                <OrderBy>
+                  <OrderByColumn Ascending="1">
+                    <ColumnReference Column="Expr1002"></ColumnReference>
+                  </OrderByColumn>
+                  <OrderByColumn Ascending="1">
+                    <ColumnReference Column="Expr1003"></ColumnReference>
+                  </OrderByColumn>
+                </OrderBy>
+                <RelOp NodeId="1" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="24" EstimateIO="0" EstimateCPU="0" AvgRowSize="23" EstimatedTotalSubtreeCost="11.959" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                  <OutputList>
+                    <ColumnReference Column="Expr1002"></ColumnReference>
+                    <ColumnReference Column="Expr1003"></ColumnReference>
+                    <ColumnReference Column="Expr1004"></ColumnReference>
+                    <ColumnReference Column="Expr1005"></ColumnReference>
+                  </OutputList>
+                  <ComputeScalar>
+                    <DefinedValues>
+                      <DefinedValue>
+                        <ColumnReference Column="Expr1004"></ColumnReference>
+                        <ScalarOperator ScalarString="CONVERT_IMPLICIT(int,[Expr1010],0)">
+                          <Convert DataType="int" Style="0" Implicit="1">
+                            <ScalarOperator>
+                              <Identifier>
+                                <ColumnReference Column="Expr1010"></ColumnReference>
+                              </Identifier>
+                            </ScalarOperator>
+                          </Convert>
+                        </ScalarOperator>
+                      </DefinedValue>
+                    </DefinedValues>
+                    <RelOp NodeId="2" PhysicalOp="Hash Match" LogicalOp="Aggregate" EstimateRows="24" EstimateIO="0" EstimateCPU="0.998723" AvgRowSize="23" EstimatedTotalSubtreeCost="11.959" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                      <OutputList>
+                        <ColumnReference Column="Expr1002"></ColumnReference>
+                        <ColumnReference Column="Expr1003"></ColumnReference>
+                        <ColumnReference Column="Expr1005"></ColumnReference>
+                        <ColumnReference Column="Expr1010"></ColumnReference>
+                      </OutputList>
+                      <MemoryFractions Input="1" Output="0.333333"></MemoryFractions>
+                      <RunTimeInformation>
+                        <RunTimeCountersPerThread Thread="0" ActualRows="12" Batches="0" ActualElapsedms="384" ActualCPUms="384" ActualScans="0" ActualLogicalReads="0" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualEndOfScans="1" ActualExecutions="1" InputMemoryGrant="1072" OutputMemoryGrant="1040" UsedMemoryGrant="320" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                      </RunTimeInformation>
+                      <Hash>
+                        <DefinedValues>
+                          <DefinedValue>
+                            <ColumnReference Column="Expr1010"></ColumnReference>
+                            <ScalarOperator ScalarString="COUNT(*)">
+                              <Aggregate Distinct="0" AggType="COUNT*"></Aggregate>
+                            </ScalarOperator>
+                          </DefinedValue>
+                          <DefinedValue>
+                            <ColumnReference Column="Expr1005"></ColumnReference>
+                            <ScalarOperator ScalarString="SUM([Expr1006])">
+                              <Aggregate Distinct="0" AggType="SUM">
+                                <ScalarOperator>
+                                  <Identifier>
+                                    <ColumnReference Column="Expr1006"></ColumnReference>
+                                  </Identifier>
+                                </ScalarOperator>
+                              </Aggregate>
+                            </ScalarOperator>
+                          </DefinedValue>
+                        </DefinedValues>
+                        <HashKeysBuild>
+                          <ColumnReference Column="Expr1002"></ColumnReference>
+                          <ColumnReference Column="Expr1003"></ColumnReference>
+                        </HashKeysBuild>
+                        <BuildResidual>
+                          <ScalarOperator ScalarString="[Expr1002] = [Expr1002] AND [Expr1003] = [Expr1003]">
+                            <Logical Operation="AND">
+                              <ScalarOperator>
+                                <Compare CompareOp="IS">
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Column="Expr1002"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Column="Expr1002"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                </Compare>
+                              </ScalarOperator>
+                              <ScalarOperator>
+                                <Compare CompareOp="IS">
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Column="Expr1003"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                  <ScalarOperator>
+                                    <Identifier>
+                                      <ColumnReference Column="Expr1003"></ColumnReference>
+                                    </Identifier>
+                                  </ScalarOperator>
+                                </Compare>
+                              </ScalarOperator>
+                            </Logical>
+                          </ScalarOperator>
+                        </BuildResidual>
+                        <RelOp NodeId="3" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="146802" EstimateIO="0" EstimateCPU="0.1" AvgRowSize="25" EstimatedTotalSubtreeCost="10.0803" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                          <OutputList>
+                            <ColumnReference Column="Expr1002"></ColumnReference>
+                            <ColumnReference Column="Expr1003"></ColumnReference>
+                            <ColumnReference Column="Expr1006"></ColumnReference>
+                          </OutputList>
+                          <ComputeScalar>
+                            <DefinedValues>
+                              <DefinedValue>
+                                <ColumnReference Column="Expr1002"></ColumnReference>
+                                <ScalarOperator ScalarString="datepart(year,[tribuneros_bdi].[dbo].[partidos].[fecha_utc])">
+                                  <Intrinsic FunctionName="datepart">
+                                    <ScalarOperator>
+                                      <Const ConstValue="(0)"></Const>
+                                    </ScalarOperator>
+                                    <ScalarOperator>
+                                      <Identifier>
+                                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                      </Identifier>
+                                    </ScalarOperator>
+                                  </Intrinsic>
+                                </ScalarOperator>
+                              </DefinedValue>
+                              <DefinedValue>
+                                <ColumnReference Column="Expr1003"></ColumnReference>
+                                <ScalarOperator ScalarString="datepart(month,[tribuneros_bdi].[dbo].[partidos].[fecha_utc])">
+                                  <Intrinsic FunctionName="datepart">
+                                    <ScalarOperator>
+                                      <Const ConstValue="(2)"></Const>
+                                    </ScalarOperator>
+                                    <ScalarOperator>
+                                      <Identifier>
+                                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                      </Identifier>
+                                    </ScalarOperator>
+                                  </Intrinsic>
+                                </ScalarOperator>
+                              </DefinedValue>
+                              <DefinedValue>
+                                <ColumnReference Column="Expr1006"></ColumnReference>
+                                <ScalarOperator ScalarString="CASE WHEN [tribuneros_bdi].[dbo].[partidos].[estado]=(2) THEN (1) ELSE (0) END">
+                                  <IF>
+                                    <Condition>
+                                      <ScalarOperator>
+                                        <Compare CompareOp="EQ">
+                                          <ScalarOperator>
+                                            <Identifier>
+                                              <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="estado"></ColumnReference>
+                                            </Identifier>
+                                          </ScalarOperator>
+                                          <ScalarOperator>
+                                            <Const ConstValue="(2)"></Const>
+                                          </ScalarOperator>
+                                        </Compare>
+                                      </ScalarOperator>
+                                    </Condition>
+                                    <Then>
+                                      <ScalarOperator>
+                                        <Const ConstValue="(1)"></Const>
+                                      </ScalarOperator>
+                                    </Then>
+                                    <Else>
+                                      <ScalarOperator>
+                                        <Const ConstValue="(0)"></Const>
+                                      </ScalarOperator>
+                                    </Else>
+                                  </IF>
+                                </ScalarOperator>
+                              </DefinedValue>
+                            </DefinedValues>
+                            <RelOp NodeId="4" PhysicalOp="Clustered Index Scan" LogicalOp="Clustered Index Scan" EstimateRows="146802" EstimatedRowsRead="1e+06" EstimateIO="8.88016" EstimateCPU="1.10016" AvgRowSize="14" EstimatedTotalSubtreeCost="9.98032" TableCardinality="1e+06" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                              <OutputList>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="estado"></ColumnReference>
+                              </OutputList>
+                              <RunTimeInformation>
+                                <RunTimeCountersPerThread Thread="0" ActualRows="146681" Batches="0" ActualElapsedms="236" ActualCPUms="236" ActualScans="1" ActualLogicalReads="12031" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRowsRead="1000000" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                              </RunTimeInformation>
+                              <IndexScan Ordered="0" ForcedIndex="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+                                <DefinedValues>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="estado"></ColumnReference>
+                                  </DefinedValue>
+                                </DefinedValues>
+                                <Object Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Index="[PK_partidos]" IndexKind="Clustered" Storage="RowStore"></Object>
+                                <Predicate>
+                                  <ScalarOperator ScalarString="[tribuneros_bdi].[dbo].[partidos].[fecha_utc]&gt;='2023-01-01 00:00:00.0000000' AND [tribuneros_bdi].[dbo].[partidos].[fecha_utc]&lt;'2024-01-01 00:00:00.0000000'">
+                                    <Logical Operation="AND">
+                                      <ScalarOperator>
+                                        <Compare CompareOp="GE">
+                                          <ScalarOperator>
+                                            <Identifier>
+                                              <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                            </Identifier>
+                                          </ScalarOperator>
+                                          <ScalarOperator>
+                                            <Const ConstValue="'2023-01-01 00:00:00.0000000'"></Const>
+                                          </ScalarOperator>
+                                        </Compare>
+                                      </ScalarOperator>
+                                      <ScalarOperator>
+                                        <Compare CompareOp="LT">
+                                          <ScalarOperator>
+                                            <Identifier>
+                                              <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Column="fecha_utc"></ColumnReference>
+                                            </Identifier>
+                                          </ScalarOperator>
+                                          <ScalarOperator>
+                                            <Const ConstValue="'2024-01-01 00:00:00.0000000'"></Const>
+                                          </ScalarOperator>
+                                        </Compare>
+                                      </ScalarOperator>
+                                    </Logical>
+                                  </ScalarOperator>
+                                </Predicate>
+                              </IndexScan>
+                            </RelOp>
+                          </ComputeScalar>
+                        </RelOp>
+                      </Hash>
+                    </RelOp>
+                  </ComputeScalar>
+                </RelOp>
+              </Sort>
+            </RelOp>
+          </QueryPlan>
+        </StmtSimple>
+      </Statements>
+    </Batch>
+  </BatchSequence>
+</ShowPlanXML>

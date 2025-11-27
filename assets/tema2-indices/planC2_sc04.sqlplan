@@ -1,0 +1,489 @@
+<ShowPlanXML xmlns="http://schemas.microsoft.com/sqlserver/2004/07/showplan" Version="1.564" Build="16.0.1000.6">
+  <BatchSequence>
+    <Batch>
+      <Statements>
+        <StmtSimple StatementText="SELECT &#xD;&#xA;    p.id,&#xD;&#xA;    p.fecha_utc,&#xD;&#xA;    CASE p.estado &#xD;&#xA;        WHEN 0 THEN 'Programado'&#xD;&#xA;        WHEN 1 THEN 'En Vivo'&#xD;&#xA;        WHEN 2 THEN 'Finalizado'&#xD;&#xA;        WHEN 3 THEN 'Pospuesto'&#xD;&#xA;        ELSE 'Cancelado'&#xD;&#xA;    END AS estado_texto,&#xD;&#xA;    el.nombre AS equipo_local,&#xD;&#xA;    ev.nombre AS equipo_visitante,&#xD;&#xA;    p.goles_local,&#xD;&#xA;    p.goles_visitante&#xD;&#xA;FROM dbo.partidos p&#xD;&#xA;INNER JOIN dbo.equipos el ON p.equipo_local = el.id&#xD;&#xA;INNER JOIN dbo.equipos ev ON p.equipo_visitante = ev.id&#xD;&#xA;WHERE p.fecha_utc &gt;= '2024-01-01' &#xD;&#xA;  AND p.fecha_utc &lt; '2024-04-01'&#xD;&#xA;  AND p.estado = 2" StatementId="2" StatementCompId="4" StatementType="SELECT" StatementSqlHandle="0x0900BB7AEB94EDDA2442B36E325720C6A2060000000000000000000000000000000000000000000000000000" DatabaseContextSettingsId="2" ParentObjectId="0" StatementParameterizationType="0" RetrievedFromCache="true" StatementSubTreeCost="0.560479" StatementEstRows="26936.5" SecurityPolicyApplied="false" StatementOptmLevel="FULL" QueryHash="0x26E8C7FEC3466F98" QueryPlanHash="0x9242AE52B161272D" StatementOptmEarlyAbortReason="GoodEnoughPlanFound" CardinalityEstimationModelVersion="160">
+          <StatementSetOptions QUOTED_IDENTIFIER="true" ARITHABORT="true" CONCAT_NULL_YIELDS_NULL="true" ANSI_NULLS="true" ANSI_PADDING="true" ANSI_WARNINGS="true" NUMERIC_ROUNDABORT="false"></StatementSetOptions>
+          <QueryPlan DegreeOfParallelism="0" MemoryGrant="3784" NonParallelPlanReason="NoParallelPlansInDesktopOrExpressEdition" CachedPlanSize="104" CompileTime="8" CompileCPU="8" CompileMemory="712">
+            <MissingIndexes>
+              <MissingIndexGroup Impact="60.298">
+                <MissingIndex Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]">
+                  <ColumnGroup Usage="EQUALITY">
+                    <Column Name="[estado]" ColumnId="7"></Column>
+                    <Column Name="[equipo_visitante]" ColumnId="10"></Column>
+                  </ColumnGroup>
+                  <ColumnGroup Usage="INEQUALITY">
+                    <Column Name="[fecha_utc]" ColumnId="6"></Column>
+                  </ColumnGroup>
+                  <ColumnGroup Usage="INCLUDE">
+                    <Column Name="[equipo_local]" ColumnId="9"></Column>
+                    <Column Name="[goles_local]" ColumnId="11"></Column>
+                    <Column Name="[goles_visitante]" ColumnId="12"></Column>
+                  </ColumnGroup>
+                </MissingIndex>
+              </MissingIndexGroup>
+            </MissingIndexes>
+            <MemoryGrantInfo SerialRequiredMemory="2048" SerialDesiredMemory="3784" RequiredMemory="2048" DesiredMemory="3784" RequestedMemory="3784" GrantWaitTime="0" MaxQueryMemory="591576" GrantedMemory="3784" MaxUsedMemory="1280"></MemoryGrantInfo>
+            <OptimizerHardwareDependentProperties EstimatedAvailableMemoryGrant="203776" EstimatedPagesCached="50944" EstimatedAvailableDegreeOfParallelism="2" MaxCompileMemory="2393016"></OptimizerHardwareDependentProperties>
+            <OptimizerStatsUsage>
+              <StatisticsInfo LastUpdate="2025-11-27T01:22:51.14" ModificationCount="0" SamplingPercent="100" Statistics="[IX_partidos_fecha_compuesto]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:22.88" ModificationCount="0" SamplingPercent="11.1219" Statistics="[_WA_Sys_00000007_5006DFF2]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:23.07" ModificationCount="0" SamplingPercent="100" Statistics="[PK_equipos]" Table="[equipos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:23.58" ModificationCount="0" SamplingPercent="11.8574" Statistics="[PK_partidos]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:23.06" ModificationCount="0" SamplingPercent="11.1219" Statistics="[_WA_Sys_00000009_5006DFF2]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:23.24" ModificationCount="0" SamplingPercent="11.1219" Statistics="[_WA_Sys_0000000A_5006DFF2]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+              <StatisticsInfo LastUpdate="2025-11-27T01:12:23.46" ModificationCount="0" SamplingPercent="11.5805" Statistics="[IX_partidos_liga]" Table="[partidos]" Schema="[dbo]" Database="[tribuneros_bdi]"></StatisticsInfo>
+            </OptimizerStatsUsage>
+            <TraceFlags IsCompileTime="1">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <TraceFlags IsCompileTime="0">
+              <TraceFlag Value="8017" Scope="Global"></TraceFlag>
+            </TraceFlags>
+            <WaitStats>
+              <Wait WaitType="ASYNC_NETWORK_IO" WaitTimeMs="257" WaitCount="332"></Wait>
+            </WaitStats>
+            <QueryTimeStats ElapsedTime="345" CpuTime="89"></QueryTimeStats>
+            <RelOp NodeId="0" PhysicalOp="Hash Match" LogicalOp="Inner Join" EstimateRows="26936.5" EstimateIO="0" EstimateCPU="0.194693" AvgRowSize="272" EstimatedTotalSubtreeCost="0.560479" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+              <OutputList>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="nombre"></ColumnReference>
+                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="nombre"></ColumnReference>
+                <ColumnReference Column="Expr1003"></ColumnReference>
+              </OutputList>
+              <MemoryFractions Input="0.562212" Output="0.562212"></MemoryFractions>
+              <RunTimeInformation>
+                <RunTimeCountersPerThread Thread="0" ActualRows="19564" Batches="0" ActualElapsedms="37" ActualCPUms="37" ActualScans="0" ActualLogicalReads="0" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualEndOfScans="1" ActualExecutions="1" InputMemoryGrant="2000" OutputMemoryGrant="2000" UsedMemoryGrant="640" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+              </RunTimeInformation>
+              <Hash>
+                <DefinedValues></DefinedValues>
+                <HashKeysBuild>
+                  <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="id"></ColumnReference>
+                </HashKeysBuild>
+                <HashKeysProbe>
+                  <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                </HashKeysProbe>
+                <RelOp NodeId="1" PhysicalOp="Clustered Index Scan" LogicalOp="Clustered Index Scan" EstimateRows="500" EstimatedRowsRead="500" EstimateIO="0.00831019" EstimateCPU="0.000707" AvgRowSize="135" EstimatedTotalSubtreeCost="0.00901719" TableCardinality="500" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                  <OutputList>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="id"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="nombre"></ColumnReference>
+                  </OutputList>
+                  <RunTimeInformation>
+                    <RunTimeCountersPerThread Thread="0" ActualRows="500" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualScans="1" ActualLogicalReads="10" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRowsRead="500" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                  </RunTimeInformation>
+                  <IndexScan Ordered="0" ForcedIndex="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+                    <DefinedValues>
+                      <DefinedValue>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="id"></ColumnReference>
+                      </DefinedValue>
+                      <DefinedValue>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[el]" Column="nombre"></ColumnReference>
+                      </DefinedValue>
+                    </DefinedValues>
+                    <Object Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Index="[PK_equipos]" Alias="[el]" IndexKind="Clustered" Storage="RowStore"></Object>
+                  </IndexScan>
+                </RelOp>
+                <RelOp NodeId="2" PhysicalOp="Hash Match" LogicalOp="Inner Join" EstimateRows="26936.5" EstimateIO="0" EstimateCPU="0.194693" AvgRowSize="154" EstimatedTotalSubtreeCost="0.356766" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                  <OutputList>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="nombre"></ColumnReference>
+                    <ColumnReference Column="Expr1003"></ColumnReference>
+                  </OutputList>
+                  <MemoryFractions Input="0.437788" Output="0.437788"></MemoryFractions>
+                  <RunTimeInformation>
+                    <RunTimeCountersPerThread Thread="0" ActualRows="19564" Batches="0" ActualElapsedms="25" ActualCPUms="25" ActualScans="0" ActualLogicalReads="0" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualEndOfScans="1" ActualExecutions="1" InputMemoryGrant="1784" OutputMemoryGrant="1784" UsedMemoryGrant="640" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                  </RunTimeInformation>
+                  <Hash>
+                    <DefinedValues></DefinedValues>
+                    <HashKeysBuild>
+                      <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="id"></ColumnReference>
+                    </HashKeysBuild>
+                    <HashKeysProbe>
+                      <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_visitante"></ColumnReference>
+                    </HashKeysProbe>
+                    <RelOp NodeId="3" PhysicalOp="Clustered Index Scan" LogicalOp="Clustered Index Scan" EstimateRows="500" EstimatedRowsRead="500" EstimateIO="0.00831019" EstimateCPU="0.000707" AvgRowSize="135" EstimatedTotalSubtreeCost="0.00901719" TableCardinality="500" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                      <OutputList>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="id"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="nombre"></ColumnReference>
+                      </OutputList>
+                      <RunTimeInformation>
+                        <RunTimeCountersPerThread Thread="0" ActualRows="500" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualScans="1" ActualLogicalReads="10" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRowsRead="500" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                      </RunTimeInformation>
+                      <IndexScan Ordered="0" ForcedIndex="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+                        <DefinedValues>
+                          <DefinedValue>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="id"></ColumnReference>
+                          </DefinedValue>
+                          <DefinedValue>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Alias="[ev]" Column="nombre"></ColumnReference>
+                          </DefinedValue>
+                        </DefinedValues>
+                        <Object Database="[tribuneros_bdi]" Schema="[dbo]" Table="[equipos]" Index="[PK_equipos]" Alias="[ev]" IndexKind="Clustered" Storage="RowStore"></Object>
+                      </IndexScan>
+                    </RelOp>
+                    <RelOp NodeId="4" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="26936.5" EstimateIO="0" EstimateCPU="0.00269365" AvgRowSize="36" EstimatedTotalSubtreeCost="0.153053" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                      <OutputList>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_visitante"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                        <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                        <ColumnReference Column="Expr1003"></ColumnReference>
+                      </OutputList>
+                      <ComputeScalar>
+                        <DefinedValues>
+                          <DefinedValue>
+                            <ColumnReference Column="Expr1003"></ColumnReference>
+                            <ScalarOperator ScalarString="CASE WHEN [tribuneros_bdi].[dbo].[partidos].[estado] as [p].[estado]=(0) THEN 'Programado' ELSE CASE WHEN [tribuneros_bdi].[dbo].[partidos].[estado] as [p].[estado]=(1) THEN 'En Vivo' ELSE CASE WHEN [tribuneros_bdi].[dbo].[partidos].[estado] as [p].[estado]=(2) THEN 'Finalizado' ELSE CASE WHEN [tribuneros_bdi].[dbo].[partidos].[estado] as [p].[estado]=(3) THEN 'Pospuesto' ELSE 'Cancelado' END END END END">
+                              <IF>
+                                <Condition>
+                                  <ScalarOperator>
+                                    <Compare CompareOp="EQ">
+                                      <ScalarOperator>
+                                        <Identifier>
+                                          <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                        </Identifier>
+                                      </ScalarOperator>
+                                      <ScalarOperator>
+                                        <Const ConstValue="(0)"></Const>
+                                      </ScalarOperator>
+                                    </Compare>
+                                  </ScalarOperator>
+                                </Condition>
+                                <Then>
+                                  <ScalarOperator>
+                                    <Const ConstValue="'Programado'"></Const>
+                                  </ScalarOperator>
+                                </Then>
+                                <Else>
+                                  <ScalarOperator>
+                                    <IF>
+                                      <Condition>
+                                        <ScalarOperator>
+                                          <Compare CompareOp="EQ">
+                                            <ScalarOperator>
+                                              <Identifier>
+                                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                              </Identifier>
+                                            </ScalarOperator>
+                                            <ScalarOperator>
+                                              <Const ConstValue="(1)"></Const>
+                                            </ScalarOperator>
+                                          </Compare>
+                                        </ScalarOperator>
+                                      </Condition>
+                                      <Then>
+                                        <ScalarOperator>
+                                          <Const ConstValue="'En Vivo'"></Const>
+                                        </ScalarOperator>
+                                      </Then>
+                                      <Else>
+                                        <ScalarOperator>
+                                          <IF>
+                                            <Condition>
+                                              <ScalarOperator>
+                                                <Compare CompareOp="EQ">
+                                                  <ScalarOperator>
+                                                    <Identifier>
+                                                      <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                                    </Identifier>
+                                                  </ScalarOperator>
+                                                  <ScalarOperator>
+                                                    <Const ConstValue="(2)"></Const>
+                                                  </ScalarOperator>
+                                                </Compare>
+                                              </ScalarOperator>
+                                            </Condition>
+                                            <Then>
+                                              <ScalarOperator>
+                                                <Const ConstValue="'Finalizado'"></Const>
+                                              </ScalarOperator>
+                                            </Then>
+                                            <Else>
+                                              <ScalarOperator>
+                                                <IF>
+                                                  <Condition>
+                                                    <ScalarOperator>
+                                                      <Compare CompareOp="EQ">
+                                                        <ScalarOperator>
+                                                          <Identifier>
+                                                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                                          </Identifier>
+                                                        </ScalarOperator>
+                                                        <ScalarOperator>
+                                                          <Const ConstValue="(3)"></Const>
+                                                        </ScalarOperator>
+                                                      </Compare>
+                                                    </ScalarOperator>
+                                                  </Condition>
+                                                  <Then>
+                                                    <ScalarOperator>
+                                                      <Const ConstValue="'Pospuesto'"></Const>
+                                                    </ScalarOperator>
+                                                  </Then>
+                                                  <Else>
+                                                    <ScalarOperator>
+                                                      <Const ConstValue="'Cancelado'"></Const>
+                                                    </ScalarOperator>
+                                                  </Else>
+                                                </IF>
+                                              </ScalarOperator>
+                                            </Else>
+                                          </IF>
+                                        </ScalarOperator>
+                                      </Else>
+                                    </IF>
+                                  </ScalarOperator>
+                                </Else>
+                              </IF>
+                            </ScalarOperator>
+                          </DefinedValue>
+                        </DefinedValues>
+                        <RelOp NodeId="5" PhysicalOp="Nested Loops" LogicalOp="Inner Join" EstimateRows="26936.5" EstimatedRowsRead="36359.6" EstimateIO="0.0927546" EstimateCPU="0.0401526" AvgRowSize="28" EstimatedTotalSubtreeCost="0.132907" TableCardinality="1e+06" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                          <OutputList>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_visitante"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                            <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                          </OutputList>
+                          <RunTimeInformation>
+                            <RunTimeCountersPerThread Thread="0" ActualRows="19564" Batches="0" ActualElapsedms="16" ActualCPUms="16" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                          </RunTimeInformation>
+                          <NestedLoops Optimized="0">
+                            <OuterReferences>
+                              <ColumnReference Column="Expr1010"></ColumnReference>
+                              <ColumnReference Column="Expr1011"></ColumnReference>
+                              <ColumnReference Column="Expr1012"></ColumnReference>
+                            </OuterReferences>
+                            <RelOp NodeId="6" PhysicalOp="Merge Interval" LogicalOp="Merge Interval" EstimateRows="2" EstimateIO="0" EstimateCPU="0" AvgRowSize="23" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                              <OutputList>
+                                <ColumnReference Column="Expr1010"></ColumnReference>
+                                <ColumnReference Column="Expr1011"></ColumnReference>
+                                <ColumnReference Column="Expr1012"></ColumnReference>
+                              </OutputList>
+                              <RunTimeInformation>
+                                <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                              </RunTimeInformation>
+                              <MergeInterval>
+                                <RelOp NodeId="7" PhysicalOp="Concatenation" LogicalOp="Concatenation" EstimateRows="2" EstimateIO="0" EstimateCPU="0" AvgRowSize="23" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                                  <OutputList>
+                                    <ColumnReference Column="Expr1010"></ColumnReference>
+                                    <ColumnReference Column="Expr1011"></ColumnReference>
+                                    <ColumnReference Column="Expr1012"></ColumnReference>
+                                  </OutputList>
+                                  <RunTimeInformation>
+                                    <RunTimeCountersPerThread Thread="0" ActualRows="2" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                                  </RunTimeInformation>
+                                  <Concat>
+                                    <DefinedValues>
+                                      <DefinedValue>
+                                        <ColumnReference Column="Expr1010"></ColumnReference>
+                                        <ColumnReference Column="Expr1005"></ColumnReference>
+                                        <ColumnReference Column="Expr1008"></ColumnReference>
+                                      </DefinedValue>
+                                      <DefinedValue>
+                                        <ColumnReference Column="Expr1011"></ColumnReference>
+                                        <ColumnReference Column="Expr1006"></ColumnReference>
+                                        <ColumnReference Column="Expr1009"></ColumnReference>
+                                      </DefinedValue>
+                                      <DefinedValue>
+                                        <ColumnReference Column="Expr1012"></ColumnReference>
+                                        <ColumnReference Column="Expr1004"></ColumnReference>
+                                        <ColumnReference Column="Expr1007"></ColumnReference>
+                                      </DefinedValue>
+                                    </DefinedValues>
+                                    <RelOp NodeId="8" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="1" EstimateIO="0" EstimateCPU="0" AvgRowSize="23" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                                      <OutputList>
+                                        <ColumnReference Column="Expr1005"></ColumnReference>
+                                        <ColumnReference Column="Expr1006"></ColumnReference>
+                                        <ColumnReference Column="Expr1004"></ColumnReference>
+                                      </OutputList>
+                                      <RunTimeInformation>
+                                        <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                                      </RunTimeInformation>
+                                      <ComputeScalar>
+                                        <DefinedValues>
+                                          <DefinedValue>
+                                            <ValueVector>
+                                              <ColumnReference Column="Expr1005"></ColumnReference>
+                                              <ColumnReference Column="Expr1006"></ColumnReference>
+                                              <ColumnReference Column="Expr1004"></ColumnReference>
+                                            </ValueVector>
+                                            <ScalarOperator ScalarString="GetRangeWithMismatchedTypes('2024-01-01 00:00:00.0000000',NULL,(22))">
+                                              <Intrinsic FunctionName="GetRangeWithMismatchedTypes">
+                                                <ScalarOperator>
+                                                  <Const ConstValue="'2024-01-01 00:00:00.0000000'"></Const>
+                                                </ScalarOperator>
+                                                <ScalarOperator>
+                                                  <Const ConstValue="NULL"></Const>
+                                                </ScalarOperator>
+                                                <ScalarOperator>
+                                                  <Const ConstValue="(22)"></Const>
+                                                </ScalarOperator>
+                                              </Intrinsic>
+                                            </ScalarOperator>
+                                          </DefinedValue>
+                                        </DefinedValues>
+                                        <RelOp NodeId="9" PhysicalOp="Constant Scan" LogicalOp="Constant Scan" EstimateRows="1" EstimateIO="0" EstimateCPU="0" AvgRowSize="0" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                                          <OutputList></OutputList>
+                                          <RunTimeInformation>
+                                            <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                                          </RunTimeInformation>
+                                          <ConstantScan></ConstantScan>
+                                        </RelOp>
+                                      </ComputeScalar>
+                                    </RelOp>
+                                    <RelOp NodeId="10" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="1" EstimateIO="0" EstimateCPU="0" AvgRowSize="23" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                                      <OutputList>
+                                        <ColumnReference Column="Expr1008"></ColumnReference>
+                                        <ColumnReference Column="Expr1009"></ColumnReference>
+                                        <ColumnReference Column="Expr1007"></ColumnReference>
+                                      </OutputList>
+                                      <RunTimeInformation>
+                                        <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                                      </RunTimeInformation>
+                                      <ComputeScalar>
+                                        <DefinedValues>
+                                          <DefinedValue>
+                                            <ValueVector>
+                                              <ColumnReference Column="Expr1008"></ColumnReference>
+                                              <ColumnReference Column="Expr1009"></ColumnReference>
+                                              <ColumnReference Column="Expr1007"></ColumnReference>
+                                            </ValueVector>
+                                            <ScalarOperator ScalarString="GetRangeWithMismatchedTypes(NULL,'2024-04-01 00:00:00.0000000',(10))">
+                                              <Intrinsic FunctionName="GetRangeWithMismatchedTypes">
+                                                <ScalarOperator>
+                                                  <Const ConstValue="NULL"></Const>
+                                                </ScalarOperator>
+                                                <ScalarOperator>
+                                                  <Const ConstValue="'2024-04-01 00:00:00.0000000'"></Const>
+                                                </ScalarOperator>
+                                                <ScalarOperator>
+                                                  <Const ConstValue="(10)"></Const>
+                                                </ScalarOperator>
+                                              </Intrinsic>
+                                            </ScalarOperator>
+                                          </DefinedValue>
+                                        </DefinedValues>
+                                        <RelOp NodeId="11" PhysicalOp="Constant Scan" LogicalOp="Constant Scan" EstimateRows="1" EstimateIO="0" EstimateCPU="0" AvgRowSize="0" EstimatedTotalSubtreeCost="0" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                                          <OutputList></OutputList>
+                                          <RunTimeInformation>
+                                            <RunTimeCountersPerThread Thread="0" ActualRows="1" Batches="0" ActualElapsedms="0" ActualCPUms="0" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                                          </RunTimeInformation>
+                                          <ConstantScan></ConstantScan>
+                                        </RelOp>
+                                      </ComputeScalar>
+                                    </RelOp>
+                                  </Concat>
+                                </RelOp>
+                              </MergeInterval>
+                            </RelOp>
+                            <RelOp NodeId="12" PhysicalOp="Index Seek" LogicalOp="Index Seek" EstimateRows="26936.5" EstimatedRowsRead="36359.6" EstimateIO="0.0927546" EstimateCPU="0.0401526" AvgRowSize="28" EstimatedTotalSubtreeCost="0.132907" TableCardinality="1e+06" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+                              <OutputList>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_visitante"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                                <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                              </OutputList>
+                              <RunTimeInformation>
+                                <RunTimeCountersPerThread Thread="0" ActualRows="19564" Batches="0" ActualElapsedms="14" ActualCPUms="14" ActualScans="1" ActualLogicalReads="126" ActualPhysicalReads="0" ActualReadAheads="0" ActualLobLogicalReads="0" ActualLobPhysicalReads="0" ActualLobReadAheads="0" ActualRowsRead="36473" ActualEndOfScans="1" ActualExecutions="1" ActualExecutionMode="Row"></RunTimeCountersPerThread>
+                              </RunTimeInformation>
+                              <IndexScan Ordered="1" ScanDirection="FORWARD" ForcedIndex="0" ForceSeek="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+                                <DefinedValues>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="id"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_local"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="equipo_visitante"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_local"></ColumnReference>
+                                  </DefinedValue>
+                                  <DefinedValue>
+                                    <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="goles_visitante"></ColumnReference>
+                                  </DefinedValue>
+                                </DefinedValues>
+                                <Object Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Index="[IX_partidos_fecha_compuesto]" Alias="[p]" IndexKind="NonClustered" Storage="RowStore"></Object>
+                                <SeekPredicates>
+                                  <SeekPredicateNew>
+                                    <SeekKeys>
+                                      <StartRange ScanType="GT">
+                                        <RangeColumns>
+                                          <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                                        </RangeColumns>
+                                        <RangeExpressions>
+                                          <ScalarOperator ScalarString="[Expr1010]">
+                                            <Identifier>
+                                              <ColumnReference Column="Expr1010"></ColumnReference>
+                                            </Identifier>
+                                          </ScalarOperator>
+                                        </RangeExpressions>
+                                      </StartRange>
+                                      <EndRange ScanType="LT">
+                                        <RangeColumns>
+                                          <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="fecha_utc"></ColumnReference>
+                                        </RangeColumns>
+                                        <RangeExpressions>
+                                          <ScalarOperator ScalarString="[Expr1011]">
+                                            <Identifier>
+                                              <ColumnReference Column="Expr1011"></ColumnReference>
+                                            </Identifier>
+                                          </ScalarOperator>
+                                        </RangeExpressions>
+                                      </EndRange>
+                                    </SeekKeys>
+                                  </SeekPredicateNew>
+                                </SeekPredicates>
+                                <Predicate>
+                                  <ScalarOperator ScalarString="[tribuneros_bdi].[dbo].[partidos].[estado] as [p].[estado]=(2)">
+                                    <Compare CompareOp="EQ">
+                                      <ScalarOperator>
+                                        <Identifier>
+                                          <ColumnReference Database="[tribuneros_bdi]" Schema="[dbo]" Table="[partidos]" Alias="[p]" Column="estado"></ColumnReference>
+                                        </Identifier>
+                                      </ScalarOperator>
+                                      <ScalarOperator>
+                                        <Const ConstValue="(2)"></Const>
+                                      </ScalarOperator>
+                                    </Compare>
+                                  </ScalarOperator>
+                                </Predicate>
+                              </IndexScan>
+                            </RelOp>
+                          </NestedLoops>
+                        </RelOp>
+                      </ComputeScalar>
+                    </RelOp>
+                  </Hash>
+                </RelOp>
+              </Hash>
+            </RelOp>
+          </QueryPlan>
+        </StmtSimple>
+      </Statements>
+    </Batch>
+  </BatchSequence>
+</ShowPlanXML>
