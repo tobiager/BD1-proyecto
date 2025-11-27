@@ -1,31 +1,33 @@
 -- =========================================================
--- TAREA 3: CREAR ÍNDICE Y REPETIR CONSULTAS
+-- TAREA 3: CREAR ÃNDICE Y REPETIR CONSULTAS
 -- =========================================================
 
-PRINT '=== TAREA 3: Crear índice y medir mejora ===';
+PRINT '=== TAREA 3: Crear Ã­ndice y medir mejora ===';
 
--- Crear índice en fecha_utc
-PRINT 'Creando índice IX_partidos_fecha...';
+-- Crear Ã­ndice en fecha_utc
+PRINT 'Creando Ã­ndice IX_partidos_fecha...';
 DECLARE @inicio_idx DATETIME2 = SYSDATETIME();
 
 CREATE INDEX IX_partidos_fecha ON dbo.partidos(fecha_utc);
 
 DECLARE @fin_idx DATETIME2 = SYSDATETIME();
-PRINT 'Índice creado en: ' + CAST(DATEDIFF(SECOND, @inicio_idx, @fin_idx) AS VARCHAR(20)) + ' segundos';
+PRINT 'Ãndice creado en: ' + CAST(DATEDIFF(SECOND, @inicio_idx, @fin_idx) AS VARCHAR(20)) + ' segundos';
 PRINT '-----------------------------------------------------';
 
--- Repetir las mismas consultas CON índice
+-- Repetir las mismas consultas CON Ã­ndice
 SET STATISTICS TIME ON;
 SET STATISTICS IO ON;
 SET STATISTICS XML ON;  
 GO
 
-PRINT 'Consulta 1: Partidos en 2023 (CON índice)';
+-- Consulta 1: Partidos en 2023 (CON Ã­ndice)
+PRINT 'Consulta 1: Partidos en 2023 (CON Ã­ndice)';
 SELECT COUNT(*) AS total_partidos_2023
 FROM dbo.partidos
 WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01';
 
-PRINT 'Consulta 2: Partidos finalizados en Q1 2024 (CON índice)';
+-- Consulta 2: Partidos finalizados en Q1 2024 (CON Ã­ndice)
+PRINT 'Consulta 2: Partidos finalizados en Q1 2024 (CON Ã­ndice)';
 SELECT 
     p.id,
     p.fecha_utc,
@@ -47,7 +49,8 @@ WHERE p.fecha_utc >= '2024-01-01'
   AND p.fecha_utc < '2024-04-01'
   AND p.estado = 2;
 
-PRINT 'Consulta 3: Partidos por mes en 2023 (CON índice)';
+-- Consulta 3: Partidos por mes en 2023 (CON Ã­ndice)
+PRINT 'Consulta 3: Partidos por mes en 2023 (CON Ã­ndice)';
 SELECT 
     YEAR(fecha_utc) AS anio,
     MONTH(fecha_utc) AS mes,
