@@ -431,7 +431,7 @@ ORDER BY periodo;
 - - Costo estimado del subárbol: 11.6677
 
 **Plan con índice compuesto (fecha_utc, estado)**
-- - Logra una reducción masiva del costo de tiempo estimado (una reducción de más del 85%).
+- - Logra una reducción masiva del costo de tiempo estimado.
 - - Permite al motor procesar la consulta leyendo solo el índice, sin tener que ir a buscar datos a la tabla base.
 - - El número de páginas leídas desde el disco/caché (lecturas lógicas) se reduce drásticamente
 - - Tiempo CPU: 89ms.
@@ -441,18 +441,19 @@ ORDER BY periodo;
 **Consulta 3: Agregación mensual**
 **Plan sin índice**
 - - Alto costo. Necesita leer toda o una gran parte de la tabla.
-- - Tiempo CPU: 226ms.
+- - Tiempo CPU: 316ms.
 - - Costo estimado del subárbol: 11.9698
 
 **Plan con índice simple**
 - - El índice simple es insuficiente e incluso perjudicial.
 - - Se tuvo que realizar una operación costosa conocida como Key Lookup (Búsqueda de clave) por cada fila que cumplía el criterio de fecha.
-- - Tiempo CPU: 338ms.
+- - Tiempo CPU: 385ms.
 - - Costo estimado del subárbol: 11.9706
 
 **Plan con índice compuesto (fecha_utc, estado)**
-- - Logra una reducción masiva del costo de tiempo estimado.
-- - Tiempo CPU: 89ms.
+- - Logra una reducción importante del costo de tiempo estimado.
+- - No se necesita table scan ni key lookups.
+- - Tiempo CPU: 185ms.
 - - Costo estimado del subárbol: 1.72421
 
 ## 5. Conclusiones finales sobre índices

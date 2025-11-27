@@ -43,7 +43,7 @@ FROM dbo.partidos
 WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01';
 
 -- Consulta 2: Búsqueda más específica con JOINs
-PRINT 'Consulta 2: Partidos finalizados en Q1 2024';
+PRINT 'Consulta 2: Partidos finalizados en 2024';
 SELECT 
     p.id,
     p.fecha_utc,

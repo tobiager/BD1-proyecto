@@ -53,7 +53,7 @@ WHERE fecha_utc >= '2023-01-01'
   AND estado = 2;
 
 -- Consulta 2: Búsqueda más específica con JOINs
-PRINT 'Consulta 2: Partidos finalizados en Q1 2024 (CON índice)';
+PRINT 'Consulta 2: Partidos finalizados en 2024 (CON índice)';
 SELECT 
     p.id,
     p.fecha_utc,
