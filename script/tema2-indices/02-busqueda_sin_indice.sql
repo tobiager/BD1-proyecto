@@ -1,24 +1,48 @@
 -- =========================================================
--- TAREA 2: BÚSQUEDA SIN ÍNDICE Y REGISTRO DE TIEMPOS
+-- TAREA 2: BÃšSQUEDA SIN ÃNDICE Y REGISTRO DE TIEMPOS
 -- =========================================================
 USE tribuneros_bdi;
 GO
 
-PRINT '=== TAREA 2: Consultas SIN índice en fecha ===';
+PRINT '=== TAREA 2: Consultas SIN Ã­ndice en fecha ===';
 
--- Habilitar estadísticas
+-- Eliminar Ã­ndice simple anterior SI EXISTE
+IF EXISTS (SELECT 1 FROM sys.indexes 
+           WHERE name = 'IX_partidos_fecha' 
+           AND object_id = OBJECT_ID('dbo.partidos'))
+BEGIN
+    PRINT 'Eliminando Ã­ndice simple anterior...';
+    DROP INDEX IX_partidos_fecha ON dbo.partidos;
+    PRINT 'Ãndice simple eliminado.';
+END
+ELSE
+BEGIN
+    PRINT 'El Ã­ndice simple no existe (ya fue eliminado).';
+END
+
+-- Eliminar Ã­ndice compuesto SI YA EXISTE
+IF EXISTS (SELECT 1 FROM sys.indexes 
+           WHERE name = 'IX_partidos_fecha_compuesto' 
+           AND object_id = OBJECT_ID('dbo.partidos'))
+BEGIN
+    PRINT 'Eliminando Ã­ndice compuesto existente...';
+    DROP INDEX IX_partidos_fecha_compuesto ON dbo.partidos;
+    PRINT 'Ãndice compuesto eliminado.';
+END
+
+-- Habilitar estadÃ­sticas
 SET STATISTICS TIME ON;
 SET STATISTICS IO ON;
 SET STATISTICS XML ON;  
 GO
 
--- Consulta 1: Búsqueda por período de fecha
+-- Consulta 1: BÃºsqueda por perÃ­odo de fecha
 PRINT 'Consulta 1: Partidos en 2023';
 SELECT COUNT(*) AS total_partidos_2023
 FROM dbo.partidos
 WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01';
 
--- Consulta 2: Búsqueda más específica con JOINs
+-- Consulta 2: BÃºsqueda mÃ¡s especÃ­fica con JOINs
 PRINT 'Consulta 2: Partidos finalizados en Q1 2024';
 SELECT 
     p.id,
@@ -41,7 +65,7 @@ WHERE p.fecha_utc >= '2024-01-01'
   AND p.fecha_utc < '2024-04-01'
   AND p.estado = 2;  -- finalizado
 
--- Consulta 3: Agregación por mes
+-- Consulta 3: AgregaciÃ³n por mes
 PRINT 'Consulta 3: Partidos por mes en 2023';
 SELECT 
     YEAR(fecha_utc) AS anio,
