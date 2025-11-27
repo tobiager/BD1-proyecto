@@ -167,10 +167,10 @@ Se implementó un script para realizar una carga masiva:
 **Consulta 1: Búsqueda por período de fecha**
 
 ```sql
+PRINT 'Consulta 1: Partidos en 2023';
 SELECT COUNT(*) AS total_partidos_2023
 FROM dbo.partidos
-WHERE fecha_utc >= '2023-01-01' 
-  AND fecha_utc < '2024-01-01';
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01';
 ```
 
 - **características:**
@@ -181,13 +181,26 @@ WHERE fecha_utc >= '2023-01-01'
 **Consulta 2: Búsqueda específica con JOINs**
 
 ```sql
-SELECT p.id, p.fecha_utc, …
-FROM partidos p
-JOIN equipos el ON p.equipo_local = el.id
-JOIN equipos ev ON p.equipo_visitante = ev.id
-WHERE p.fecha_utc >= '2024-01-01'
+SELECT 
+    p.id,
+    p.fecha_utc,
+    CASE p.estado 
+        WHEN 0 THEN 'Programado'
+        WHEN 1 THEN 'En Vivo'
+        WHEN 2 THEN 'Finalizado'
+        WHEN 3 THEN 'Pospuesto'
+        ELSE 'Cancelado'
+    END AS estado_texto,
+    el.nombre AS equipo_local,
+    ev.nombre AS equipo_visitante,
+    p.goles_local,
+    p.goles_visitante
+FROM dbo.partidos p
+INNER JOIN dbo.equipos el ON p.equipo_local = el.id
+INNER JOIN dbo.equipos ev ON p.equipo_visitante = ev.id
+WHERE p.fecha_utc >= '2024-01-01' 
   AND p.fecha_utc < '2024-04-01'
-  AND p.estado = 2;
+  AND p.estado = 2;  -- finalizado
 ```
 
 - **características:**
@@ -200,10 +213,13 @@ WHERE p.fecha_utc >= '2024-01-01'
 **Consulta 3: Agregación mensual**
 
 ```sql
-SELECT YEAR(fecha_utc), MONTH(fecha_utc), COUNT(*), SUM(...)
-FROM partidos
-WHERE fecha_utc >= '2023-01-01'
-  AND fecha_utc < '2024-01-01'
+SELECT 
+    YEAR(fecha_utc) AS anio,
+    MONTH(fecha_utc) AS mes,
+    COUNT(*) AS total_partidos,
+    SUM(CASE WHEN estado = 2 THEN 1 ELSE 0 END) AS finalizados
+FROM dbo.partidos
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
 GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)
 ORDER BY anio, mes;
 ```
@@ -228,9 +244,70 @@ CREATE INDEX IX_partidos_fecha ON dbo.partidos(fecha_utc);
 - Pueda buscar por rango de fechas usando Index Seek.
 - Mejore de forma muy importante las consultas como:
 
+**Consulta 1: Búsqueda por período de fecha**
+
 ```sql
-WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
+SELECT COUNT(*) AS total_partidos_2023
+FROM dbo.partidos
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01';
 ```
+
+- **características:**
+- Es una consulta de rango por fecha, típica para verificar el impacto de un índice.
+- Sin índice, SQL Server realizará: Table Scan sobre millones de filas.
+- Evalúa rendimiento para filtros simples.
+
+**Consulta 2: Búsqueda específica con JOINs**
+
+```sql
+SELECT 
+    p.id,
+    p.fecha_utc,
+    CASE p.estado 
+        WHEN 0 THEN 'Programado'
+        WHEN 1 THEN 'En Vivo'
+        WHEN 2 THEN 'Finalizado'
+        WHEN 3 THEN 'Pospuesto'
+        ELSE 'Cancelado'
+    END AS estado_texto,
+    el.nombre AS equipo_local,
+    ev.nombre AS equipo_visitante,
+    p.goles_local,
+    p.goles_visitante
+FROM dbo.partidos p
+INNER JOIN dbo.equipos el ON p.equipo_local = el.id
+INNER JOIN dbo.equipos ev ON p.equipo_visitante = ev.id
+WHERE p.fecha_utc >= '2024-01-01' 
+  AND p.fecha_utc < '2024-04-01'
+  AND p.estado = 2;
+```
+
+- **características:**
+- Filtrado por fecha + estado.
+- Selección de columnas descriptivas.
+- Traducción de estado con CASE.
+- Dos JOINs con tabla equipos.
+- Recupera datos de texto (equipos) y datos numéricos (goles).
+
+**Consulta 3: Agregación mensual**
+
+```sql
+SELECT 
+    YEAR(fecha_utc) AS anio,
+    MONTH(fecha_utc) AS mes,
+    COUNT(*) AS total_partidos,
+    SUM(CASE WHEN estado = 2 THEN 1 ELSE 0 END) AS finalizados
+FROM dbo.partidos
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
+GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)
+ORDER BY anio, mes;
+```
+
+- **características:**
+- Agregación por año y mes.
+- Requiere leer todas las filas del año completo.
+- SUM de estados finalizados (técnica de conteo condicional).
+- Ordenamiento al final.
 
 ### 3.4 04-indice_compuesto.sql
 
@@ -256,52 +333,92 @@ La consulta queda COMPLETAMENTE cubierta por el índice.
 ```sql
 CREATE INDEX IX_partidos_fecha_compuesto 
 ON dbo.partidos(fecha_utc, estado)
-INCLUDE (liga_id, equipo_local, equipo_visitante, goles_local, goles_visitante, estadio);
+INCLUDE (equipo_local, equipo_visitante, goles_local, goles_visitante);
 ```
 
-**Consulta optimizada 1**
+**Consulta 1: Búsqueda por período de fecha**
 
 ```sql
-WHERE p.fecha_utc >= '2024-01-01' AND p.fecha_utc < '2024-04-01' AND p.estado = 2;
-```
-
-**Consulta optimizada 2**
-Consulta con agregación:
-
-```sql
-SELECT estado, COUNT(*), AVG(goles_local + goles_visitante)
+SELECT COUNT(*) AS total_partidos_2023
 FROM dbo.partidos
-WHERE fecha_utc BETWEEN '2023' AND '2024'
-GROUP BY estado;
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01;
 ```
 
-## 6. Pruebas de rendimiento
+**Consulta 2**
+Búsqueda más específica con JOINs:
 
-### 6.1 Comparación de los costos estimados
+```sql
+SELECT 
+    p.id,
+    p.fecha_utc,
+    CASE p.estado 
+        WHEN 0 THEN 'Programado'
+        WHEN 1 THEN 'En Vivo'
+        WHEN 2 THEN 'Finalizado'
+        WHEN 3 THEN 'Pospuesto'
+        ELSE 'Cancelado'
+    END AS estado_texto,
+    el.nombre AS equipo_local,
+    ev.nombre AS equipo_visitante,
+    p.goles_local,
+    p.goles_visitante
+FROM dbo.partidos p
+INNER JOIN dbo.equipos el ON p.equipo_local = el.id
+INNER JOIN dbo.equipos ev ON p.equipo_visitante = ev.id
+WHERE p.fecha_utc >= '2024-01-01' 
+  AND p.fecha_utc < '2024-04-01'
+  AND p.estado = 2;
+```
 
+**Consulta 3: Agregación mensual**
+
+```sql
+SELECT 
+    YEAR(fecha_utc) AS anio,
+    MONTH(fecha_utc) AS mes,
+    COUNT(*) AS total_partidos,
+    SUM(CASE WHEN estado = 2 THEN 1 ELSE 0 END) AS finalizados
+FROM dbo.partidos
+WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
+GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)
+ORDER BY anio, mes;
+```
+
+- **características:**
+- Agregación por año y mes.
+- Requiere leer todas las filas del año completo.
+- SUM de estados finalizados (técnica de conteo condicional).
+- Ordenamiento al final.
+
+## 4. Pruebas de rendimiento
+
+### 4.1 Comparación de los costos estimados
+
+**Consulta 1: Búsqueda por período de fecha**
 **Plan sin índice**
-
-- Costo 1.5307 -> más de 3 veces más costoso que el plan con índice simple.
 - - La consulta obliga al motor a realizar un table scan.
 - - Esto implica leer todas las filas de la tabla, independientemente del filtro.
-- - Es el escenario más costoso y menos eficiente.
+- - Lecturas lógicas: 800 páginas. Es el escenario más costoso y menos eficiente.
+- - Tiempo CPU: 48ms.
+- - Costo estimado del subárbol: 0.613271
 
 **Plan con índice simple**
-- Costo 0.466 -> 69.5% más rápido respecto al plan sin índice.
 - - El motor puede realizar un index seek o index scan, según el filtro y la selectividad.
 - - Gran mejora respecto al scan completo.
-- - Se reduce drásticamente la cantidad de páginas leídas.
+- - Lecturas lógicas: 294 páginas. Se reduce drásticamente la cantidad de páginas leídas.
+- - Tiempo CPU: 44ms.
+- - Costo estimado del subárbol: 0.466423
 
-**Plan con índice compuesto (fecha_utc, estado) + INCLUDE (…)**
-- Costo 0.23385 -> 49.8% más rápido respecto al plan con índice simple y 84.7% más rápido respecto al plan sin índice.
+**Plan con índice compuesto (fecha_utc, estado)**
 - - Aprovecha la combinación de columnas consultadas.
 - - Proporciona el patrón de acceso más selectivo y eficiente.
-- - Reduce aún más la lectura de páginas y operaciones internas.
-- - Es el plan más óptimo del conjunto.
+- - Lecturas lógicas: 495 páginas. Menos que sin indice pero, más que indice simple.
+- - Tiempo CPU: 40ms.
+- - Costo estimado del subárbol: 0.615312
 
-## 7. Conclusiones finales y recomendaciones
+## 5. Conclusiones finales y recomendaciones
 
-### 7.1 Conclusiones sobre índices
+### 5.1 Conclusiones sobre índices
 
 - El índice compuesto ofrece el mejor rendimiento, con una reducción total del costo del plan del 84.7% respecto al escenario sin índices.
 - El índice simple también mejora significativamente, pero no tanto como el compuesto.
@@ -310,10 +427,10 @@ GROUP BY estado;
 - - Utilizar índices compuestos cuando se filtra por más de una columna.
 - - Analizar planes de ejecución para validar decisiones de optimización.
 
-### 7.2 Recomendaciones
+### 5.2 Recomendaciones
 - Utilizar índices compuestos para consultas que filtran y ordenan por múltiples columnas con alta selectividad, ya que maximizan la eficiencia del motor de SQL Server.
   
-## 8. Referencias
+## 6. Referencias
 
 - **Microsoft Docs - Indexes**  
 https://learn.microsoft.com/es-es/sql/relational-databases/indexes/indexes?view=sql-server-ver17 
