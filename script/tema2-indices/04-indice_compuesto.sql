@@ -1,38 +1,38 @@
 -- =========================================================
--- TAREA 4: ÍNDICE COMPUESTO (COVERING INDEX) - CORREGIDO
+-- TAREA 4: ÃNDICE COMPUESTO (COVERING INDEX) - CORREGIDO
 -- =========================================================
-PRINT '=== TAREA 4: Índice compuesto con columnas incluidas ===';
+PRINT '=== TAREA 4: Ãndice compuesto con columnas incluidas ===';
 
--- Eliminar índice simple anterior SI EXISTE
+-- Eliminar Ã­ndice simple anterior SI EXISTE
 IF EXISTS (SELECT 1 FROM sys.indexes 
            WHERE name = 'IX_partidos_fecha' 
            AND object_id = OBJECT_ID('dbo.partidos'))
 BEGIN
-    PRINT 'Eliminando índice simple anterior...';
+    PRINT 'Eliminando Ã­ndice simple anterior...';
     DROP INDEX IX_partidos_fecha ON dbo.partidos;
-    PRINT 'Índice simple eliminado.';
+    PRINT 'Ãndice simple eliminado.';
 END
 ELSE
 BEGIN
-    PRINT 'El índice simple no existe (ya fue eliminado).';
+    PRINT 'El Ã­ndice simple no existe (ya fue eliminado).';
 END
 
--- Eliminar índice compuesto SI YA EXISTE
+-- Eliminar Ã­ndice compuesto SI YA EXISTE
 IF EXISTS (SELECT 1 FROM sys.indexes 
            WHERE name = 'IX_partidos_fecha_compuesto' 
            AND object_id = OBJECT_ID('dbo.partidos'))
 BEGIN
-    PRINT 'Eliminando índice compuesto existente...';
+    PRINT 'Eliminando Ã­ndice compuesto existente...';
     DROP INDEX IX_partidos_fecha_compuesto ON dbo.partidos;
-    PRINT 'Índice compuesto eliminado.';
+    PRINT 'Ãndice compuesto eliminado.';
 END
 
--- Crear índice compuesto optimizado
-PRINT 'Creando índice compuesto optimizado...';
+-- Crear Ã­ndice compuesto optimizado
+PRINT 'Creando Ã­ndice compuesto optimizado...';
 CREATE INDEX IX_partidos_fecha_compuesto 
 ON dbo.partidos(fecha_utc, estado)
 INCLUDE (liga_id, equipo_local, equipo_visitante, goles_local, goles_visitante, estadio);
-PRINT 'Índice compuesto creado exitosamente.';
+PRINT 'Ãndice compuesto creado exitosamente.';
 PRINT '-----------------------------------------------------';
 
 -- Probar consultas optimizadas
@@ -41,7 +41,8 @@ SET STATISTICS IO ON;
 SET STATISTICS XML ON;  
 GO
 
-PRINT 'Consulta con índice compuesto 1: Partidos finalizados por período';
+-- Consulta 1: Partidos finalizados por perÃ­odo
+PRINT 'Consulta con Ã­ndice compuesto 1: Partidos finalizados por perÃ­odo';
 SELECT 
     p.fecha_utc,
     p.estado,
@@ -54,7 +55,8 @@ WHERE p.fecha_utc >= '2024-01-01'
   AND p.fecha_utc < '2024-04-01'
   AND p.estado = 2;
 
-PRINT 'Consulta con índice compuesto 2: Estadísticas de goles por estado';
+-- Consulta 2: EstadÃ­sticas de goles por estado
+PRINT 'Consulta con Ã­ndice compuesto 2: EstadÃ­sticas de goles por estado';
 SELECT 
     CASE estado 
         WHEN 0 THEN 'Programado'
