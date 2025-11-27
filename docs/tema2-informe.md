@@ -341,11 +341,12 @@ INCLUDE (equipo_local, equipo_visitante, goles_local, goles_visitante);
 ```sql
 SELECT COUNT(*) AS total_partidos_2023
 FROM dbo.partidos
-WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01;
+WHERE fecha_utc >= '2023-01-01' 
+  AND fecha_utc < '2024-01-01'
+  AND estado = 2;
 ```
 
-**Consulta 2**
-Búsqueda más específica con JOINs:
+**Consulta 2: Búsqueda específica con JOINs**
 
 ```sql
 SELECT 
@@ -374,18 +375,18 @@ WHERE p.fecha_utc >= '2024-01-01'
 
 ```sql
 SELECT 
-    YEAR(fecha_utc) AS anio,
-    MONTH(fecha_utc) AS mes,
+    DATEFROMPARTS(YEAR(fecha_utc), MONTH(fecha_utc), 1) AS periodo,
     COUNT(*) AS total_partidos,
     SUM(CASE WHEN estado = 2 THEN 1 ELSE 0 END) AS finalizados
 FROM dbo.partidos
-WHERE fecha_utc >= '2023-01-01' AND fecha_utc < '2024-01-01'
-GROUP BY YEAR(fecha_utc), MONTH(fecha_utc)
-ORDER BY anio, mes;
+WHERE fecha_utc >= '2023-01-01' 
+  AND fecha_utc < '2024-01-01'
+GROUP BY DATEFROMPARTS(YEAR(fecha_utc), MONTH(fecha_utc), 1)
+ORDER BY periodo;
 ```
 
 - **características:**
-- Agregación por año y mes.
+- Agregación por año y mes (periodo).
 - Requiere leer todas las filas del año completo.
 - SUM de estados finalizados (técnica de conteo condicional).
 - Ordenamiento al final.
@@ -398,37 +399,72 @@ ORDER BY anio, mes;
 **Plan sin índice**
 - - La consulta obliga al motor a realizar un table scan.
 - - Esto implica leer todas las filas de la tabla, independientemente del filtro.
-- - Lecturas lógicas: 800 páginas. Es el escenario más costoso y menos eficiente.
-- - Tiempo CPU: 48ms.
-- - Costo estimado del subárbol: 0.613271
+- - Lecturas lógicas: 12031 páginas. Es el escenario más costoso y menos eficiente.
+- - Tiempo CPU: 186ms.
+- - Costo estimado del subárbol: 10.9483
 
 **Plan con índice simple**
 - - El motor puede realizar un index seek o index scan, según el filtro y la selectividad.
-- - Gran mejora respecto al scan completo.
-- - Lecturas lógicas: 294 páginas. Se reduce drásticamente la cantidad de páginas leídas.
-- - Tiempo CPU: 44ms.
-- - Costo estimado del subárbol: 0.466423
+- - Gran mejora respecto al scan completo (más del 95% respecto al escenario sin índice.).
+- - Lecturas lógicas: 295 páginas. Se reduce drásticamente la cantidad de páginas leídas.
+- - Tiempo CPU: 56ms.
+- - Costo estimado del subárbol: 0.467661
 
 **Plan con índice compuesto (fecha_utc, estado)**
-- - Aprovecha la combinación de columnas consultadas.
-- - Proporciona el patrón de acceso más selectivo y eficiente.
-- - Lecturas lógicas: 495 páginas. Menos que sin indice pero, más que indice simple.
-- - Tiempo CPU: 40ms.
-- - Costo estimado del subárbol: 0.615312
+- - Más específica al añadir el filtro AND estado = 2.
+- - Costo ligeramente superior al simple.
+- - Lecturas lógicas: 496 páginas. Menos que sin indice pero, más que con indice simple.
+- - Tiempo CPU: 29ms.
+- - Costo estimado del subárbol: 0.620147
 
-## 5. Conclusiones finales y recomendaciones
 
-### 5.1 Conclusiones sobre índices
+**Consulta 2: Búsqueda específica con JOINs**
+**Plan sin índice**
+- - Alto costo. Necesita leer toda o una gran parte de la tabla.
+- - Tiempo CPU: 226ms.
+- - Costo estimado del subárbol: 11.6674
 
-- El índice compuesto ofrece el mejor rendimiento, con una reducción total del costo del plan del 84.7% respecto al escenario sin índices.
-- El índice simple también mejora significativamente, pero no tanto como el compuesto.
-- Esto demuestra la importancia de:
-- - Definir índices basados en los patrones reales de consulta.
-- - Utilizar índices compuestos cuando se filtra por más de una columna.
-- - Analizar planes de ejecución para validar decisiones de optimización.
+**Plan con índice simple**
+- - El índice no fue aprovechado eficientemente para la operación.
+- - El índice simple solo en fecha_utc obligó al optimizador a realizar una operación ineficiente para obtener la columna estado
+- - Tiempo CPU: 338ms.
+- - Costo estimado del subárbol: 11.6677
 
-### 5.2 Recomendaciones
-- Utilizar índices compuestos para consultas que filtran y ordenan por múltiples columnas con alta selectividad, ya que maximizan la eficiencia del motor de SQL Server.
+**Plan con índice compuesto (fecha_utc, estado)**
+- - Logra una reducción masiva del costo de tiempo estimado (una reducción de más del 85%).
+- - Permite al motor procesar la consulta leyendo solo el índice, sin tener que ir a buscar datos a la tabla base.
+- - El número de páginas leídas desde el disco/caché (lecturas lógicas) se reduce drásticamente
+- - Tiempo CPU: 89ms.
+- - Costo estimado del subárbol: 0.560479
+ 
+
+**Consulta 3: Agregación mensual**
+**Plan sin índice**
+- - Alto costo. Necesita leer toda o una gran parte de la tabla.
+- - Tiempo CPU: 226ms.
+- - Costo estimado del subárbol: 11.9698
+
+**Plan con índice simple**
+- - El índice simple es insuficiente e incluso perjudicial.
+- - Se tuvo que realizar una operación costosa conocida como Key Lookup (Búsqueda de clave) por cada fila que cumplía el criterio de fecha.
+- - Tiempo CPU: 338ms.
+- - Costo estimado del subárbol: 11.9706
+
+**Plan con índice compuesto (fecha_utc, estado)**
+- - Logra una reducción masiva del costo de tiempo estimado.
+- - Tiempo CPU: 89ms.
+- - Costo estimado del subárbol: 1.72421
+
+## 5. Conclusiones finales sobre índices
+
+**"Consulta 1: Búsqueda por período de fecha"**
+La indexación en la columna de filtro de rango (fecha_utc) es el factor más importante para optimizar la Consulta 1, reduciendo el costo en más del 95% al permitir un Index Seek en lugar de un Clustered Index Scan. El índice simple demostró ser el más eficiente para esta consulta específica de conteo por rango.
+
+**Consulta 2: Búsqueda específica con JOINs**
+Para consultas con múltiples condiciones de filtro (como rango de fechas y valor específico, y que requieren columnas adicionales en el SELECT), la creación de un Índice de Cobertura (Covering Index) que incluya las columnas de filtro y las columnas de la proyección (SELECT) es la estrategia más efectiva para optimizar el rendimiento. El índice compuesto optimizado logra esto, superando con creces tanto a la versión sin índice como a la versión con un índice simple.
+
+**Consulta 3: Agregación mensual**
+Para consultas que utilizan un rango de fechas en la cláusula WHERE junto con una función de agregación que depende de otras columnas (como estado), un índice compuesto que cubra al menos las columnas de filtro y las columnas de agregación (incluida la columna que se agrupa) es crucial. El índice IX_partidos_fecha_compuesto demuestra ser el más efectivo para este tipo de consulta, permitiendo un Index Seek y un procesamiento de datos más rápido directamente desde el índice.
   
 ## 6. Referencias
 
